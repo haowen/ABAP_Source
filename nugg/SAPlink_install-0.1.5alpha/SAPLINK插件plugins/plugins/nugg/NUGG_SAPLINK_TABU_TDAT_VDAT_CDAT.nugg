@@ -1,0 +1,4411 @@
+<?xml version="1.0" encoding="utf-16"?>
+<nugget name="SAPLINK_TABU_TDAT_VDAT_CDAT">
+ <CLAS CLSNAME="ZSAPLINK_TABU" VERSION="1" LANGU="P" DESCRIPT="SapLink Class Installer" UUID="001CC4ED928E1EE4839DDA82A2860CBC" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" CHGDANYON="00000000" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="702" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " REFCLSNAME="ZSAPLINK">
+  <publicSection>class ZSAPLINK_TABU definition
+  public
+  inheriting from ZSAPLINK
+  create public .
+
+public section.
+  type-pools ABAP .
+  type-pools SEOP .
+  type-pools SEOR .
+  type-pools SEOS .
+  type-pools SEOT .
+  type-pools SEOX .
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+  <protectedSection>*&quot;* protected components of class ZSAPLINK_CDAT
+*&quot;* do not include other source files here!!!
+protected section.
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+  <privateSection>private section.
+
+  class ZSAPLINK_TOOLS definition load .
+  class-data T_E071 type ZSAPLINK_TOOLS=&gt;TY_T_E071 .
+  class-data T_E071K type ZSAPLINK_TOOLS=&gt;TY_T_E071K .
+  class-data V_MODE type C .
+
+  methods CREATEIXMLDOCFROMREQUEST
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .
+  methods CREATEIXMLDOCFROMDATABASE
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .</privateSection>
+  <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+  <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+  <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+  <typeUsage CLSNAME="ZSAPLINK_TABU" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TABU" TYPEGROUP="SEOP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TABU" TYPEGROUP="SEOR" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TABU" TYPEGROUP="SEOS" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TABU" TYPEGROUP="SEOT" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TABU" TYPEGROUP="SEOX" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <forwardDeclaration>ABAP</forwardDeclaration>
+  <forwardDeclaration>SEOP</forwardDeclaration>
+  <forwardDeclaration>SEOR</forwardDeclaration>
+  <forwardDeclaration>SEOS</forwardDeclaration>
+  <forwardDeclaration>SEOT</forwardDeclaration>
+  <forwardDeclaration>SEOX</forwardDeclaration>
+  <attribute CLSNAME="ZSAPLINK_TABU" CMPNAME="T_E071" VERSION="1" LANGU="P" DESCRIPT="Task objects" EXPOSURE="0" STATE="1" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_TABU" CMPNAME="T_E071K" VERSION="1" LANGU="P" DESCRIPT="Task objects keys" EXPOSURE="0" STATE="1" EDITORDER="2 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071K" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_TABU" CMPNAME="V_MODE" VERSION="1" LANGU="P" DESCRIPT="O=add object, R=add request" EXPOSURE="0" STATE="1" EDITORDER="3 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <inheritance CLSNAME="ZSAPLINK_TABU" REFCLSNAME="ZSAPLINK" VERSION="1" STATE="1" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000">
+   <redefinition CLSNAME="ZSAPLINK_TABU" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CHECKEXISTS" EXPOSURE="0"/>
+   <redefinition CLSNAME="ZSAPLINK_TABU" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEIXMLDOCFROMOBJECT" EXPOSURE="0"/>
+   <redefinition CLSNAME="ZSAPLINK_TABU" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEOBJECTFROMIXMLDOC" EXPOSURE="0"/>
+   <redefinition CLSNAME="ZSAPLINK_TABU" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="DELETEOBJECT" EXPOSURE="0"/>
+   <redefinition CLSNAME="ZSAPLINK_TABU" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="GETOBJECTTYPE" EXPOSURE="0"/>
+  </inheritance>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CHECKEXISTS.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  exists = abap_false.  &quot; No implementation of existence check
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_TABU" CMPNAME="CREATEIXMLDOCFROMDATABASE" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of database" EXPOSURE="0" STATE="1" EDITORDER="2 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_TABU" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_TABU" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMDATABASE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_tabu.
+
+  DATA: lv_str     TYPE string,
+        lv_objtype TYPE string,
+        lv_objname TYPE ddobjname,
+
+        lr_t_table TYPE REF TO data,
+
+        ls_dd02v TYPE dd02v,
+
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt; TYPE any.
+
+* Get the object type and name
+  lv_objtype = me-&gt;getobjecttype( ).
+  lv_objname = objname.
+
+  CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+    EXPORTING
+      name          = lv_objname
+      langu         = sy-langu
+    IMPORTING
+      dd02v_wa      = ls_dd02v
+    EXCEPTIONS
+      illegal_input = 1
+      OTHERS        = 2.
+
+  IF sy-subrc &lt;&gt; 0 OR ls_dd02v IS INITIAL.
+    lv_str = `Table does not exist in the active state`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Creates the TABU root node
+  lo_tabu_node    = xmldoc-&gt;create_element( lv_objtype ).
+  ls_tabu-tabname = lv_objname.
+  CLEAR ls_tabu-activity.
+  me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                  structure = ls_tabu  ).
+
+  CREATE DATA lr_t_table TYPE STANDARD TABLE OF (ls_tabu-tabname).
+  ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Get data from table
+  zsaplink_tools=&gt;get_filtered_table( EXPORTING
+                                        iv_tabname      = ls_tabu-tabname
+                                      IMPORTING
+                                        et_results      = &lt;fs_t_table&gt; ).
+
+* Save data to XML document
+  LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Creates the TABU node
+    lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+    me-&gt;setattributesfromstructure( node      = lo_datarow_node
+                                    structure = &lt;fs_s_table&gt;  ).
+    lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+  ENDLOOP.
+
+  xmldoc-&gt;append_child( lo_tabu_node ).
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEIXMLDOCFROMOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+* Get all tasks of the request supplied in the calling program, if that&apos;s the case
+  zsaplink_tools=&gt;init_plugin( EXPORTING
+                                  iv_mastertype = &apos;TABU&apos;
+                                IMPORTING
+                                  et_e071  = me-&gt;t_e071
+                                  et_e071k = me-&gt;t_e071k
+                                CHANGING
+                                  cv_mode  = me-&gt;v_mode ).
+
+  IF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_request.
+    ixmldocument = me-&gt;createixmldocfromrequest( ).
+  ELSEIF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_object.
+    ixmldocument = me-&gt;createixmldocfromdatabase( ).
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_TABU" CMPNAME="CREATEIXMLDOCFROMREQUEST" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of a request" EXPOSURE="0" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_TABU" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_TABU" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMREQUEST.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_tabu.
+
+  DATA: lv_str           TYPE string,
+        lv_objtype       TYPE string,
+        lv_from          TYPE sy-tabix,
+        lv_len           TYPE i,
+        lv_complete_keys TYPE abap_bool,
+        lv_charfields    TYPE string,
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+        lv_typedescr     TYPE REF TO cl_abap_typedescr,
+
+        lr_t_table  TYPE REF TO data,
+        lr_s_table  TYPE REF TO data,
+        lr_tabkeys  TYPE REF TO data,
+        lr_tabkeys2 TYPE REF TO data,
+
+        lt_dd03p       TYPE STANDARD TABLE OF dd03p,
+        lt_fields      TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields   TYPE abap_keydescr_tab,
+        lt_charfields  TYPE abap_keydescr_tab,
+        lt_sortfields  TYPE abap_sortorder_tab,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabledescr  TYPE REF TO cl_abap_tabledescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_e071&gt;       LIKE LINE OF t_e071,
+                 &lt;fs_e071k&gt;      LIKE LINE OF t_e071k,
+                 &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_t_tabkeys&gt;  TYPE STANDARD TABLE,
+                 &lt;fs_t_tabkeys2&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_tabkey&gt;   TYPE any,
+                 &lt;fs_field&gt;      LIKE LINE OF lt_fields,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_sortfield&gt;  LIKE LINE OF lt_sortfields,
+                 &lt;fs_keyfield&gt;   LIKE LINE OF lt_keyfields.
+
+* Get the object type
+  lv_objtype = me-&gt;getobjecttype( ).
+
+* Look for the first task activity not yet processed
+  READ TABLE t_e071 ASSIGNING &lt;fs_e071&gt;
+    WITH KEY obj_name = objname
+             used     = space
+    BINARY SEARCH.
+
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `No more object(s) of this type found in the request(s) supplied`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Position on the first key of the object being processed
+  READ TABLE t_e071k TRANSPORTING NO FIELDS WITH KEY trkorr     = &lt;fs_e071&gt;-trkorr
+                                                     activity   = &lt;fs_e071&gt;-activity
+                                                     mastername = &lt;fs_e071&gt;-obj_name.
+
+  IF sy-subrc = 0.
+
+    lv_from = sy-tabix.
+
+* Process all keys belonging to current object
+    LOOP AT t_e071k ASSIGNING &lt;fs_e071k&gt; FROM lv_from.
+
+      AT NEW objname.
+
+* Get information about all fields of the table
+        REFRESH lt_dd03p.
+        CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+          EXPORTING
+            name          = &lt;fs_e071k&gt;-objname
+            langu         = sy-langu
+          TABLES
+            dd03p_tab     = lt_dd03p
+          EXCEPTIONS
+            illegal_input = 1
+            OTHERS        = 2.
+
+        IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+          lv_str = `Table does not exist in the active state`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Create the type object for field E071K-TABKEY
+        lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Loop thru all key fields of the table:
+*   1) Building a list of all key fields
+*   2) Building a list of all CHARLIKE key fields that fit fields E071K-TABKEY
+*   3) Building the WHERE clause for the SELECT to be used for data retrieval, using FOR ALL ENTRIES
+*   4) Setting up table LT_FIELDS, with all key fields
+        CLEAR: lv_keyfields, lv_charfields, lv_where.
+        lv_complete_keys = abap_true.
+        REFRESH lt_fields.
+        LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;
+          WHERE keyflag = abap_true AND
+                fieldname(1) &lt;&gt; &apos;.&apos;.
+
+* Build the list of all key fields names
+          CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+            SEPARATED BY space.
+
+* Add key field to the key type strucuture of the object keys table
+          APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_field&gt;.
+          &lt;fs_field&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+          &lt;fs_field&gt;-type ?= cl_abap_structdescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+          CHECK lv_complete_keys = abap_true.
+
+* Check if structure containing all key fields of the View table is CHARLIKE
+          IF &lt;fs_field&gt;-type-&gt;type_kind CN &apos;CNDT&apos;.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the type object for key fields found so far, to help answer the following question below
+          lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+          IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the list of CHARLIKE key fields names
+          CONCATENATE lv_charfields &lt;fs_dd03p&gt;-fieldname INTO lv_charfields
+            SEPARATED BY space.
+
+* Build the &apos;FIELDNAME = &lt;FS_T_TAKEYS&gt;-FIELDNAME&apos; WHERE condition
+          CONCATENATE &apos;&lt;FS_T_TABKEYS&gt;-&apos; &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+          CONCATENATE lv_where &apos;AND&apos; &lt;fs_dd03p&gt;-fieldname &apos;=&apos; lv_str INTO lv_where SEPARATED BY space.
+
+        ENDLOOP.
+
+* Table has no key fields (?!?)
+        IF sy-subrc &lt;&gt; 0.
+          lv_str = `Table has no key fields`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of key fuields list
+        SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* List of table key fields
+        SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; &quot; at the beginning of CHAR key fields list
+        SHIFT lv_charfields LEFT BY 1 PLACES.
+
+* List of table CHARLIKE key fields
+        SPLIT lv_charfields AT space INTO TABLE lt_charfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+        SHIFT lv_where LEFT BY 5 PLACES.
+
+* Creates the dynamic table with key fields of the data table
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+        lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                    p_key       = lt_keyfields ).
+        CREATE DATA lr_tabkeys TYPE HANDLE lo_tabledescr.
+        ASSIGN lr_tabkeys-&gt;* TO &lt;fs_t_tabkeys&gt;.
+
+      ENDAT.
+
+* If we are not storing complete keys, get rid of the &quot;*&quot; at the end of key
+      CLEAR lv_str.
+      lv_len = strlen( &lt;fs_e071k&gt;-tabkey ) - 1.
+      IF lv_len &gt;= 0.
+        IF lv_complete_keys = abap_false AND
+           &lt;fs_e071k&gt;-tabkey+lv_len(1) = &apos;*&apos;.
+          lv_str = &lt;fs_e071k&gt;-tabkey(lv_len).
+        ELSE.
+          lv_str = &lt;fs_e071k&gt;-tabkey.
+        ENDIF.
+      ENDIF.
+
+* Creates a new key in the keys table
+      APPEND INITIAL LINE TO &lt;fs_t_tabkeys&gt; ASSIGNING &lt;fs_s_tabkey&gt;.
+      &lt;fs_s_tabkey&gt; = lv_str.
+
+      AT END OF objname.
+
+* Get rid of duplicate keys in the keys table
+        SORT &lt;fs_t_tabkeys&gt; BY table_line.
+        IF lv_complete_keys = abap_true.
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys&gt; COMPARING ALL FIELDS.
+        ELSEIF lt_charfields[] IS NOT INITIAL.
+
+* Create a table with same fields as LT_TABKEYS, but with CHAR key fields
+          lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                      p_key       = lt_charfields ).
+          CREATE DATA lr_tabkeys2 TYPE HANDLE lo_tabledescr.
+          ASSIGN lr_tabkeys2-&gt;* TO &lt;fs_t_tabkeys2&gt;.
+
+* Get rid of all CHARLIKE key duplicates
+          &lt;fs_t_tabkeys2&gt;[] = &lt;fs_t_tabkeys&gt;[].
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys2&gt;.
+          &lt;fs_t_tabkeys&gt;[] = &lt;fs_t_tabkeys2&gt;[].
+
+        ENDIF.
+
+* Only reuse the keys table as data table if data table fields are all key fields and
+*   if data table allows storing complete keys in the request
+        IF lines( lt_dd03p ) &lt;&gt; lines( lt_keyfields ) OR
+           lv_complete_keys = abap_false.
+
+* If not, then create the table that will contain the records to be written
+          CREATE DATA lr_t_table TYPE STANDARD TABLE OF (&lt;fs_e071k&gt;-objname) WITH KEY (lt_keyfields).
+          ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* And select the desired records from database using CHARLIKE keys table &lt;FS_T_TABKEYS&gt; as the key
+          IF &lt;fs_t_tabkeys&gt;[] IS NOT INITIAL.
+            SELECT  *
+              INTO  TABLE &lt;fs_t_table&gt;
+              FROM  (&lt;fs_e071k&gt;-objname)
+              CLIENT SPECIFIED
+              FOR ALL ENTRIES IN &lt;fs_t_tabkeys&gt;
+              WHERE (lv_where).
+          ENDIF.
+
+        ELSE.
+
+* If yes, the table &lt;fs_t_tabkeys&gt; already contains all fields that should be written
+          ASSIGN &lt;fs_t_tabkeys&gt; TO &lt;fs_t_table&gt;.
+
+        ENDIF.
+
+        IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate entries in the data table
+          REFRESH lt_sortfields.
+          LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfield&gt;.
+            APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfield&gt;.
+            &lt;fs_sortfield&gt;-name = &lt;fs_keyfield&gt;.
+          ENDLOOP.
+          SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+* Creates the TABU node containing the table name
+          lo_tabu_node = xmldoc-&gt;create_element( &apos;TABU&apos; ).
+          ls_tabu-tabname = &lt;fs_e071k&gt;-objname.
+          me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                          structure = ls_tabu  ).
+
+* Writes all records to the XML document
+          LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+            lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+            me-&gt;setattributesfromstructure( node = lo_datarow_node structure = &lt;fs_s_table&gt; ).
+            lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+          ENDLOOP.
+
+* Inserts the TABU node into the XML document
+          xmldoc-&gt;append_child( lo_tabu_node ).
+
+        ENDIF.
+
+        EXIT.
+
+      ENDAT.
+
+    ENDLOOP.
+
+  ENDIF.
+
+  &lt;fs_e071&gt;-used = abap_true.
+
+  SORT t_e071 BY obj_name used trkorr activity.
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEOBJECTFROMIXMLDOC.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02l-tabname,
+           activity TYPE e071-activity,
+         END OF ty_tabu,
+
+         BEGIN OF ty_entry,
+           tabname TYPE dd02l-tabname,
+           table   TYPE REF TO data,
+         END OF ty_entry.
+
+  DATA: lo_tabu_node     TYPE REF TO if_ixml_element,
+
+        lo_datarow_node     TYPE REF TO if_ixml_element,
+        lo_datarow_filter   TYPE REF TO if_ixml_node_filter,
+        lo_datarow_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lt_dd03p TYPE STANDARD TABLE OF dd03p,
+
+        ls_tabu TYPE ty_tabu,
+
+        lv_objtype TYPE string,
+
+        lv_clidep TYPE abap_bool,
+
+        lv_num_keyfields TYPE i,
+
+        lr_table   TYPE REF TO data,
+        lr_table_2 LIKE lr_table,
+        lr_struct  TYPE REF TO data,
+
+        ls_ko200      TYPE ko200,
+        lt_e071k      TYPE tredt_keys,
+        lt_fields     TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields  TYPE STANDARD TABLE OF dd03p-fieldname,
+        lt_sortfields TYPE abap_sortorder_tab,
+        lt_entries    TYPE STANDARD TABLE OF ty_entry,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+        lo_typedescr   TYPE REF TO cl_abap_typedescr,
+
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+        lv_complete_keys TYPE abap_bool,
+        lv_tabix         TYPE sy-tabix,
+        lv_str           TYPE string.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_t_table_2&gt;  LIKE &lt;fs_t_table&gt;,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_e071k&gt;      LIKE LINE OF lt_e071k,
+                 &lt;fs_fields&gt;     LIKE LINE OF lt_fields,
+                 &lt;fs_keyfields&gt;  LIKE LINE OF lt_keyfields,
+                 &lt;fs_sortfields&gt; LIKE LINE OF lt_sortfields,
+                 &lt;fs_entries&gt;    LIKE LINE OF lt_entries,
+                 &lt;fs_struct&gt;     TYPE any,
+                 &lt;fs_mandt&gt;      TYPE mandt.
+
+* Get object type
+  lv_objtype = getobjecttype( ).
+
+* Save the XML document object
+  xmldoc = ixmldocument.
+
+* Get root node for VDAT object
+  lo_tabu_node = xmldoc-&gt;find_from_name( lv_objtype ).
+
+* Get Table name from XML
+  me-&gt;getstructurefromattributes(
+          EXPORTING  node      = lo_tabu_node
+          CHANGING   structure = ls_tabu ).
+
+* Returns the name of the object
+  name = ls_tabu-tabname.
+
+* Check that table exists
+  REFRESH lt_dd03p.
+  CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+    EXPORTING
+      name          = ls_tabu-tabname
+      langu         = sy-langu
+    TABLES
+      dd03p_tab     = lt_dd03p
+    EXCEPTIONS
+      illegal_input = 1
+      OTHERS        = 2.
+
+  IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+    lv_str = `Table does not exist in the active state`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Count number of key fields
+  LOOP AT lt_dd03p TRANSPORTING NO FIELDS WHERE keyflag = abap_true.
+    ADD  1 TO lv_num_keyfields.
+  ENDLOOP.
+
+* Create the type object for field E071K-TABKEY
+  lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Build a structure type containing all key fields of the View table
+  DELETE lt_dd03p WHERE keyflag      = abap_false OR
+                        fieldname(1) = &apos;.&apos;.
+  CLEAR: lv_keyfields, lv_where.
+  lv_clidep = abap_false.
+  lv_complete_keys = abap_true.
+  REFRESH lt_fields.
+  LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;.
+
+    AT FIRST.
+
+* Check if the View table is a client dependent table:
+*   First table field must be a key field of type CLNT
+      IF &lt;fs_dd03p&gt;-datatype = &apos;CLNT&apos; AND
+         lv_num_keyfields &lt;&gt; 1.
+        lv_clidep = abap_true.
+      ENDIF.
+
+    ENDAT.
+
+* Build the key fields list
+    CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+      SEPARATED BY space.
+
+* Build the WHERE clause used to retrieve entries from database
+    CONCATENATE `&lt;FS_T_TABLE&gt;-` &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+    CONCATENATE lv_where `AND` &lt;fs_dd03p&gt;-fieldname `=` lv_str INTO lv_where
+      SEPARATED BY space.
+
+    CHECK lv_complete_keys = abap_true.
+
+    lo_typedescr = cl_abap_typedescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+* Only CHARLIKE key fields are accepted
+    IF lo_typedescr-&gt;type_kind CN &apos;CNDT&apos;.
+      lv_complete_keys = abap_false.
+      CONTINUE.
+    ENDIF.
+
+* One more CHARLIKE key field found
+    APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_fields&gt;.
+    &lt;fs_fields&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+    &lt;fs_fields&gt;-type ?= lo_typedescr.
+
+* Build the type object for key fields found so far, to help answer the following question below
+    lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+    IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+
+* CHARLIKE key field just added will make CHARLIKE key structure not fit field E071K-TABKEY, so delete it
+      lv_tabix = lines( lt_fields ).
+      DELETE lt_fields INDEX lv_tabix.
+
+* Rebuild the type object for key fields, excluding current CHARLIKE key field that did not fit
+      lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+      lv_complete_keys = abap_false.
+      CONTINUE.
+
+    ENDIF.
+
+  ENDLOOP.
+
+* Error if View table has no key fields (?!?)
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `Table has no key fields`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of the list of key fields of View table
+  SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* Build a list of all View table key fields
+  SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+  SHIFT lv_where LEFT BY 5 PLACES.
+
+* Create a work area to store all CHARLIKE key fields of the View table that fit field E070K-TABKEY
+  CREATE DATA lr_struct TYPE HANDLE lo_structdescr.
+  ASSIGN lr_struct-&gt;* TO &lt;fs_struct&gt;.
+
+* Create the View table using the CHARLIKE key. This will allow us to delete adjacent duplicates from it
+*   using a dynamically COMPARING addition
+  CREATE DATA lr_table TYPE STANDARD TABLE OF (ls_tabu-tabname) WITH KEY (lt_keyfields).
+  ASSIGN lr_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Create a table to contain existing data from database
+  CREATE DATA lr_table_2 LIKE &lt;fs_t_table&gt;.
+  ASSIGN lr_table_2-&gt;* TO &lt;fs_t_table_2&gt;.
+
+* Create the filter to loop thru all DataRow entries in document for the View table
+  lo_datarow_filter = lo_tabu_node-&gt;create_filter_name( `DataRow` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of DataRow entries
+  lo_datarow_iterator = lo_tabu_node-&gt;create_iterator_filtered( lo_datarow_filter ).
+
+* Collect all DataRow entries of current View table
+  lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+  WHILE lo_datarow_node IS BOUND.
+
+* Append contents of each DataRow entry to the View table
+    APPEND INITIAL LINE TO &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+    me-&gt;getstructurefromattributes(
+            EXPORTING   node      = lo_datarow_node
+            CHANGING    structure = &lt;fs_s_table&gt; ).
+
+* If it&apos;s a client dependent table, replace CLNT key field with logged on client
+    IF lv_clidep = abap_true.
+      ASSIGN COMPONENT 1 OF STRUCTURE &lt;fs_s_table&gt; TO &lt;fs_mandt&gt;.
+      &lt;fs_mandt&gt; = sy-mandt.
+    ENDIF.
+
+* Build table key to be stored in the object keys table
+    &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+
+* Build the table key for each DataRow entry
+    APPEND INITIAL LINE TO lt_e071k ASSIGNING &lt;fs_e071k&gt;.
+    &lt;fs_e071k&gt;-pgmid      = &apos;R3TR&apos;.
+    &lt;fs_e071k&gt;-object     = &apos;TABU&apos;.
+    &lt;fs_e071k&gt;-objname    = ls_tabu-tabname.
+    &lt;fs_e071k&gt;-mastertype = &apos;TABU&apos;.
+    &lt;fs_e071k&gt;-mastername = ls_tabu-tabname.
+    CLEAR &lt;fs_e071k&gt;-viewname.
+    &lt;fs_e071k&gt;-tabkey     = &lt;fs_struct&gt;.
+    &lt;fs_e071k&gt;-sortflag   = &apos;2&apos;.
+    &lt;fs_e071k&gt;-activity   = ls_tabu-activity.
+
+* Get next DataRow entry
+    lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+
+  ENDWHILE.
+
+  IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Check if any of the entries to be inserted already exists in database
+    SELECT  (lv_keyfields)
+      FROM  (ls_tabu-tabname)
+      INTO  TABLE &lt;fs_t_table_2&gt;
+      FOR ALL ENTRIES IN &lt;fs_t_table&gt;
+      WHERE (lv_where).
+
+* At least one table entry already exists in datrabase
+    IF sy-subrc = 0.
+
+* Overwrite existing records or write only the records that does not exist in database
+*   depending on the &quot;Overwrite Originals&quot; flag of SAPLINK selection screen
+      IF overwrite = abap_true.
+        DELETE (ls_tabu-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+      ELSE.
+
+* If no overwrite is desired, delete all existing entries from the
+*   View table and also from the CHARLIKE key fields table
+        LOOP AT &lt;fs_t_table_2&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Remove entry from View table
+          DELETE TABLE &lt;fs_t_table&gt; FROM &lt;fs_s_table&gt;.
+
+* Also remove entry from the object keys table
+          &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+          READ TABLE lt_e071k TRANSPORTING NO FIELDS
+            WITH KEY objname    = ls_tabu-tabname
+                     viewname   = space
+                     mastername = ls_tabu-tabname
+                     tabkey     = &lt;fs_struct&gt;.
+          IF sy-subrc = 0.
+            DELETE lt_e071k INDEX sy-tabix.
+          ENDIF.
+
+        ENDLOOP.
+
+      ENDIF.
+
+    ENDIF.
+
+  ENDIF.
+
+* Store all entries that will be written to database later
+  IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate keys in the View table
+    REFRESH lt_sortfields.
+    LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfields&gt;.
+      APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfields&gt;.
+      &lt;fs_sortfields&gt;-name = &lt;fs_keyfields&gt;.
+    ENDLOOP.
+    SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+    DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+    APPEND INITIAL LINE TO lt_entries ASSIGNING &lt;fs_entries&gt;.
+    &lt;fs_entries&gt;-tabname  = ls_tabu-tabname.
+    CREATE DATA &lt;fs_entries&gt;-table LIKE &lt;fs_t_table&gt;.
+    ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+    &lt;fs_t_table_2&gt;[] =  &lt;fs_t_table&gt;[].
+
+* If not storing complete keys, append an &quot;*&quot; at the end of every key entry
+    IF lv_complete_keys = abap_false.
+      LOOP AT lt_e071k ASSIGNING &lt;fs_e071k&gt;
+        WHERE objname    = ls_tabu-tabname AND
+              viewname   = space AND
+              mastername = ls_tabu-tabname.
+        CONCATENATE &lt;fs_e071k&gt;-tabkey &apos;*&apos; INTO &lt;fs_e071k&gt;-tabkey.
+      ENDLOOP.
+    ENDIF.
+
+* Get rid of duplicate object keys
+    SORT lt_e071k BY mastername objname tabkey.
+    DELETE ADJACENT DUPLICATES FROM lt_e071k COMPARING mastername objname tabkey.
+
+* Attach inserted entries to a request
+    ls_ko200-pgmid     = &apos;R3TR&apos;.
+    ls_ko200-object    = lv_objtype.
+    ls_ko200-obj_name  = ls_tabu-tabname.
+    ls_ko200-objfunc   = &apos;K&apos;.
+    ls_ko200-activity  = ls_tabu-activity.
+    ls_ko200-operation = &apos;I&apos;.
+
+    IF zsaplink_tools=&gt;add_to_request( is_ko200  = ls_ko200
+                                       it_e071k  = lt_e071k ) &lt;&gt; 0.
+      lv_str = `Error while attaching table entries to the request`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Insert all selected records into database
+    LOOP AT lt_entries ASSIGNING &lt;fs_entries&gt;.
+      ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+      INSERT (&lt;fs_entries&gt;-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+    ENDLOOP.
+
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method DELETEOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  DATA: v_msg TYPE string.
+
+  v_msg = `Operation not implemented`.
+  RAISE EXCEPTION TYPE zcx_saplink
+    EXPORTING
+      textid = zcx_saplink=&gt;error_message
+      msg = v_msg.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method GETOBJECTTYPE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  objecttype = &apos;TABU&apos;.  &quot;Selected tables contents
+
+endmethod.</source>
+  </method>
+ </CLAS>
+ <CLAS CLSNAME="ZSAPLINK_TDAT" VERSION="1" LANGU="P" DESCRIPT="SapLink Class Installer" UUID="001CC4ED928E1EE4839DDA82A286CCBC" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" CHGDANYON="00000000" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="702" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " REFCLSNAME="ZSAPLINK">
+  <publicSection>class ZSAPLINK_TDAT definition
+  public
+  inheriting from ZSAPLINK
+  create public .
+
+*&quot;* public components of class ZSAPLINK_TDAT
+*&quot;* do not include other source files here!!!
+public section.
+  type-pools ABAP .
+  type-pools SEOP .
+  type-pools SEOR .
+  type-pools SEOS .
+  type-pools SEOT .
+  type-pools SEOX .
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+  <protectedSection>*&quot;* protected components of class ZSAPLINK_CDAT
+*&quot;* do not include other source files here!!!
+protected section.
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+  <privateSection>private section.
+
+  class ZSAPLINK_TOOLS definition load .
+  class-data T_E071 type ZSAPLINK_TOOLS=&gt;TY_T_E071 .
+  class-data T_E071K type ZSAPLINK_TOOLS=&gt;TY_T_E071K .
+  class-data V_MODE type C .
+
+  methods CREATEIXMLDOCFROMREQUEST
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .
+  methods CREATEIXMLDOCFROMDATABASE
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .</privateSection>
+  <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+  <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+  <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+  <typeUsage CLSNAME="ZSAPLINK_TDAT" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TDAT" TYPEGROUP="SEOP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TDAT" TYPEGROUP="SEOR" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TDAT" TYPEGROUP="SEOS" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TDAT" TYPEGROUP="SEOT" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_TDAT" TYPEGROUP="SEOX" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <forwardDeclaration>ABAP</forwardDeclaration>
+  <forwardDeclaration>SEOP</forwardDeclaration>
+  <forwardDeclaration>SEOR</forwardDeclaration>
+  <forwardDeclaration>SEOS</forwardDeclaration>
+  <forwardDeclaration>SEOT</forwardDeclaration>
+  <forwardDeclaration>SEOX</forwardDeclaration>
+  <attribute CLSNAME="ZSAPLINK_TDAT" CMPNAME="T_E071" VERSION="1" LANGU="P" DESCRIPT="Task objects" EXPOSURE="0" STATE="1" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_TDAT" CMPNAME="T_E071K" VERSION="1" LANGU="P" DESCRIPT="Task objects keys" EXPOSURE="0" STATE="1" EDITORDER="2 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071K" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_TDAT" CMPNAME="V_MODE" VERSION="1" LANGU="P" DESCRIPT="O=add object. R=add request" EXPOSURE="0" STATE="1" EDITORDER="3 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <inheritance CLSNAME="ZSAPLINK_TDAT" REFCLSNAME="ZSAPLINK" VERSION="1" STATE="1" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000">
+   <redefinition CLSNAME="ZSAPLINK_TDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CHECKEXISTS" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_TDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEIXMLDOCFROMOBJECT" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_TDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEOBJECTFROMIXMLDOC" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_TDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="DELETEOBJECT" EXPOSURE="1"/>
+   <redefinition CLSNAME="ZSAPLINK_TDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="GETOBJECTTYPE" EXPOSURE="1"/>
+  </inheritance>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CHECKEXISTS.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  exists = abap_false.  &quot; No implementation of existence check
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_TDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of database" EXPOSURE="0" STATE="1" EDITORDER="2 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_TDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_TDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMDATABASE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_tdat,
+           name     TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_tdat.
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+         END OF ty_tabu.
+
+  DATA: lv_str     TYPE string,
+        lv_objtype TYPE string,
+        lv_objname TYPE ddobjname,
+
+        lr_t_table  TYPE REF TO data,
+
+        lt_objects TYPE STANDARD TABLE OF objs,
+
+        lo_tdat_node    TYPE REF TO if_ixml_element,
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_tdat         TYPE ty_tdat,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt; TYPE any,
+                 &lt;fs_objects&gt; LIKE LINE OF lt_objects.
+
+* Get the object type and name
+  lv_objtype = me-&gt;getobjecttype( ).
+  lv_objname = objname.
+
+* Get the list of tables in TDAT
+  SELECT  objectname tabname
+    INTO  TABLE lt_objects
+    FROM  objs
+    WHERE objectname = objname.
+
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `TDAT not found in object table`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Save data from each table only once in the XML document
+  SORT lt_objects BY tabname.
+  DELETE ADJACENT DUPLICATES FROM lt_objects COMPARING tabname.
+
+  SORT lt_objects BY objectname tabname.
+
+* Save contents of all TDAT tables in XML document
+  LOOP AT lt_objects ASSIGNING &lt;fs_objects&gt;.
+
+    AT NEW objectname.
+
+* Creates the TDAT root node
+      lo_tdat_node = xmldoc-&gt;create_element( lv_objtype ).
+      ls_tdat-name  = &lt;fs_objects&gt;-objectname.
+      CLEAR ls_tdat-activity.
+      me-&gt;setattributesfromstructure( node      = lo_tdat_node
+                                      structure = ls_tdat  ).
+
+    ENDAT.
+
+    AT NEW tabname.
+
+* Creates the TABU node
+      lo_tabu_node = xmldoc-&gt;create_element( `TABU` ).
+      ls_tabu-tabname  = &lt;fs_objects&gt;-tabname.
+      me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                      structure = ls_tabu  ).
+
+      CREATE DATA lr_t_table TYPE STANDARD TABLE OF (ls_tabu-tabname).
+      ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Get data from table
+      zsaplink_tools=&gt;get_filtered_table( EXPORTING
+                                            iv_vdat_tdat    = ls_tdat-name
+                                            iv_is_tdat      = abap_true
+                                            iv_tabname      = ls_tabu-tabname
+                                          IMPORTING
+                                            et_results      = &lt;fs_t_table&gt; ).
+
+* Save data to XML document
+      LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Creates the DataRow node
+        lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+        me-&gt;setattributesfromstructure( node      = lo_datarow_node
+                                        structure = &lt;fs_s_table&gt;  ).
+        lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+      ENDLOOP.
+
+      lo_tdat_node-&gt;append_child( lo_tabu_node ).
+
+    ENDAT.
+
+    AT END OF objectname.
+
+      xmldoc-&gt;append_child( lo_tdat_node ).
+      EXIT.
+
+    ENDAT.
+
+  ENDLOOP.
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEIXMLDOCFROMOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+* Get all tasks of the request supplied in the calling program, if that&apos;s the case
+  zsaplink_tools=&gt;init_plugin( EXPORTING
+                                 iv_mastertype = &apos;TDAT&apos;
+                               IMPORTING
+                                 et_e071  = me-&gt;t_e071
+                                 et_e071k = me-&gt;t_e071k
+                               CHANGING
+                                 cv_mode  = me-&gt;v_mode ).
+
+  IF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_request.
+    ixmldocument = me-&gt;createixmldocfromrequest( ).
+  ELSEIF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_object.
+    ixmldocument = me-&gt;createixmldocfromdatabase( ).
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_TDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of a request" EXPOSURE="0" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_TDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_TDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMREQUEST.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_tdat,
+           name     TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_tdat.
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+         END OF ty_tabu.
+
+  DATA: lv_str           TYPE string,
+        lv_objtype       TYPE string,
+        lv_from          TYPE sy-tabix,
+        lv_len           TYPE i,
+        lv_complete_keys TYPE abap_bool,
+        lv_charfields    TYPE string,
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+
+        lr_t_table  TYPE REF TO data,
+        lr_s_table  TYPE REF TO data,
+        lr_tabkeys  TYPE REF TO data,
+        lr_tabkeys2 TYPE REF TO data,
+
+        lt_dd03p       TYPE STANDARD TABLE OF dd03p,
+        lt_fields      TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields   TYPE abap_keydescr_tab,
+        lt_charfields  TYPE abap_keydescr_tab,
+        lt_sortfields  TYPE abap_sortorder_tab,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabledescr  TYPE REF TO cl_abap_tabledescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+        lo_typedescr   TYPE REF TO cl_abap_typedescr,
+
+        lo_tdat_node    TYPE REF TO if_ixml_element,
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_tdat         TYPE ty_tdat,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_e071&gt;       LIKE LINE OF t_e071,
+                 &lt;fs_e071k&gt;      LIKE LINE OF t_e071k,
+                 &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_t_tabkeys&gt;  TYPE STANDARD TABLE,
+                 &lt;fs_t_tabkeys2&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_tabkey&gt;   TYPE any,
+                 &lt;fs_field&gt;      LIKE LINE OF lt_fields,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_sortfield&gt;  LIKE LINE OF lt_sortfields,
+                 &lt;fs_keyfield&gt;   LIKE LINE OF lt_keyfields.
+
+* Get the object type
+  lv_objtype = me-&gt;getobjecttype( ).
+
+* Look for the first task activity not yet processed
+  READ TABLE t_e071 ASSIGNING &lt;fs_e071&gt;
+    WITH KEY obj_name = objname
+             used     = space
+    BINARY SEARCH.
+
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `No more object(s) of this type found in the request(s) supplied`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Position on the first key of the object being processed
+  READ TABLE t_e071k TRANSPORTING NO FIELDS WITH KEY trkorr     = &lt;fs_e071&gt;-trkorr
+                                                     activity   = &lt;fs_e071&gt;-activity
+                                                     mastername = &lt;fs_e071&gt;-obj_name.
+
+  IF sy-subrc = 0.
+
+    lv_from = sy-tabix.
+
+* Process all keys belonging to current object
+    LOOP AT t_e071k ASSIGNING &lt;fs_e071k&gt; FROM lv_from.
+
+      AT NEW mastername.
+
+* Creates the TDAT root node
+        lo_tdat_node = xmldoc-&gt;create_element( lv_objtype ).
+        ls_tdat-name  = objname.
+        ls_tdat-activity = &lt;fs_e071&gt;-activity.
+        me-&gt;setattributesfromstructure( node      = lo_tdat_node
+                                        structure = ls_tdat  ).
+
+      ENDAT.
+
+      AT NEW objname.
+
+* Get information about all fields of the table
+        REFRESH lt_dd03p.
+        CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+          EXPORTING
+            name          = &lt;fs_e071k&gt;-objname
+            langu         = sy-langu
+          TABLES
+            dd03p_tab     = lt_dd03p
+          EXCEPTIONS
+            illegal_input = 1
+            OTHERS        = 2.
+
+        IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+          lv_str = `Table does not exist in the active state`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Create the type object for field E071K-TABKEY
+        lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Loop thru all key fields of the table:
+*   1) Building a list of all key fields
+*   2) Building a list of all CHARLIKE key fields that fit fields E071K-TABKEY
+*   3) Building the WHERE clause for the SELECT to be used for data retrieval, using FOR ALL ENTRIES
+*   4) Setting up table LT_FIELDS, with all key fields
+        CLEAR: lv_keyfields, lv_charfields, lv_where.
+        lv_complete_keys = abap_true.
+        REFRESH lt_fields.
+        LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;
+          WHERE keyflag = abap_true AND
+                fieldname(1) &lt;&gt; &apos;.&apos;.
+
+* Build the list of all key fields names
+          CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+            SEPARATED BY space.
+
+* Add key field to the key type strucuture of the object keys table
+          APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_field&gt;.
+          &lt;fs_field&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+          &lt;fs_field&gt;-type ?= cl_abap_structdescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+          CHECK lv_complete_keys = abap_true.
+
+* Check if structure containing all key fields of the View table is CHARLIKE
+          IF &lt;fs_field&gt;-type-&gt;type_kind CN &apos;CNDT&apos;.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the type object for key fields found so far, to help answer the following question below
+          lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+          IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the list of CHARLIKE key fields names
+          CONCATENATE lv_charfields &lt;fs_dd03p&gt;-fieldname INTO lv_charfields
+            SEPARATED BY space.
+
+* Build the &apos;FIELDNAME = &lt;FS_T_TAKEYS&gt;-FIELDNAME&apos; WHERE condition
+          CONCATENATE &apos;&lt;FS_T_TABKEYS&gt;-&apos; &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+          CONCATENATE lv_where &apos;AND&apos; &lt;fs_dd03p&gt;-fieldname &apos;=&apos; lv_str INTO lv_where SEPARATED BY space.
+
+        ENDLOOP.
+
+* Table has no key fields (?!?)
+        IF sy-subrc &lt;&gt; 0.
+          lv_str = `Table has no key fields`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of key fuields list
+        SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* List of table key fields
+        SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; &quot; at the beginning of CHAR key fields list
+        SHIFT lv_charfields LEFT BY 1 PLACES.
+
+* List of table CHARLIKE key fields
+        SPLIT lv_charfields AT space INTO TABLE lt_charfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+        SHIFT lv_where LEFT BY 5 PLACES.
+
+* Creates the dynamic table with key fields of the data table
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+        lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                    p_key       = lt_keyfields ).
+        CREATE DATA lr_tabkeys TYPE HANDLE lo_tabledescr.
+        ASSIGN lr_tabkeys-&gt;* TO &lt;fs_t_tabkeys&gt;.
+
+      ENDAT.
+
+* If we are not storing complete keys, get rid of the &quot;*&quot; at the end of key
+      CLEAR lv_str.
+      lv_len = strlen( &lt;fs_e071k&gt;-tabkey ) - 1.
+      IF lv_len &gt;= 0.
+        IF lv_complete_keys = abap_false AND
+           &lt;fs_e071k&gt;-tabkey+lv_len(1) = &apos;*&apos;.
+          lv_str = &lt;fs_e071k&gt;-tabkey(lv_len).
+        ELSE.
+          lv_str = &lt;fs_e071k&gt;-tabkey.
+        ENDIF.
+      ENDIF.
+
+* Creates a new key in the keys table
+      APPEND INITIAL LINE TO &lt;fs_t_tabkeys&gt; ASSIGNING &lt;fs_s_tabkey&gt;.
+      &lt;fs_s_tabkey&gt; = lv_str.
+
+      AT END OF objname.
+
+* Get rid of duplicate keys in the keys table
+        SORT &lt;fs_t_tabkeys&gt; BY table_line.
+        IF lv_complete_keys = abap_true.
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys&gt; COMPARING ALL FIELDS.
+        ELSEIF lt_charfields[] IS NOT INITIAL.
+
+* Create a table with same fields as LT_TABKEYS, but with CHAR key fields
+          lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                      p_key       = lt_charfields ).
+          CREATE DATA lr_tabkeys2 TYPE HANDLE lo_tabledescr.
+          ASSIGN lr_tabkeys2-&gt;* TO &lt;fs_t_tabkeys2&gt;.
+
+* Get rid of all CHARLIKE key duplicates
+          &lt;fs_t_tabkeys2&gt;[] = &lt;fs_t_tabkeys&gt;[].
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys2&gt;.
+          &lt;fs_t_tabkeys&gt;[] = &lt;fs_t_tabkeys2&gt;[].
+
+        ENDIF.
+
+* Only reuse the keys table as data table if data table fields are all key fields and
+*   if data table allows storing complete keys in the request
+        IF lines( lt_dd03p ) &lt;&gt; lines( lt_keyfields ) OR
+           lv_complete_keys = abap_false.
+
+* If not, then create the table that will contain the records to be written
+          CREATE DATA lr_t_table TYPE STANDARD TABLE OF (&lt;fs_e071k&gt;-objname) WITH KEY (lt_keyfields).
+          ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* And select the desired records from database using CHARLIKE keys table &lt;FS_T_TABKEYS&gt; as the key
+          IF &lt;fs_t_tabkeys&gt;[] IS NOT INITIAL.
+            SELECT  *
+              INTO  TABLE &lt;fs_t_table&gt;
+              FROM  (&lt;fs_e071k&gt;-objname)
+              CLIENT SPECIFIED
+              FOR ALL ENTRIES IN &lt;fs_t_tabkeys&gt;
+              WHERE (lv_where).
+          ENDIF.
+
+        ELSE.
+
+* If yes, the table &lt;fs_t_tabkeys&gt; already contains all fields that should be written
+          ASSIGN &lt;fs_t_tabkeys&gt; TO &lt;fs_t_table&gt;.
+
+        ENDIF.
+
+        IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate entries in the data table
+          REFRESH lt_sortfields.
+          LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfield&gt;.
+            APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfield&gt;.
+            &lt;fs_sortfield&gt;-name = &lt;fs_keyfield&gt;.
+          ENDLOOP.
+          SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+* Creates the TABU node containing the table name
+          lo_tabu_node = xmldoc-&gt;create_element( &apos;TABU&apos; ).
+          ls_tabu-tabname = &lt;fs_e071k&gt;-objname.
+          me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                          structure = ls_tabu  ).
+
+* Writes all records to the XML document
+          LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+            lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+            me-&gt;setattributesfromstructure( node = lo_datarow_node structure = &lt;fs_s_table&gt; ).
+            lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+          ENDLOOP.
+
+* Inserts the TABU node into the XML document
+          lo_tdat_node-&gt;append_child( lo_tabu_node ).
+
+        ENDIF.
+
+      ENDAT.
+
+* If it&apos;s the last key for current object, exit
+      AT END OF mastername.
+
+* Inserts the TDAT node into the XML document
+        xmldoc-&gt;append_child( lo_tdat_node ).
+        EXIT.
+
+      ENDAT.
+
+    ENDLOOP.
+
+  ENDIF.
+
+  &lt;fs_e071&gt;-used = abap_true.
+
+  SORT t_e071 BY obj_name used trkorr activity.
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEOBJECTFROMIXMLDOC.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_tdat,
+           name     TYPE dd02l-tabname,
+           activity TYPE e071-activity,
+         END OF ty_tdat,
+
+         BEGIN OF ty_tabu,
+           tabname TYPE dd02l-tabname,
+         END OF ty_tabu,
+
+         BEGIN OF ty_entry,
+           tabname TYPE dd02l-tabname,
+           table   TYPE REF TO data,
+         END OF ty_entry.
+
+  DATA: lo_tdat_node TYPE REF TO if_ixml_element,
+
+        lo_tabu_node     TYPE REF TO if_ixml_element,
+        lo_tabu_filter   TYPE REF TO if_ixml_node_filter,
+        lo_tabu_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lo_datarow_node     TYPE REF TO if_ixml_element,
+        lo_datarow_filter   TYPE REF TO if_ixml_node_filter,
+        lo_datarow_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lt_dd03p TYPE STANDARD TABLE OF dd03p,
+
+        ls_tdat TYPE ty_tdat,
+        ls_tabu TYPE ty_tabu,
+
+        lv_objtype TYPE string,
+
+        lv_clidep TYPE abap_bool,
+
+        lv_num_keyfields TYPE i,
+
+        lr_table   TYPE REF TO data,
+        lr_table_2 LIKE lr_table,
+        lr_struct  TYPE REF TO data,
+
+        ls_ko200      TYPE ko200,
+        lt_e071k      TYPE tredt_keys,
+        lt_fields     TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields  TYPE STANDARD TABLE OF dd03p-fieldname,
+        lt_sortfields TYPE abap_sortorder_tab,
+        lt_entries    TYPE STANDARD TABLE OF ty_entry,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+        lo_typedescr   TYPE REF TO cl_abap_typedescr,
+
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+        lv_complete_keys TYPE abap_bool,
+        lv_tabix         TYPE sy-tabix,
+        lv_str           TYPE string.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_t_table_2&gt;  LIKE &lt;fs_t_table&gt;,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_e071k&gt;      LIKE LINE OF lt_e071k,
+                 &lt;fs_fields&gt;     LIKE LINE OF lt_fields,
+                 &lt;fs_keyfields&gt;  LIKE LINE OF lt_keyfields,
+                 &lt;fs_sortfields&gt; LIKE LINE OF lt_sortfields,
+                 &lt;fs_entries&gt;    LIKE LINE OF lt_entries,
+                 &lt;fs_struct&gt;     TYPE any,
+                 &lt;fs_mandt&gt;      TYPE mandt.
+
+* Get object type
+  lv_objtype = getobjecttype( ).
+
+* Save the XML document object
+  xmldoc = ixmldocument.
+
+* Get root node for VDAT object
+  lo_tdat_node = xmldoc-&gt;find_from_name( lv_objtype ).
+
+* Get View name from XML
+  me-&gt;getstructurefromattributes(
+          EXPORTING  node      = lo_tdat_node
+          CHANGING   structure = ls_tdat ).
+
+* Returns the name of the object
+  name = ls_tdat-name.
+
+* Create the filter to loop thru all TABU entries in document
+  lo_tabu_filter = lo_tdat_node-&gt;create_filter_name( `TABU` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of TABU entries
+  lo_tabu_iterator = lo_tdat_node-&gt;create_iterator_filtered( lo_tabu_filter ).
+
+* Loop thru all tables (TABU entries) that make up the View
+  lo_tabu_node ?= lo_tabu_iterator-&gt;get_next( ).
+  WHILE lo_tabu_node IS BOUND.
+
+* Get table name from XML
+    me-&gt;getstructurefromattributes(
+            EXPORTING  node      = lo_tabu_node
+            CHANGING   structure = ls_tabu ).
+
+* Check that table exists
+    REFRESH lt_dd03p.
+    CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+      EXPORTING
+        name          = ls_tabu-tabname
+        langu         = sy-langu
+      TABLES
+        dd03p_tab     = lt_dd03p
+      EXCEPTIONS
+        illegal_input = 1
+        OTHERS        = 2.
+
+    IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+      lv_str = `Table does not exist in the active state`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Count number of key fields
+  LOOP AT lt_dd03p TRANSPORTING NO FIELDS WHERE keyflag = abap_true.
+    ADD  1 TO lv_num_keyfields.
+  ENDLOOP.
+
+* Create the type object for field E071K-TABKEY
+    lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Build a structure type containing all key fields of the View table
+    DELETE lt_dd03p WHERE keyflag      = abap_false OR
+                          fieldname(1) = &apos;.&apos;.
+    CLEAR: lv_keyfields, lv_where.
+    lv_clidep = abap_false.
+    lv_complete_keys = abap_true.
+    REFRESH lt_fields.
+    LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;.
+
+      AT FIRST.
+
+* Check if the View table is a client dependent table:
+*   First table field must be a key field of type CLNT
+        IF &lt;fs_dd03p&gt;-datatype = &apos;CLNT&apos; AND
+           lv_num_keyfields &lt;&gt; 1.
+          lv_clidep = abap_true.
+        ENDIF.
+
+      ENDAT.
+
+* Build the key fields list
+      CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+        SEPARATED BY space.
+
+* Build the WHERE clause used to retrieve entries from database
+      CONCATENATE `&lt;FS_T_TABLE&gt;-` &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+      CONCATENATE lv_where `AND` &lt;fs_dd03p&gt;-fieldname `=` lv_str INTO lv_where
+        SEPARATED BY space.
+
+      CHECK lv_complete_keys = abap_true.
+
+      lo_typedescr = cl_abap_typedescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+* Only CHARLIKE key fields are accepted
+      IF lo_typedescr-&gt;type_kind CN &apos;CNDT&apos;.
+        lv_complete_keys = abap_false.
+        CONTINUE.
+      ENDIF.
+
+* One more CHARLIKE key field found
+      APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_fields&gt;.
+      &lt;fs_fields&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+      &lt;fs_fields&gt;-type ?= lo_typedescr.
+
+* Build the type object for key fields found so far, to help answer the following question below
+      lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+      IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+
+* CHARLIKE key field just added will make CHARLIKE key structure not fit field E071K-TABKEY, so delete it
+        lv_tabix = lines( lt_fields ).
+        DELETE lt_fields INDEX lv_tabix.
+
+* Rebuild the type object for key fields, excluding current CHARLIKE key field that did not fit
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+        lv_complete_keys = abap_false.
+        CONTINUE.
+
+      ENDIF.
+
+    ENDLOOP.
+
+* Error if View table has no key fields (?!?)
+    IF sy-subrc &lt;&gt; 0.
+      lv_str = `Table has no key fields`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of the list of key fields of View table
+    SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* Build a list of all View table key fields
+    SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+    SHIFT lv_where LEFT BY 5 PLACES.
+
+* Create a work area to store all CHARLIKE key fields of the View table that fit field E070K-TABKEY
+    CREATE DATA lr_struct TYPE HANDLE lo_structdescr.
+    ASSIGN lr_struct-&gt;* TO &lt;fs_struct&gt;.
+
+* Create the View table using the CHARLIKE key. This will allow us to delete adjacent duplicates from it
+*   using a dynamically COMPARING addition
+    CREATE DATA lr_table TYPE STANDARD TABLE OF (ls_tabu-tabname) WITH KEY (lt_keyfields).
+    ASSIGN lr_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Create a table to contain existing data from database
+    CREATE DATA lr_table_2 LIKE &lt;fs_t_table&gt;.
+    ASSIGN lr_table_2-&gt;* TO &lt;fs_t_table_2&gt;.
+
+* Create the filter to loop thru all DataRow entries in document for the View table
+    lo_datarow_filter = lo_tabu_node-&gt;create_filter_name( `DataRow` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of DataRow entries
+    lo_datarow_iterator = lo_tabu_node-&gt;create_iterator_filtered( lo_datarow_filter ).
+
+* Collect all DataRow entries of current View table
+    lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+    WHILE lo_datarow_node IS BOUND.
+
+* Append contents of each DataRow entry to the View table
+      APPEND INITIAL LINE TO &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+      me-&gt;getstructurefromattributes(
+              EXPORTING   node      = lo_datarow_node
+              CHANGING    structure = &lt;fs_s_table&gt; ).
+
+* If it&apos;s a client dependent table, replace CLNT key field with logged on client
+      IF lv_clidep = abap_true.
+        ASSIGN COMPONENT 1 OF STRUCTURE &lt;fs_s_table&gt; TO &lt;fs_mandt&gt;.
+        &lt;fs_mandt&gt; = sy-mandt.
+      ENDIF.
+
+* Build table key to be stored in the object keys table
+      &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+
+* Build the table key for each DataRow entry
+      APPEND INITIAL LINE TO lt_e071k ASSIGNING &lt;fs_e071k&gt;.
+      &lt;fs_e071k&gt;-pgmid      = &apos;R3TR&apos;.
+      &lt;fs_e071k&gt;-object     = &apos;TABU&apos;.
+      &lt;fs_e071k&gt;-objname    = ls_tabu-tabname.
+      &lt;fs_e071k&gt;-mastertype = &apos;TDAT&apos;.
+      &lt;fs_e071k&gt;-mastername = ls_tdat-name.
+      CLEAR &lt;fs_e071k&gt;-viewname.
+      &lt;fs_e071k&gt;-tabkey     = &lt;fs_struct&gt;.
+      &lt;fs_e071k&gt;-sortflag   = &apos;2&apos;.
+      &lt;fs_e071k&gt;-activity   = ls_tdat-activity.
+
+* Get next DataRow entry
+      lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+
+    ENDWHILE.
+
+* Check if any of the entries to be inserted already exists in database
+    SELECT  (lv_keyfields)
+      FROM  (ls_tabu-tabname)
+      INTO  TABLE &lt;fs_t_table_2&gt;
+      FOR ALL ENTRIES IN &lt;fs_t_table&gt;
+      WHERE (lv_where).
+
+* At least one table entry already exists in datrabase
+    IF sy-subrc = 0.
+
+* Overwrite existing records or write only the records that does not exist in database
+*   depending on the &quot;Overwrite Originals&quot; flag of SAPLINK selection screen
+      IF overwrite = abap_true.
+        DELETE (ls_tabu-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+      ELSE.
+
+* If no overwrite is desired, delete all existing entries from the
+*   View table and also from the CHARLIKE key fields table
+        LOOP AT &lt;fs_t_table_2&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Remove entry from View table
+          DELETE TABLE &lt;fs_t_table&gt; FROM &lt;fs_s_table&gt;.
+
+* Also remove entry from the object keys table
+          &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+          READ TABLE lt_e071k TRANSPORTING NO FIELDS
+            WITH KEY objname    = ls_tabu-tabname
+                     viewname   = space
+                     mastername = ls_tdat-name
+                     tabkey     = &lt;fs_struct&gt;.
+          IF sy-subrc = 0.
+            DELETE lt_e071k INDEX sy-tabix.
+          ENDIF.
+
+        ENDLOOP.
+
+      ENDIF.
+
+    ENDIF.
+
+* Store all entries that will be written to database later
+    IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate keys in the View table
+      REFRESH lt_sortfields.
+      LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfields&gt;.
+        APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfields&gt;.
+        &lt;fs_sortfields&gt;-name = &lt;fs_keyfields&gt;.
+      ENDLOOP.
+      SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+      DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+      APPEND INITIAL LINE TO lt_entries ASSIGNING &lt;fs_entries&gt;.
+      &lt;fs_entries&gt;-tabname  = ls_tabu-tabname.
+      CREATE DATA &lt;fs_entries&gt;-table LIKE &lt;fs_t_table&gt;.
+      ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+      &lt;fs_t_table_2&gt;[] =  &lt;fs_t_table&gt;[].
+
+    ENDIF.
+
+* If not storing complete keys, append an &quot;*&quot; at the end of every key entry
+    IF lv_complete_keys = abap_false.
+      LOOP AT lt_e071k ASSIGNING &lt;fs_e071k&gt;
+        WHERE objname    = ls_tabu-tabname AND
+              viewname   = space AND
+              mastername = ls_tdat-name.
+        CONCATENATE &lt;fs_e071k&gt;-tabkey &apos;*&apos; INTO &lt;fs_e071k&gt;-tabkey.
+      ENDLOOP.
+    ENDIF.
+
+* Get next TABU entry
+    lo_tabu_node ?= lo_tabu_iterator-&gt;get_next( ).
+
+  ENDWHILE.
+
+  IF lt_entries[] IS NOT INITIAL.
+
+* Get rid of duplicate object keys
+    SORT lt_e071k BY mastername objname tabkey.
+    DELETE ADJACENT DUPLICATES FROM lt_e071k COMPARING mastername objname tabkey.
+
+* Attach inserted entries to a request
+    ls_ko200-pgmid     = &apos;R3TR&apos;.
+    ls_ko200-object    = lv_objtype.
+    ls_ko200-obj_name  = ls_tdat-name.
+    ls_ko200-objfunc   = &apos;K&apos;.
+    ls_ko200-activity  = ls_tdat-activity.
+    ls_ko200-operation = &apos;I&apos;.
+
+    IF zsaplink_tools=&gt;add_to_request( is_ko200  = ls_ko200
+                                       it_e071k  = lt_e071k ) &lt;&gt; 0.
+      lv_str = `Error while attaching table entries to the request`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Insert all selected records into database
+    LOOP AT lt_entries ASSIGNING &lt;fs_entries&gt;.
+      ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+      INSERT (&lt;fs_entries&gt;-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+    ENDLOOP.
+
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method DELETEOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  DATA: v_msg TYPE string.
+
+  v_msg = `Operation not implemented`.
+  RAISE EXCEPTION TYPE zcx_saplink
+    EXPORTING
+      textid = zcx_saplink=&gt;error_message
+      msg = v_msg.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method GETOBJECTTYPE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  objecttype = &apos;TDAT&apos;.  &quot;Selected tables contents
+
+endmethod.</source>
+  </method>
+ </CLAS>
+ <CLAS CLSNAME="ZSAPLINK_VDAT" VERSION="1" LANGU="P" DESCRIPT="SapLink Class Installer" UUID="001CC4ED928E1EE4839DDA82A2878CBC" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" CHGDANYON="00000000" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="702" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " REFCLSNAME="ZSAPLINK">
+  <publicSection>class ZSAPLINK_VDAT definition
+  public
+  inheriting from ZSAPLINK
+  create public .
+
+*&quot;* public components of class ZSAPLINK_VDAT
+*&quot;* do not include other source files here!!!
+public section.
+  type-pools ABAP .
+  type-pools SEOP .
+  type-pools SEOR .
+  type-pools SEOS .
+  type-pools SEOT .
+  type-pools SEOX .
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+  <protectedSection>*&quot;* protected components of class ZSAPLINK_CDAT
+*&quot;* do not include other source files here!!!
+protected section.
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+  <privateSection>private section.
+
+  class ZSAPLINK_TOOLS definition load .
+  class-data T_E071 type ZSAPLINK_TOOLS=&gt;TY_T_E071 .
+  class-data T_E071K type ZSAPLINK_TOOLS=&gt;TY_T_E071K .
+  class-data V_MODE type C .
+
+  methods CREATEIXMLDOCFROMREQUEST
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .
+  methods CREATEIXMLDOCFROMDATABASE
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .</privateSection>
+  <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+  <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+  <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+  <typeUsage CLSNAME="ZSAPLINK_VDAT" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_VDAT" TYPEGROUP="SEOP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_VDAT" TYPEGROUP="SEOR" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_VDAT" TYPEGROUP="SEOS" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_VDAT" TYPEGROUP="SEOT" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_VDAT" TYPEGROUP="SEOX" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <forwardDeclaration>ABAP</forwardDeclaration>
+  <forwardDeclaration>SEOP</forwardDeclaration>
+  <forwardDeclaration>SEOR</forwardDeclaration>
+  <forwardDeclaration>SEOS</forwardDeclaration>
+  <forwardDeclaration>SEOT</forwardDeclaration>
+  <forwardDeclaration>SEOX</forwardDeclaration>
+  <attribute CLSNAME="ZSAPLINK_VDAT" CMPNAME="T_E071" VERSION="1" LANGU="P" DESCRIPT="Task objects" EXPOSURE="0" STATE="1" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_VDAT" CMPNAME="T_E071K" VERSION="1" LANGU="P" DESCRIPT="Task objects keys" EXPOSURE="0" STATE="1" EDITORDER="2 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071K" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_VDAT" CMPNAME="V_MODE" VERSION="1" LANGU="P" DESCRIPT="O=add object. R=add request" EXPOSURE="0" STATE="1" EDITORDER="3 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <inheritance CLSNAME="ZSAPLINK_VDAT" REFCLSNAME="ZSAPLINK" VERSION="1" STATE="1" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000">
+   <redefinition CLSNAME="ZSAPLINK_VDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CHECKEXISTS" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_VDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEIXMLDOCFROMOBJECT" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_VDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEOBJECTFROMIXMLDOC" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_VDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="DELETEOBJECT" EXPOSURE="1"/>
+   <redefinition CLSNAME="ZSAPLINK_VDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="GETOBJECTTYPE" EXPOSURE="1"/>
+  </inheritance>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CHECKEXISTS.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  exists = abap_false.  &quot; No implementation of existence check
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_VDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of database" EXPOSURE="0" STATE="1" EDITORDER="2 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_VDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_VDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMDATABASE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_vdat,
+           name     TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_vdat.
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+         END OF ty_tabu.
+
+  DATA: lv_str     TYPE string,
+        lv_objtype TYPE string,
+        lv_objname TYPE ddobjname,
+
+        lr_t_table  TYPE REF TO data,
+
+        lt_dd26v TYPE STANDARD TABLE OF dd26v,
+
+        lo_vdat_node    TYPE REF TO if_ixml_element,
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_vdat         TYPE ty_vdat,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt; TYPE any,
+                 &lt;fs_dd26v&gt;   LIKE LINE OF lt_dd26v.
+
+* Get the object type and name
+  lv_objtype = me-&gt;getobjecttype( ).
+  lv_objname = objname.
+
+* Get the list of tables in View
+  CALL FUNCTION &apos;DDIF_VIEW_GET&apos;
+    EXPORTING
+      name          = lv_objname
+      langu         = sy-langu
+    TABLES
+      dd26v_tab     = lt_dd26v
+    EXCEPTIONS
+      illegal_input = 1
+      OTHERS        = 2.
+
+  IF sy-subrc &lt;&gt; 0 OR lt_dd26v[] IS INITIAL.
+    lv_str = `View does not exist in the active state`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Save data from each table only once in the XML document
+  SORT lt_dd26v BY tabname.
+  DELETE ADJACENT DUPLICATES FROM lt_dd26v COMPARING tabname.
+
+  SORT lt_dd26v BY ddlanguage viewname tabname.
+
+* Save contents of all View tables in XML document
+  LOOP AT lt_dd26v ASSIGNING &lt;fs_dd26v&gt;.
+
+    AT NEW viewname.
+
+* Creates the VDAT root node
+      lo_vdat_node = xmldoc-&gt;create_element( lv_objtype ).
+      ls_vdat-name  = &lt;fs_dd26v&gt;-viewname.
+      CLEAR ls_vdat-activity.
+      me-&gt;setattributesfromstructure( node      = lo_vdat_node
+                                      structure = ls_vdat  ).
+
+    ENDAT.
+
+    AT NEW tabname.
+
+* Creates the TABU node
+      lo_tabu_node = xmldoc-&gt;create_element( `TABU` ).
+      ls_tabu-tabname  = &lt;fs_dd26v&gt;-tabname.
+      me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                      structure = ls_tabu  ).
+
+      CREATE DATA lr_t_table TYPE STANDARD TABLE OF (ls_tabu-tabname).
+      ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Get data from table
+      zsaplink_tools=&gt;get_filtered_table( EXPORTING
+                                            iv_vdat_tdat    = ls_vdat-name
+                                            iv_is_tdat      = abap_false
+                                            iv_tabname      = ls_tabu-tabname
+                                          IMPORTING
+                                            et_results      = &lt;fs_t_table&gt; ).
+
+* Save data to XML document
+      LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Creates the DataRow node
+        lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+        me-&gt;setattributesfromstructure( node      = lo_datarow_node
+                                        structure = &lt;fs_s_table&gt;  ).
+        lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+      ENDLOOP.
+
+      lo_vdat_node-&gt;append_child( lo_tabu_node ).
+
+    ENDAT.
+
+    AT END OF viewname.
+
+      xmldoc-&gt;append_child( lo_vdat_node ).
+      EXIT.
+
+    ENDAT.
+
+  ENDLOOP.
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEIXMLDOCFROMOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+* Get all tasks of the request supplied in the calling program, if that&apos;s the case
+  zsaplink_tools=&gt;init_plugin( EXPORTING
+                                 iv_mastertype = &apos;VDAT&apos;
+                               IMPORTING
+                                 et_e071  = me-&gt;t_e071
+                                 et_e071k = me-&gt;t_e071k
+                               CHANGING
+                                 cv_mode  = me-&gt;v_mode ).
+
+  IF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_request.
+    ixmldocument = me-&gt;createixmldocfromrequest( ).
+  ELSEIF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_object.
+    ixmldocument = me-&gt;createixmldocfromdatabase( ).
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_VDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of a request" EXPOSURE="0" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_VDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_VDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMREQUEST.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_vdat,
+           name     TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_vdat.
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+         END OF ty_tabu.
+
+  DATA: lv_str           TYPE string,
+        lv_objtype       TYPE string,
+        lv_from          TYPE sy-tabix,
+        lv_len           TYPE i,
+        lv_complete_keys TYPE abap_bool,
+        lv_charfields    TYPE string,
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+
+        lr_t_table  TYPE REF TO data,
+        lr_s_table  TYPE REF TO data,
+        lr_tabkeys  TYPE REF TO data,
+        lr_tabkeys2 TYPE REF TO data,
+
+        lt_dd03p       TYPE STANDARD TABLE OF dd03p,
+        lt_fields      TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields   TYPE abap_keydescr_tab,
+        lt_charfields  TYPE abap_keydescr_tab,
+        lt_sortfields  TYPE abap_sortorder_tab,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabledescr  TYPE REF TO cl_abap_tabledescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+
+        lo_vdat_node    TYPE REF TO if_ixml_element,
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_vdat         TYPE ty_vdat,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_e071&gt;       LIKE LINE OF t_e071,
+                 &lt;fs_e071k&gt;      LIKE LINE OF t_e071k,
+                 &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_t_tabkeys&gt;  TYPE STANDARD TABLE,
+                 &lt;fs_t_tabkeys2&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_tabkey&gt;   TYPE any,
+                 &lt;fs_field&gt;      LIKE LINE OF lt_fields,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_sortfield&gt;  LIKE LINE OF lt_sortfields,
+                 &lt;fs_keyfield&gt;   LIKE LINE OF lt_keyfields.
+
+* Get the object type
+  lv_objtype = me-&gt;getobjecttype( ).
+
+* Look for the first task activity not yet processed
+  READ TABLE t_e071 ASSIGNING &lt;fs_e071&gt;
+    WITH KEY obj_name = objname
+             used     = space
+    BINARY SEARCH.
+
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `No more object(s) of this type found in the request(s) supplied`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Position on the first key of the object being processed
+  READ TABLE t_e071k TRANSPORTING NO FIELDS WITH KEY trkorr     = &lt;fs_e071&gt;-trkorr
+                                                     activity   = &lt;fs_e071&gt;-activity
+                                                     mastername = &lt;fs_e071&gt;-obj_name.
+
+  IF sy-subrc = 0.
+
+    lv_from = sy-tabix.
+
+* Process all keys belonging to current object
+    LOOP AT t_e071k ASSIGNING &lt;fs_e071k&gt; FROM lv_from.
+
+      AT NEW mastername.
+
+* Creates the VDAT root node
+        lo_vdat_node = xmldoc-&gt;create_element( lv_objtype ).
+        ls_vdat-name  = objname.
+        ls_vdat-activity = &lt;fs_e071&gt;-activity.
+        me-&gt;setattributesfromstructure( node      = lo_vdat_node
+                                        structure = ls_vdat  ).
+
+      ENDAT.
+
+      AT NEW objname.
+
+* Get information about all fields of the table
+        REFRESH lt_dd03p.
+        CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+          EXPORTING
+            name          = &lt;fs_e071k&gt;-objname
+            langu         = sy-langu
+          TABLES
+            dd03p_tab     = lt_dd03p
+          EXCEPTIONS
+            illegal_input = 1
+            OTHERS        = 2.
+
+        IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+          lv_str = `Table does not exist in the active state`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Create the type object for field E071K-TABKEY
+        lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Loop thru all key fields of the table:
+*   1) Building a list of all key fields
+*   2) Building a list of all CHARLIKE key fields that fit fields E071K-TABKEY
+*   3) Building the WHERE clause for the SELECT to be used for data retrieval, using FOR ALL ENTRIES
+*   4) Setting up table LT_FIELDS, with all key fields
+        CLEAR: lv_keyfields, lv_charfields, lv_where.
+        lv_complete_keys = abap_true.
+        REFRESH lt_fields.
+        LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;
+          WHERE keyflag = abap_true AND
+                fieldname(1) &lt;&gt; &apos;.&apos;.
+
+* Build the list of all key fields names
+          CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+            SEPARATED BY space.
+
+* Add key field to the key type strucuture of the object keys table
+          APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_field&gt;.
+          &lt;fs_field&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+          &lt;fs_field&gt;-type ?= cl_abap_structdescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+          CHECK lv_complete_keys = abap_true.
+
+* Check if structure containing all key fields of the View table is CHARLIKE
+          IF &lt;fs_field&gt;-type-&gt;type_kind CN &apos;CNDT&apos;.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the type object for key fields found so far, to help answer the following question below
+          lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+          IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the list of CHARLIKE key fields names
+          CONCATENATE lv_charfields &lt;fs_dd03p&gt;-fieldname INTO lv_charfields
+            SEPARATED BY space.
+
+* Build the &apos;FIELDNAME = &lt;FS_T_TAKEYS&gt;-FIELDNAME&apos; WHERE condition
+          CONCATENATE &apos;&lt;FS_T_TABKEYS&gt;-&apos; &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+          CONCATENATE lv_where &apos;AND&apos; &lt;fs_dd03p&gt;-fieldname &apos;=&apos; lv_str INTO lv_where SEPARATED BY space.
+
+        ENDLOOP.
+
+* Table has no key fields (?!?)
+        IF sy-subrc &lt;&gt; 0.
+          lv_str = `Table has no key fields`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of key fuields list
+        SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* List of table key fields
+        SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; &quot; at the beginning of CHAR key fields list
+        SHIFT lv_charfields LEFT BY 1 PLACES.
+
+* List of table CHARLIKE key fields
+        SPLIT lv_charfields AT space INTO TABLE lt_charfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+        SHIFT lv_where LEFT BY 5 PLACES.
+
+* Creates the dynamic table with key fields of the data table
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+        lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                    p_key       = lt_keyfields ).
+        CREATE DATA lr_tabkeys TYPE HANDLE lo_tabledescr.
+        ASSIGN lr_tabkeys-&gt;* TO &lt;fs_t_tabkeys&gt;.
+
+      ENDAT.
+
+* If we are not storing complete keys, get rid of the &quot;*&quot; at the end of key
+      CLEAR lv_str.
+      lv_len = strlen( &lt;fs_e071k&gt;-tabkey ) - 1.
+      IF lv_len &gt;= 0.
+        IF lv_complete_keys = abap_false AND
+           &lt;fs_e071k&gt;-tabkey+lv_len(1) = &apos;*&apos;.
+          lv_str = &lt;fs_e071k&gt;-tabkey(lv_len).
+        ELSE.
+          lv_str = &lt;fs_e071k&gt;-tabkey.
+        ENDIF.
+      ENDIF.
+
+* Creates a new key in the keys table
+      APPEND INITIAL LINE TO &lt;fs_t_tabkeys&gt; ASSIGNING &lt;fs_s_tabkey&gt;.
+      &lt;fs_s_tabkey&gt; = lv_str.
+
+      AT END OF objname.
+
+* Get rid of duplicate keys in the keys table
+        SORT &lt;fs_t_tabkeys&gt; BY table_line.
+        IF lv_complete_keys = abap_true.
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys&gt; COMPARING ALL FIELDS.
+        ELSEIF lt_charfields[] IS NOT INITIAL.
+
+* Create a table with same fields as LT_TABKEYS, but with CHAR key fields
+          lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                      p_key       = lt_charfields ).
+          CREATE DATA lr_tabkeys2 TYPE HANDLE lo_tabledescr.
+          ASSIGN lr_tabkeys2-&gt;* TO &lt;fs_t_tabkeys2&gt;.
+
+* Get rid of all CHARLIKE key duplicates
+          &lt;fs_t_tabkeys2&gt;[] = &lt;fs_t_tabkeys&gt;[].
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys2&gt;.
+          &lt;fs_t_tabkeys&gt;[] = &lt;fs_t_tabkeys2&gt;[].
+
+        ENDIF.
+
+* Only reuse the keys table as data table if data table fields are all key fields and
+*   if data table allows storing complete keys in the request
+        IF lines( lt_dd03p ) &lt;&gt; lines( lt_keyfields ) OR
+           lv_complete_keys = abap_false.
+
+* If not, then create the table that will contain the records to be written
+          CREATE DATA lr_t_table TYPE STANDARD TABLE OF (&lt;fs_e071k&gt;-objname) WITH KEY (lt_keyfields).
+          ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* And select the desired records from database using CHARLIKE keys table &lt;FS_T_TABKEYS&gt; as the key
+          IF &lt;fs_t_tabkeys&gt;[] IS NOT INITIAL.
+            SELECT  *
+              INTO  TABLE &lt;fs_t_table&gt;
+              FROM  (&lt;fs_e071k&gt;-objname)
+              CLIENT SPECIFIED
+              FOR ALL ENTRIES IN &lt;fs_t_tabkeys&gt;
+              WHERE (lv_where).
+          ENDIF.
+
+        ELSE.
+
+* If yes, the table &lt;fs_t_tabkeys&gt; already contains all fields that should be written
+          ASSIGN &lt;fs_t_tabkeys&gt; TO &lt;fs_t_table&gt;.
+
+        ENDIF.
+
+        IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate entries in the data table
+          REFRESH lt_sortfields.
+          LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfield&gt;.
+            APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfield&gt;.
+            &lt;fs_sortfield&gt;-name = &lt;fs_keyfield&gt;.
+          ENDLOOP.
+          SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+* Creates the TABU node containing the table name
+          lo_tabu_node = xmldoc-&gt;create_element( &apos;TABU&apos; ).
+          ls_tabu-tabname = &lt;fs_e071k&gt;-objname.
+          me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                          structure = ls_tabu  ).
+
+* Writes all records to the XML document
+          LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+            lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+            me-&gt;setattributesfromstructure( node = lo_datarow_node structure = &lt;fs_s_table&gt; ).
+            lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+          ENDLOOP.
+
+* Inserts the TABU node into the XML document
+          lo_vdat_node-&gt;append_child( lo_tabu_node ).
+
+        ENDIF.
+
+      ENDAT.
+
+* If it&apos;s the last key for current object, exit
+      AT END OF mastername.
+
+* Inserts the VDAT node into the XML document
+        xmldoc-&gt;append_child( lo_vdat_node ).
+        EXIT.
+
+      ENDAT.
+
+    ENDLOOP.
+
+  ENDIF.
+
+  &lt;fs_e071&gt;-used = abap_true.
+
+  SORT t_e071 BY obj_name used trkorr activity.
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEOBJECTFROMIXMLDOC.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_vdat,
+           name     TYPE dd02l-tabname,
+           activity TYPE e071-activity,
+         END OF ty_vdat,
+
+         BEGIN OF ty_tabu,
+           tabname TYPE dd02l-tabname,
+         END OF ty_tabu,
+
+         BEGIN OF ty_entry,
+           tabname TYPE dd02l-tabname,
+           table   TYPE REF TO data,
+         END OF ty_entry.
+
+  DATA: lo_vdat_node TYPE REF TO if_ixml_element,
+
+        lo_tabu_node     TYPE REF TO if_ixml_element,
+        lo_tabu_filter   TYPE REF TO if_ixml_node_filter,
+        lo_tabu_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lo_datarow_node     TYPE REF TO if_ixml_element,
+        lo_datarow_filter   TYPE REF TO if_ixml_node_filter,
+        lo_datarow_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lt_dd03p TYPE STANDARD TABLE OF dd03p,
+
+        ls_vdat TYPE ty_vdat,
+        ls_tabu TYPE ty_tabu,
+
+        lv_objtype TYPE string,
+
+        lv_clidep TYPE abap_bool,
+
+        lv_num_keyfields TYPE i,
+
+        lr_table   TYPE REF TO data,
+        lr_table_2 LIKE lr_table,
+        lr_struct  TYPE REF TO data,
+
+        ls_ko200      TYPE ko200,
+        lt_e071k      TYPE tredt_keys,
+        lt_fields     TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields  TYPE STANDARD TABLE OF dd03p-fieldname,
+        lt_sortfields TYPE abap_sortorder_tab,
+        lt_entries    TYPE STANDARD TABLE OF ty_entry,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+        lo_typedescr   TYPE REF TO cl_abap_typedescr,
+
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+        lv_complete_keys TYPE abap_bool,
+        lv_tabix         TYPE sy-tabix,
+        lv_str           TYPE string.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_t_table_2&gt;  LIKE &lt;fs_t_table&gt;,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_e071k&gt;      LIKE LINE OF lt_e071k,
+                 &lt;fs_fields&gt;     LIKE LINE OF lt_fields,
+                 &lt;fs_keyfields&gt;  LIKE LINE OF lt_keyfields,
+                 &lt;fs_sortfields&gt; LIKE LINE OF lt_sortfields,
+                 &lt;fs_entries&gt;    LIKE LINE OF lt_entries,
+                 &lt;fs_struct&gt;     TYPE any,
+                 &lt;fs_mandt&gt;      TYPE mandt.
+
+* Get object type
+  lv_objtype = getobjecttype( ).
+
+* Save the XML document object
+  xmldoc = ixmldocument.
+
+* Get root node for VDAT object
+  lo_vdat_node = xmldoc-&gt;find_from_name( lv_objtype ).
+
+* Get View name from XML
+  me-&gt;getstructurefromattributes(
+          EXPORTING  node      = lo_vdat_node
+          CHANGING   structure = ls_vdat ).
+
+* Returns the name of the object
+  name = ls_vdat-name.
+
+* Create the filter to loop thru all TABU entries in document
+  lo_tabu_filter = lo_vdat_node-&gt;create_filter_name( `TABU` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of TABU entries
+  lo_tabu_iterator = lo_vdat_node-&gt;create_iterator_filtered( lo_tabu_filter ).
+
+* Loop thru all tables (TABU entries) that make up the View
+  lo_tabu_node ?= lo_tabu_iterator-&gt;get_next( ).
+  WHILE lo_tabu_node IS BOUND.
+
+* Get table name from XML
+    me-&gt;getstructurefromattributes(
+            EXPORTING  node      = lo_tabu_node
+            CHANGING   structure = ls_tabu ).
+
+* Check that table exists
+    REFRESH lt_dd03p.
+    CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+      EXPORTING
+        name          = ls_tabu-tabname
+        langu         = sy-langu
+      TABLES
+        dd03p_tab     = lt_dd03p
+      EXCEPTIONS
+        illegal_input = 1
+        OTHERS        = 2.
+
+    IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+      lv_str = `Table does not exist in the active state`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Count number of key fields
+    LOOP AT lt_dd03p TRANSPORTING NO FIELDS WHERE keyflag = abap_true.
+      ADD  1 TO lv_num_keyfields.
+    ENDLOOP.
+
+* Create the type object for field E071K-TABKEY
+    lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Build a structure type containing all key fields of the View table
+    DELETE lt_dd03p WHERE keyflag      = abap_false OR
+                          fieldname(1) = &apos;.&apos;.
+    CLEAR: lv_keyfields, lv_where.
+    lv_clidep = abap_false.
+    lv_complete_keys = abap_true.
+    REFRESH lt_fields.
+    LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;.
+
+      AT FIRST.
+
+* Check if the View table is a client dependent table:
+*   First table field must be a key field of type CLNT
+        IF &lt;fs_dd03p&gt;-datatype = &apos;CLNT&apos; AND
+           lv_num_keyfields &lt;&gt; 1.
+          lv_clidep = abap_true.
+        ENDIF.
+
+      ENDAT.
+
+* Build the key fields list
+      CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+        SEPARATED BY space.
+
+* Build the WHERE clause used to retrieve entries from database
+      CONCATENATE `&lt;FS_T_TABLE&gt;-` &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+      CONCATENATE lv_where `AND` &lt;fs_dd03p&gt;-fieldname `=` lv_str INTO lv_where
+        SEPARATED BY space.
+
+      CHECK lv_complete_keys = abap_true.
+
+      lo_typedescr = cl_abap_typedescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+* Only CHARLIKE key fields are accepted
+      IF lo_typedescr-&gt;type_kind CN &apos;CNDT&apos;.
+        lv_complete_keys = abap_false.
+        CONTINUE.
+      ENDIF.
+
+* One more CHARLIKE key field found
+      APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_fields&gt;.
+      &lt;fs_fields&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+      &lt;fs_fields&gt;-type ?= lo_typedescr.
+
+* Build the type object for key fields found so far, to help answer the following question below
+      lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+      IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+
+* CHARLIKE key field just added will make CHARLIKE key structure not fit field E071K-TABKEY, so delete it
+        lv_tabix = lines( lt_fields ).
+        DELETE lt_fields INDEX lv_tabix.
+
+* Rebuild the type object for key fields, excluding current CHARLIKE key field that did not fit
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+        lv_complete_keys = abap_false.
+        CONTINUE.
+
+      ENDIF.
+
+    ENDLOOP.
+
+* Error if View table has no key fields (?!?)
+    IF sy-subrc &lt;&gt; 0.
+      lv_str = `Table has no key fields`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of the list of key fields of View table
+    SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* Build a list of all View table key fields
+    SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+    SHIFT lv_where LEFT BY 5 PLACES.
+
+* Create a work area to store all CHARLIKE key fields of the View table that fit field E070K-TABKEY
+    CREATE DATA lr_struct TYPE HANDLE lo_structdescr.
+    ASSIGN lr_struct-&gt;* TO &lt;fs_struct&gt;.
+
+* Create the View table using the CHARLIKE key. This will allow us to delete adjacent duplicates from it
+*   using a dynamically COMPARING addition
+    CREATE DATA lr_table TYPE STANDARD TABLE OF (ls_tabu-tabname) WITH KEY (lt_keyfields).
+    ASSIGN lr_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Create a table to contain existing data from database
+    CREATE DATA lr_table_2 LIKE &lt;fs_t_table&gt;.
+    ASSIGN lr_table_2-&gt;* TO &lt;fs_t_table_2&gt;.
+
+* Create the filter to loop thru all DataRow entries in document for the View table
+    lo_datarow_filter = lo_tabu_node-&gt;create_filter_name( `DataRow` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of DataRow entries
+    lo_datarow_iterator = lo_tabu_node-&gt;create_iterator_filtered( lo_datarow_filter ).
+
+* Collect all DataRow entries of current View table
+    lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+    WHILE lo_datarow_node IS BOUND.
+
+* Append contents of each DataRow entry to the View table
+      APPEND INITIAL LINE TO &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+      me-&gt;getstructurefromattributes(
+              EXPORTING   node      = lo_datarow_node
+              CHANGING    structure = &lt;fs_s_table&gt; ).
+
+* If it&apos;s a client dependent table, replace CLNT key field with logged on client
+      IF lv_clidep = abap_true.
+        ASSIGN COMPONENT 1 OF STRUCTURE &lt;fs_s_table&gt; TO &lt;fs_mandt&gt;.
+        &lt;fs_mandt&gt; = sy-mandt.
+      ENDIF.
+
+* Build table key to be stored in the object keys table
+      &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+
+* Build the table key for each DataRow entry
+      APPEND INITIAL LINE TO lt_e071k ASSIGNING &lt;fs_e071k&gt;.
+      &lt;fs_e071k&gt;-pgmid      = &apos;R3TR&apos;.
+      &lt;fs_e071k&gt;-object     = &apos;TABU&apos;.
+      &lt;fs_e071k&gt;-objname    = ls_tabu-tabname.
+      &lt;fs_e071k&gt;-mastertype = &apos;VDAT&apos;.
+      &lt;fs_e071k&gt;-mastername = ls_vdat-name.
+      &lt;fs_e071k&gt;-viewname   = ls_vdat-name.
+      &lt;fs_e071k&gt;-tabkey     = &lt;fs_struct&gt;.
+      &lt;fs_e071k&gt;-sortflag   = &apos;2&apos;.
+      &lt;fs_e071k&gt;-activity   = ls_vdat-activity.
+
+* Get next DataRow entry
+      lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+
+    ENDWHILE.
+
+    IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Check if any of the entries to be inserted already exists in database
+      SELECT  (lv_keyfields)
+        FROM  (ls_tabu-tabname)
+        INTO  TABLE &lt;fs_t_table_2&gt;
+        FOR ALL ENTRIES IN &lt;fs_t_table&gt;
+        WHERE (lv_where).
+
+* At least one table entry already exists in datrabase
+      IF sy-subrc = 0.
+
+* Overwrite existing records or write only the records that does not exist in database
+*   depending on the &quot;Overwrite Originals&quot; flag of SAPLINK selection screen
+        IF overwrite = abap_true.
+          DELETE (ls_tabu-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+        ELSE.
+
+* If no overwrite is desired, delete all existing entries from the
+*   View table and also from the CHARLIKE key fields table
+          LOOP AT &lt;fs_t_table_2&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Remove entry from View table
+            DELETE TABLE &lt;fs_t_table&gt; FROM &lt;fs_s_table&gt;.
+
+* Also remove entry from the object keys table
+            &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+            READ TABLE lt_e071k TRANSPORTING NO FIELDS
+              WITH KEY objname    = ls_tabu-tabname
+                       viewname   = ls_vdat-name
+                       mastername = ls_vdat-name
+                       tabkey     = &lt;fs_struct&gt;.
+            IF sy-subrc = 0.
+              DELETE lt_e071k INDEX sy-tabix.
+            ENDIF.
+
+          ENDLOOP.
+
+        ENDIF.
+
+      ENDIF.
+
+    ENDIF.
+
+* Store all entries that will be written to database later
+    IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate keys in the View table
+      REFRESH lt_sortfields.
+      LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfields&gt;.
+        APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfields&gt;.
+        &lt;fs_sortfields&gt;-name = &lt;fs_keyfields&gt;.
+      ENDLOOP.
+      SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+      DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+      APPEND INITIAL LINE TO lt_entries ASSIGNING &lt;fs_entries&gt;.
+      &lt;fs_entries&gt;-tabname  = ls_tabu-tabname.
+      CREATE DATA &lt;fs_entries&gt;-table LIKE &lt;fs_t_table&gt;.
+      ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+      &lt;fs_t_table_2&gt;[] =  &lt;fs_t_table&gt;[].
+
+    ENDIF.
+
+* If not storing complete keys, append an &quot;*&quot; at the end of every key entry
+    IF lv_complete_keys = abap_false.
+      LOOP AT lt_e071k ASSIGNING &lt;fs_e071k&gt;
+        WHERE objname    = ls_tabu-tabname AND
+              viewname   = ls_vdat-name AND
+              mastername = ls_vdat-name.
+        CONCATENATE &lt;fs_e071k&gt;-tabkey &apos;*&apos; INTO &lt;fs_e071k&gt;-tabkey.
+      ENDLOOP.
+    ENDIF.
+
+* Get next TABU entry
+    lo_tabu_node ?= lo_tabu_iterator-&gt;get_next( ).
+
+  ENDWHILE.
+
+  IF lt_entries[] IS NOT INITIAL.
+
+* Get rid of duplicate object keys
+    SORT lt_e071k BY mastername objname tabkey.
+    DELETE ADJACENT DUPLICATES FROM lt_e071k COMPARING mastername objname tabkey.
+
+* Attach inserted entries to a request
+    ls_ko200-pgmid     = &apos;R3TR&apos;.
+    ls_ko200-object    = lv_objtype.
+    ls_ko200-obj_name  = ls_vdat-name.
+    ls_ko200-objfunc   = &apos;K&apos;.
+    ls_ko200-activity  = ls_vdat-activity.
+    ls_ko200-operation = &apos;I&apos;.
+
+    IF zsaplink_tools=&gt;add_to_request( is_ko200  = ls_ko200
+                                       it_e071k  = lt_e071k ) &lt;&gt; 0.
+      lv_str = `Error while attaching table entries to the request`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Insert all selected records into database
+    LOOP AT lt_entries ASSIGNING &lt;fs_entries&gt;.
+      ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+      INSERT (&lt;fs_entries&gt;-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+    ENDLOOP.
+
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method DELETEOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  DATA: v_msg TYPE string.
+
+  v_msg = `Operation not implemented`.
+  RAISE EXCEPTION TYPE zcx_saplink
+    EXPORTING
+      textid = zcx_saplink=&gt;error_message
+      msg = v_msg.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method GETOBJECTTYPE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  objecttype = &apos;VDAT&apos;.  &quot;Selected view contents
+
+endmethod.</source>
+  </method>
+ </CLAS>
+ <CLAS CLSNAME="ZSAPLINK_CDAT" VERSION="1" LANGU="P" DESCRIPT="SapLink Class Installer" UUID="001CC4ED928E1EE4839DDA82A2884CBC" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" CHGDANYON="00000000" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="702" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " REFCLSNAME="ZSAPLINK">
+  <publicSection>class ZSAPLINK_CDAT definition
+  public
+  inheriting from ZSAPLINK
+  create public .
+
+*&quot;* public components of class ZSAPLINK_CDAT
+*&quot;* do not include other source files here!!!
+public section.
+  type-pools ABAP .
+  type-pools SEOP .
+  type-pools SEOR .
+  type-pools SEOS .
+  type-pools SEOT .
+  type-pools SEOX .
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+  <protectedSection>*&quot;* protected components of class ZSAPLINK_CDAT
+*&quot;* do not include other source files here!!!
+protected section.
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+  <privateSection>private section.
+
+  class ZSAPLINK_TOOLS definition load .
+  class-data T_E071 type ZSAPLINK_TOOLS=&gt;TY_T_E071 .
+  class-data T_E071K type ZSAPLINK_TOOLS=&gt;TY_T_E071K .
+  class-data V_MODE type C .
+
+  methods CREATEIXMLDOCFROMREQUEST
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .
+  methods CREATEIXMLDOCFROMDATABASE
+    returning
+      value(IXMLDOCUMENT) type ref to IF_IXML_DOCUMENT
+    raising
+      ZCX_SAPLINK .</privateSection>
+  <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+  <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+  <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+  <typeUsage CLSNAME="ZSAPLINK_CDAT" TYPEGROUP="ABAP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_CDAT" TYPEGROUP="SEOP" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_CDAT" TYPEGROUP="SEOR" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_CDAT" TYPEGROUP="SEOS" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_CDAT" TYPEGROUP="SEOT" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <typeUsage CLSNAME="ZSAPLINK_CDAT" TYPEGROUP="SEOX" VERSION="1" TPUTYPE="0" EXPLICIT="X"/>
+  <forwardDeclaration>ABAP</forwardDeclaration>
+  <forwardDeclaration>SEOP</forwardDeclaration>
+  <forwardDeclaration>SEOR</forwardDeclaration>
+  <forwardDeclaration>SEOS</forwardDeclaration>
+  <forwardDeclaration>SEOT</forwardDeclaration>
+  <forwardDeclaration>SEOX</forwardDeclaration>
+  <attribute CLSNAME="ZSAPLINK_CDAT" CMPNAME="T_E071" VERSION="1" LANGU="P" DESCRIPT="Task objects" EXPOSURE="0" STATE="1" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_CDAT" CMPNAME="T_E071K" VERSION="1" LANGU="P" DESCRIPT="Task objects keys" EXPOSURE="0" STATE="1" EDITORDER="2 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="ZSAPLINK_TOOLS=&gt;TY_T_E071K" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <attribute CLSNAME="ZSAPLINK_CDAT" CMPNAME="V_MODE" VERSION="1" LANGU="P" DESCRIPT="O=add object. R=add request" EXPOSURE="0" STATE="1" EDITORDER="3 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" ATTDECLTYP="1" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="702" TYPESRC_LENG="0 "/>
+  <inheritance CLSNAME="ZSAPLINK_CDAT" REFCLSNAME="ZSAPLINK" VERSION="1" STATE="1" AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000">
+   <redefinition CLSNAME="ZSAPLINK_CDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CHECKEXISTS" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_CDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEIXMLDOCFROMOBJECT" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_CDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEOBJECTFROMIXMLDOC" EXPOSURE="2"/>
+   <redefinition CLSNAME="ZSAPLINK_CDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="DELETEOBJECT" EXPOSURE="1"/>
+   <redefinition CLSNAME="ZSAPLINK_CDAT" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="GETOBJECTTYPE" EXPOSURE="1"/>
+  </inheritance>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CHECKEXISTS.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  exists = abap_false.  &quot; No implementation of existence check
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_CDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of database" EXPOSURE="0" STATE="1" EDITORDER="2 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_CDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_CDAT" CMPNAME="CREATEIXMLDOCFROMDATABASE" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>method CREATEIXMLDOCFROMDATABASE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_cdat,
+           name     TYPE vclstruc-vclname,
+           activity TYPE e071-activity,
+         END OF ty_cdat.
+
+  TYPES: BEGIN OF ty_vdat,
+           name     TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_vdat.
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+         END OF ty_tabu.
+
+  TYPES: BEGIN OF ty_vclstruc,
+           vclname  TYPE vclstruc-vclname,
+           viewname TYPE dd02v-tabname,
+           tabname  TYPE dd02v-tabname.
+  TYPES: END OF ty_vclstruc.
+
+
+  DATA: lv_str     TYPE string,
+        lv_objtype TYPE string,
+        lv_objname TYPE ddobjname,
+
+        lr_t_table  TYPE REF TO data,
+
+        lt_objects  TYPE STANDARD TABLE OF dd02v-tabname,
+        lt_vclstruc TYPE STANDARD TABLE OF ty_vclstruc,
+        lt_dd26v    TYPE STANDARD TABLE OF dd26v,
+
+        lo_cdat_node    TYPE REF TO if_ixml_element,
+        lo_vdat_node    TYPE REF TO if_ixml_element,
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_cdat         TYPE ty_vdat,
+        ls_vdat         TYPE ty_vdat,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt;  TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt;  TYPE any,
+                 &lt;fs_objects&gt;  LIKE LINE OF lt_objects,
+                 &lt;fs_vclstruc&gt; LIKE LINE OF lt_vclstruc,
+                 &lt;fs_dd26v&gt;    LIKE LINE OF lt_dd26v.
+
+* Get the object type and name
+  lv_objtype = me-&gt;getobjecttype( ).
+  lv_objname = objname.
+
+* Get the list of views in View Cluster
+  SELECT  object
+    INTO  TABLE lt_objects
+    FROM  vclstruc
+    WHERE vclname = lv_objname.
+
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `View Cluster does not exist in the active state`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Expand all views in View Cluster
+  LOOP AT lt_objects ASSIGNING &lt;fs_objects&gt;.
+
+* Get the list of tables in View, if object is a view at all
+    REFRESH lt_dd26v.
+    CALL FUNCTION &apos;DDIF_VIEW_GET&apos;
+      EXPORTING
+        name          = &lt;fs_objects&gt;
+        langu         = sy-langu
+      TABLES
+        dd26v_tab     = lt_dd26v
+      EXCEPTIONS
+        illegal_input = 1
+        OTHERS        = 2.
+
+* If object is a view, expand all View tables
+    IF sy-subrc = 0 AND
+       lt_dd26v[] IS NOT INITIAL.
+
+* Add all View tables to the list of View Cluster table list
+      LOOP AT lt_dd26v ASSIGNING &lt;fs_dd26v&gt;.
+
+        APPEND INITIAL LINE TO lt_vclstruc ASSIGNING &lt;fs_vclstruc&gt;.
+        &lt;fs_vclstruc&gt;-vclname  = lv_objname.
+        &lt;fs_vclstruc&gt;-viewname = &lt;fs_objects&gt;.
+        &lt;fs_vclstruc&gt;-tabname  = &lt;fs_dd26v&gt;-tabname.
+
+      ENDLOOP.
+
+    ELSE.
+
+* Object is a table, add it to the View Cluster table list
+      APPEND INITIAL LINE TO lt_vclstruc ASSIGNING &lt;fs_vclstruc&gt;.
+      &lt;fs_vclstruc&gt;-vclname  = lv_objname.
+      &lt;fs_vclstruc&gt;-viewname = &lt;fs_objects&gt;.
+      &lt;fs_vclstruc&gt;-tabname  = &lt;fs_objects&gt;.
+
+    ENDIF.
+
+  ENDLOOP.
+
+* Save data from each table only once in the XML document
+  SORT lt_vclstruc BY tabname.
+  DELETE ADJACENT DUPLICATES FROM lt_vclstruc COMPARING tabname.
+
+  SORT lt_vclstruc BY vclname viewname tabname.
+
+* Save contents of all View Cluster views in XML document
+  LOOP AT lt_vclstruc ASSIGNING &lt;fs_vclstruc&gt;.
+
+    AT NEW vclname.
+
+* Creates the CDAT root node
+      lo_cdat_node = xmldoc-&gt;create_element( lv_objtype ).
+      ls_cdat-name  = &lt;fs_vclstruc&gt;-vclname.
+      CLEAR ls_cdat-activity.
+      me-&gt;setattributesfromstructure( node      = lo_cdat_node
+                                      structure = ls_cdat  ).
+
+    ENDAT.
+
+    AT NEW viewname.
+
+* Creates the VDAT node
+      lo_vdat_node = xmldoc-&gt;create_element( `VDAT` ).
+      ls_vdat-name  = &lt;fs_vclstruc&gt;-viewname.
+      CLEAR ls_vdat-activity.
+      me-&gt;setattributesfromstructure( node      = lo_vdat_node
+                                      structure = ls_vdat  ).
+    ENDAT.
+
+    AT NEW tabname.
+
+* Creates the TABU node
+      lo_tabu_node = xmldoc-&gt;create_element( `TABU` ).
+      ls_tabu-tabname  = &lt;fs_vclstruc&gt;-tabname.
+      me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                      structure = ls_tabu  ).
+
+* Create table to hold TABU data
+      CREATE DATA lr_t_table TYPE STANDARD TABLE OF (ls_tabu-tabname).
+      ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Get data from table
+      zsaplink_tools=&gt;get_filtered_table( EXPORTING
+                                            iv_cdat         = ls_cdat-name
+                                            iv_vdat_tdat    = ls_vdat-name
+                                            iv_is_tdat      = abap_false
+                                            iv_tabname      = ls_tabu-tabname
+                                          IMPORTING
+                                            et_results      = &lt;fs_t_table&gt; ).
+
+* Save data to XML document
+      LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Creates the TABU node
+        lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+        me-&gt;setattributesfromstructure( node      = lo_datarow_node
+                                        structure = &lt;fs_s_table&gt;  ).
+        lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+      ENDLOOP.
+
+    ENDAT.
+
+    AT END OF tabname.
+
+      lo_vdat_node-&gt;append_child( lo_tabu_node ).
+
+    ENDAT.
+
+
+    AT END OF viewname.
+
+      lo_cdat_node-&gt;append_child( lo_vdat_node ).
+
+    ENDAT.
+
+    AT END OF vclname.
+
+      xmldoc-&gt;append_child( lo_cdat_node ).
+      EXIT.
+
+    ENDAT.
+
+  ENDLOOP.
+
+  ixmldocument = xmldoc.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEIXMLDOCFROMOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+* Get all tasks of the request supplied in the calling program, if that&apos;s the case
+  zsaplink_tools=&gt;init_plugin( EXPORTING
+                                 iv_mastertype = &apos;CDAT&apos;
+                               IMPORTING
+                                 et_e071  = me-&gt;t_e071
+                                 et_e071k = me-&gt;t_e071k
+                               CHANGING
+                                 cv_mode  = me-&gt;v_mode ).
+
+  IF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_request.
+    ixmldocument = me-&gt;createixmldocfromrequest( ).
+  ELSEIF me-&gt;v_mode = zsaplink_tools=&gt;c_mode_object.
+    ixmldocument = me-&gt;createixmldocfromdatabase( ).
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK_CDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" VERSION="1" LANGU="P" DESCRIPT="Creates an IF_IXML_DOCUMENT from OBJNAME Attr.  of a request" EXPOSURE="0" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDNEWEXC="X" R3RELEASE="702" BCMTDCAT="00" BCMTDSYN="0">
+   <parameter CLSNAME="ZSAPLINK_CDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="IXMLDOCUMENT" VERSION="1" LANGU="P" DESCRIPT="IF_IXML_DOCUMENT" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000" PARDECLTYP="3" PARPASSTYP="0" TYPTYPE="3" TYPE="IF_IXML_DOCUMENT"/>
+   <exception CLSNAME="ZSAPLINK_CDAT" CMPNAME="CREATEIXMLDOCFROMREQUEST" SCONAME="ZCX_SAPLINK" VERSION="1" LANGU="P" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="ABAP" CREATEDON="20140716" CHANGEDON="00000000"/>
+   <source>METHOD createixmldocfromrequest.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_cdat,
+           name     TYPE vclstruc-vclname,
+           activity TYPE e071-activity,
+         END OF ty_cdat.
+
+  TYPES: BEGIN OF ty_vdat,
+           name     TYPE dd02v-tabname,
+           activity TYPE e071-activity,
+         END OF ty_vdat.
+
+  TYPES: BEGIN OF ty_tabu,
+           tabname  TYPE dd02v-tabname,
+         END OF ty_tabu.
+
+  DATA: lv_str           TYPE string,
+        lv_objtype       TYPE string,
+        lv_from          TYPE sy-tabix,
+        lv_len           TYPE i,
+        lv_complete_keys TYPE abap_bool,
+        lv_charfields    TYPE string,
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+
+        lr_t_table  TYPE REF TO data,
+        lr_s_table  TYPE REF TO data,
+        lr_tabkeys  TYPE REF TO data,
+        lr_tabkeys2 TYPE REF TO data,
+
+        lt_dd03p       TYPE STANDARD TABLE OF dd03p,
+        lt_fields      TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields   TYPE abap_keydescr_tab,
+        lt_charfields  TYPE abap_keydescr_tab,
+        lt_sortfields  TYPE abap_sortorder_tab,
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabledescr  TYPE REF TO cl_abap_tabledescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+
+        lo_cdat_node    TYPE REF TO if_ixml_element,
+        lo_vdat_node    TYPE REF TO if_ixml_element,
+        lo_tabu_node    TYPE REF TO if_ixml_element,
+        lo_datarow_node TYPE REF TO if_ixml_element,
+        ls_cdat         TYPE ty_cdat,
+        ls_vdat         TYPE ty_vdat,
+        ls_tabu         TYPE ty_tabu.
+
+  FIELD-SYMBOLS: &lt;fs_e071&gt;       LIKE LINE OF t_e071,
+                 &lt;fs_e071k&gt;      LIKE LINE OF t_e071k,
+                 &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_t_tabkeys&gt;  TYPE STANDARD TABLE,
+                 &lt;fs_t_tabkeys2&gt; TYPE STANDARD TABLE,
+                 &lt;fs_s_tabkey&gt;   TYPE any,
+                 &lt;fs_field&gt;      LIKE LINE OF lt_fields,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_sortfield&gt;  LIKE LINE OF lt_sortfields,
+                 &lt;fs_keyfield&gt;   LIKE LINE OF lt_keyfields.
+
+* Get the object type
+  lv_objtype = me-&gt;getobjecttype( ).
+
+* Look for the first task activity not yet processed
+  READ TABLE t_e071 ASSIGNING &lt;fs_e071&gt;
+    WITH KEY obj_name = objname
+             used     = space
+    BINARY SEARCH.
+
+  IF sy-subrc &lt;&gt; 0.
+    lv_str = `No more object(s) of this type found in the request(s) supplied`.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING
+        textid = zcx_saplink=&gt;error_message
+        msg    = lv_str.
+  ENDIF.
+
+* Position on the first key of the object being processed
+  READ TABLE t_e071k TRANSPORTING NO FIELDS WITH KEY trkorr     = &lt;fs_e071&gt;-trkorr
+                                                     activity   = &lt;fs_e071&gt;-activity
+                                                     mastername = &lt;fs_e071&gt;-obj_name.
+
+  IF sy-subrc = 0.
+
+    lv_from = sy-tabix.
+
+* Process all keys belonging to current object
+    LOOP AT t_e071k ASSIGNING &lt;fs_e071k&gt; FROM lv_from.
+
+      AT NEW mastername.
+
+* Creates the CDAT root node
+        lo_cdat_node = xmldoc-&gt;create_element( lv_objtype ).
+        ls_cdat-name = objname.
+        ls_cdat-activity = &lt;fs_e071&gt;-activity.
+        me-&gt;setattributesfromstructure( node      = lo_cdat_node
+                                        structure = ls_cdat  ).
+
+      ENDAT.
+
+      AT NEW viewname.
+
+* Creates the VDAT root node
+        lo_vdat_node = xmldoc-&gt;create_element( `VDAT` ).
+        ls_vdat-name = &lt;fs_e071k&gt;-viewname.
+        ls_vdat-activity = &lt;fs_e071&gt;-activity.
+        me-&gt;setattributesfromstructure( node      = lo_vdat_node
+                                        structure = ls_vdat  ).
+
+      ENDAT.
+
+      AT NEW objname.
+
+* Get information about all fields of the table
+        REFRESH lt_dd03p.
+        CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+          EXPORTING
+            name          = &lt;fs_e071k&gt;-objname
+            langu         = sy-langu
+          TABLES
+            dd03p_tab     = lt_dd03p
+          EXCEPTIONS
+            illegal_input = 1
+            OTHERS        = 2.
+
+        IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+          lv_str = `Table does not exist in the active state`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Create the type object for field E071K-TABKEY
+        lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Loop thru all key fields of the table:
+*   1) Building a list of all key fields
+*   2) Building a list of all CHARLIKE key fields that fit fields E071K-TABKEY
+*   3) Building the WHERE clause for the SELECT to be used for data retrieval, using FOR ALL ENTRIES
+*   4) Setting up table LT_FIELDS, with all key fields
+        CLEAR: lv_keyfields, lv_charfields, lv_where.
+        lv_complete_keys = abap_true.
+        REFRESH lt_fields.
+        LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;
+          WHERE keyflag = abap_true AND
+                fieldname(1) &lt;&gt; &apos;.&apos;.
+
+* Build the list of all key fields names
+          CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+            SEPARATED BY space.
+
+* Add key field to the key type strucuture of the object keys table
+          APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_field&gt;.
+          &lt;fs_field&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+          &lt;fs_field&gt;-type ?= cl_abap_structdescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+          CHECK lv_complete_keys = abap_true.
+
+* Check if structure containing all key fields of the View table is CHARLIKE
+          IF &lt;fs_field&gt;-type-&gt;type_kind CN &apos;CNDT&apos;.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the type object for key fields found so far, to help answer the following question below
+          lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+          IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+            lv_complete_keys = abap_false.
+            CONTINUE.
+          ENDIF.
+
+* Build the list of CHARLIKE key fields names
+          CONCATENATE lv_charfields &lt;fs_dd03p&gt;-fieldname INTO lv_charfields
+            SEPARATED BY space.
+
+* Build the &apos;FIELDNAME = &lt;FS_T_TAKEYS&gt;-FIELDNAME&apos; WHERE condition
+          CONCATENATE &apos;&lt;FS_T_TABKEYS&gt;-&apos; &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+          CONCATENATE lv_where &apos;AND&apos; &lt;fs_dd03p&gt;-fieldname &apos;=&apos; lv_str INTO lv_where SEPARATED BY space.
+
+        ENDLOOP.
+
+* Table has no key fields (?!?)
+        IF sy-subrc &lt;&gt; 0.
+          lv_str = `Table has no key fields`.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING
+              textid = zcx_saplink=&gt;error_message
+              msg    = lv_str.
+        ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of key fuields list
+        SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* List of table key fields
+        SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; &quot; at the beginning of CHAR key fields list
+        SHIFT lv_charfields LEFT BY 1 PLACES.
+
+* List of table CHARLIKE key fields
+        SPLIT lv_charfields AT space INTO TABLE lt_charfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+        SHIFT lv_where LEFT BY 5 PLACES.
+
+* Creates the dynamic table with key fields of the data table
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+        lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                    p_key       = lt_keyfields ).
+        CREATE DATA lr_tabkeys TYPE HANDLE lo_tabledescr.
+        ASSIGN lr_tabkeys-&gt;* TO &lt;fs_t_tabkeys&gt;.
+
+      ENDAT.
+
+* If we are not storing complete keys, get rid of the &quot;*&quot; at the end of key
+      CLEAR lv_str.
+      lv_len = strlen( &lt;fs_e071k&gt;-tabkey ) - 1.
+      IF lv_len &gt;= 0.
+        IF lv_complete_keys = abap_false AND
+           &lt;fs_e071k&gt;-tabkey+lv_len(1) = &apos;*&apos;.
+          lv_str = &lt;fs_e071k&gt;-tabkey(lv_len).
+        ELSE.
+          lv_str = &lt;fs_e071k&gt;-tabkey.
+        ENDIF.
+      ENDIF.
+
+* Creates a new key in the keys table
+      APPEND INITIAL LINE TO &lt;fs_t_tabkeys&gt; ASSIGNING &lt;fs_s_tabkey&gt;.
+      &lt;fs_s_tabkey&gt; = lv_str.
+
+      AT END OF objname.
+
+* Get rid of duplicate keys in the keys table
+        SORT &lt;fs_t_tabkeys&gt; BY table_line.
+        IF lv_complete_keys = abap_true.
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys&gt; COMPARING ALL FIELDS.
+        ELSEIF lt_charfields[] IS NOT INITIAL.
+
+* Create a table with same fields as LT_TABKEYS, but with CHAR key fields
+          lo_tabledescr = cl_abap_tabledescr=&gt;create( p_line_type = lo_structdescr
+                                                      p_key       = lt_charfields ).
+          CREATE DATA lr_tabkeys2 TYPE HANDLE lo_tabledescr.
+          ASSIGN lr_tabkeys2-&gt;* TO &lt;fs_t_tabkeys2&gt;.
+
+* Get rid of all CHARLIKE key duplicates
+          &lt;fs_t_tabkeys2&gt;[] = &lt;fs_t_tabkeys&gt;[].
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_tabkeys2&gt;.
+          &lt;fs_t_tabkeys&gt;[] = &lt;fs_t_tabkeys2&gt;[].
+
+        ENDIF.
+
+* Only reuse the keys table as data table if data table fields are all key fields and
+*   if data table allows storing complete keys in the request
+        IF lines( lt_dd03p ) &lt;&gt; lines( lt_keyfields ) OR
+           lv_complete_keys = abap_false.
+
+* If not, then create the table that will contain the records to be written
+          CREATE DATA lr_t_table TYPE STANDARD TABLE OF (&lt;fs_e071k&gt;-objname) WITH KEY (lt_keyfields).
+          ASSIGN lr_t_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* And select the desired records from database using CHARLIKE keys table &lt;FS_T_TABKEYS&gt; as the key
+          IF &lt;fs_t_tabkeys&gt;[] IS NOT INITIAL.
+            SELECT  *
+              INTO  TABLE &lt;fs_t_table&gt;
+              FROM  (&lt;fs_e071k&gt;-objname)
+              CLIENT SPECIFIED
+              FOR ALL ENTRIES IN &lt;fs_t_tabkeys&gt;
+              WHERE (lv_where).
+          ENDIF.
+
+        ELSE.
+
+* If yes, the table &lt;fs_t_tabkeys&gt; already contains all fields that should be written
+          ASSIGN &lt;fs_t_tabkeys&gt; TO &lt;fs_t_table&gt;.
+
+        ENDIF.
+
+        IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate entries in the data table
+          REFRESH lt_sortfields.
+          LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfield&gt;.
+            APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfield&gt;.
+            &lt;fs_sortfield&gt;-name = &lt;fs_keyfield&gt;.
+          ENDLOOP.
+          SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+          DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+* Creates the TABU node containing the table name
+          lo_tabu_node = xmldoc-&gt;create_element( &apos;TABU&apos; ).
+          ls_tabu-tabname = &lt;fs_e071k&gt;-objname.
+          me-&gt;setattributesfromstructure( node      = lo_tabu_node
+                                          structure = ls_tabu  ).
+
+* Writes all records to the XML document
+          LOOP AT &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+            lo_datarow_node = xmldoc-&gt;create_element( `DataRow` ).
+            me-&gt;setattributesfromstructure( node = lo_datarow_node structure = &lt;fs_s_table&gt; ).
+            lo_tabu_node-&gt;append_child( lo_datarow_node ).
+
+          ENDLOOP.
+
+* Inserts the TABU node into the XML document
+          lo_vdat_node-&gt;append_child( lo_tabu_node ).
+
+        ENDIF.
+
+      ENDAT.
+
+* If it&apos;s the last key for current object, exit
+      AT END OF viewname.
+
+* Inserts the VDAT node into the XML document
+        lo_cdat_node-&gt;append_child( lo_vdat_node ).
+
+      ENDAT.
+
+* If it&apos;s the last key for current object, exit
+      AT END OF mastername.
+
+* Inserts the CDAT node into the XML document
+        xmldoc-&gt;append_child( lo_cdat_node ).
+        EXIT.
+
+      ENDAT.
+
+    ENDLOOP.
+
+  ENDIF.
+
+  &lt;fs_e071&gt;-used = abap_true.
+
+  SORT t_e071 BY obj_name used trkorr activity.
+
+  ixmldocument = xmldoc.
+
+ENDMETHOD.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method CREATEOBJECTFROMIXMLDOC.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  TYPES: BEGIN OF ty_cdat,
+           name     TYPE vclstruc-vclname,
+           activity TYPE e071-activity,
+         END OF ty_cdat,
+
+         BEGIN OF ty_vdat,
+           name     TYPE dd02l-tabname,
+           activity TYPE e071-activity,
+         END OF ty_vdat,
+
+         BEGIN OF ty_tabu,
+           tabname TYPE dd02l-tabname,
+         END OF ty_tabu,
+
+         BEGIN OF ty_entry,
+           tabname TYPE dd02l-tabname,
+           table   TYPE REF TO data,
+         END OF ty_entry.
+
+  DATA: lo_cdat_node TYPE REF TO if_ixml_element,
+
+        lo_vdat_node     TYPE REF TO if_ixml_element,
+        lo_vdat_filter   TYPE REF TO if_ixml_node_filter,
+        lo_vdat_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lo_tabu_node     TYPE REF TO if_ixml_element,
+        lo_tabu_filter   TYPE REF TO if_ixml_node_filter,
+        lo_tabu_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lo_datarow_node     TYPE REF TO if_ixml_element,
+        lo_datarow_filter   TYPE REF TO if_ixml_node_filter,
+        lo_datarow_iterator TYPE REF TO if_ixml_node_iterator,
+
+        lt_dd03p TYPE STANDARD TABLE OF dd03p,
+
+        ls_cdat TYPE ty_cdat,
+        ls_vdat TYPE ty_vdat,
+        ls_tabu TYPE ty_tabu,
+
+        lv_objtype TYPE string,
+
+        lv_clidep TYPE abap_bool,
+
+        lv_num_keyfields TYPE i,
+
+        lr_table   TYPE REF TO data,
+        lr_table_2 LIKE lr_table,
+        lr_struct  TYPE REF TO data,
+
+        ls_ko200      TYPE ko200,
+        lt_e071k      TYPE tredt_keys,
+        lt_fields     TYPE cl_abap_structdescr=&gt;component_table,
+        lt_keyfields  TYPE STANDARD TABLE OF dd03p-fieldname,
+        lt_sortfields TYPE abap_sortorder_tab,
+        lt_entries    TYPE STANDARD TABLE OF ty_entry,
+
+        lo_structdescr TYPE REF TO cl_abap_structdescr,
+        lo_tabkeydescr TYPE REF TO cl_abap_typedescr,
+        lo_typedescr   TYPE REF TO cl_abap_typedescr,
+
+        lv_keyfields     TYPE string,
+        lv_where         TYPE string,
+        lv_complete_keys TYPE abap_bool,
+        lv_tabix         TYPE sy-tabix,
+        lv_str           TYPE string.
+
+  FIELD-SYMBOLS: &lt;fs_t_table&gt;    TYPE STANDARD TABLE,
+                 &lt;fs_t_table_2&gt;  LIKE &lt;fs_t_table&gt;,
+                 &lt;fs_s_table&gt;    TYPE any,
+                 &lt;fs_dd03p&gt;      LIKE LINE OF lt_dd03p,
+                 &lt;fs_e071k&gt;      LIKE LINE OF lt_e071k,
+                 &lt;fs_fields&gt;     LIKE LINE OF lt_fields,
+                 &lt;fs_keyfields&gt;  LIKE LINE OF lt_keyfields,
+                 &lt;fs_sortfields&gt; LIKE LINE OF lt_sortfields,
+                 &lt;fs_entries&gt;    LIKE LINE OF lt_entries,
+                 &lt;fs_struct&gt;     TYPE any,
+                 &lt;fs_mandt&gt;      TYPE mandt.
+
+* Get object type
+  lv_objtype = getobjecttype( ).
+
+* Save the XML document object
+  xmldoc = ixmldocument.
+
+* Get root node for CDAT object
+  lo_cdat_node = xmldoc-&gt;find_from_name( lv_objtype ).
+
+* Get View Cluster name from XML
+  me-&gt;getstructurefromattributes(
+          EXPORTING  node      = lo_cdat_node
+          CHANGING   structure = ls_cdat ).
+
+* Returns the name of the object
+  name = ls_cdat-name.
+
+* Create the filter to loop thru all VDAT entries in document
+  lo_vdat_filter = lo_cdat_node-&gt;create_filter_name( `VDAT` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of TABU entries
+  lo_vdat_iterator = lo_cdat_node-&gt;create_iterator_filtered( lo_vdat_filter ).
+
+* Loop thru all tables (TABU entries) that make up the View
+  lo_vdat_node ?= lo_vdat_iterator-&gt;get_next( ).
+  WHILE lo_vdat_node IS BOUND.
+
+* Get table name from XML
+    me-&gt;getstructurefromattributes(
+            EXPORTING  node      = lo_vdat_node
+            CHANGING   structure = ls_vdat ).
+
+* Create the filter to loop thru all TABU entries in document
+    lo_tabu_filter = lo_vdat_node-&gt;create_filter_name( `TABU` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of TABU entries
+    lo_tabu_iterator = lo_vdat_node-&gt;create_iterator_filtered( lo_tabu_filter ).
+
+* Loop thru all tables (TABU entries) that make up the View
+    lo_tabu_node ?= lo_tabu_iterator-&gt;get_next( ).
+    WHILE lo_tabu_node IS BOUND.
+
+* Get table name from XML
+      me-&gt;getstructurefromattributes(
+              EXPORTING  node      = lo_tabu_node
+              CHANGING   structure = ls_tabu ).
+
+* Check that table exists
+      REFRESH lt_dd03p.
+      CALL FUNCTION &apos;DDIF_TABL_GET&apos;
+        EXPORTING
+          name          = ls_tabu-tabname
+          langu         = sy-langu
+        TABLES
+          dd03p_tab     = lt_dd03p
+        EXCEPTIONS
+          illegal_input = 1
+          OTHERS        = 2.
+
+      IF sy-subrc &lt;&gt; 0 OR lt_dd03p[] IS INITIAL.
+        lv_str = `Table does not exist in the active state`.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING
+            textid = zcx_saplink=&gt;error_message
+            msg    = lv_str.
+      ENDIF.
+
+* Count number of key fields
+      LOOP AT lt_dd03p TRANSPORTING NO FIELDS WHERE keyflag = abap_true.
+        ADD  1 TO lv_num_keyfields.
+      ENDLOOP.
+
+* Create the type object for field E071K-TABKEY
+      lo_tabkeydescr = cl_abap_typedescr=&gt;describe_by_name( `E071K-TABKEY` ).
+
+* Build a structure type containing all key fields of the View table
+      DELETE lt_dd03p WHERE keyflag      = abap_false OR
+                            fieldname(1) = &apos;.&apos;.
+      CLEAR: lv_keyfields, lv_where.
+      lv_clidep = abap_false.
+      lv_complete_keys = abap_true.
+      REFRESH lt_fields.
+      LOOP AT lt_dd03p ASSIGNING &lt;fs_dd03p&gt;.
+
+        AT FIRST.
+
+* Check if the View table is a client dependent table:
+*   First table field must be a key field of type CLNT
+          IF &lt;fs_dd03p&gt;-datatype = &apos;CLNT&apos; AND
+             lv_num_keyfields &lt;&gt; 1.
+            lv_clidep = abap_true.
+          ENDIF.
+
+        ENDAT.
+
+* Build the key fields list
+        CONCATENATE lv_keyfields &lt;fs_dd03p&gt;-fieldname INTO lv_keyfields
+          SEPARATED BY space.
+
+* Build the WHERE clause used to retrieve entries from database
+        CONCATENATE `&lt;FS_T_TABLE&gt;-` &lt;fs_dd03p&gt;-fieldname INTO lv_str.
+        CONCATENATE lv_where `AND` &lt;fs_dd03p&gt;-fieldname `=` lv_str INTO lv_where
+          SEPARATED BY space.
+
+        CHECK lv_complete_keys = abap_true.
+
+        lo_typedescr = cl_abap_typedescr=&gt;describe_by_name( &lt;fs_dd03p&gt;-rollname ).
+
+* Only CHARLIKE key fields are accepted
+        IF lo_typedescr-&gt;type_kind CN &apos;CNDT&apos;.
+          lv_complete_keys = abap_false.
+          CONTINUE.
+        ENDIF.
+
+* One more CHARLIKE key field found
+        APPEND INITIAL LINE TO lt_fields ASSIGNING &lt;fs_fields&gt;.
+        &lt;fs_fields&gt;-name = &lt;fs_dd03p&gt;-fieldname.
+        &lt;fs_fields&gt;-type ?= lo_typedescr.
+
+* Build the type object for key fields found so far, to help answer the following question below
+        lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+* If I add current CHARLIKE key field to key structure,
+*   will it make the CHARLIKE key structure larger than field E071K-TABKEY ?
+        IF lo_structdescr-&gt;length &gt; lo_tabkeydescr-&gt;length.
+
+* CHARLIKE key field just added will make CHARLIKE key structure not fit field E071K-TABKEY, so delete it
+          lv_tabix = lines( lt_fields ).
+          DELETE lt_fields INDEX lv_tabix.
+
+* Rebuild the type object for key fields, excluding current CHARLIKE key field that did not fit
+          lo_structdescr = cl_abap_structdescr=&gt;create( lt_fields ).
+
+          lv_complete_keys = abap_false.
+          CONTINUE.
+
+        ENDIF.
+
+      ENDLOOP.
+
+* Error if View table has no key fields (?!?)
+      IF sy-subrc &lt;&gt; 0.
+        lv_str = `Table has no key fields`.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING
+            textid = zcx_saplink=&gt;error_message
+            msg    = lv_str.
+      ENDIF.
+
+* Get rid of the &quot; &quot; at the beginning of the list of key fields of View table
+      SHIFT lv_keyfields LEFT BY 1 PLACES.
+
+* Build a list of all View table key fields
+      SPLIT lv_keyfields AT space INTO TABLE lt_keyfields.
+
+* Get rid of the &quot; AND &quot; at the beginning of the WHERE clause
+      SHIFT lv_where LEFT BY 5 PLACES.
+
+* Create a work area to store all CHARLIKE key fields of the View table that fit field E070K-TABKEY
+      CREATE DATA lr_struct TYPE HANDLE lo_structdescr.
+      ASSIGN lr_struct-&gt;* TO &lt;fs_struct&gt;.
+
+* Create the View table using the CHARLIKE key. This will allow us to delete adjacent duplicates from it
+*   using a dynamically COMPARING addition
+      CREATE DATA lr_table TYPE STANDARD TABLE OF (ls_tabu-tabname) WITH KEY (lt_keyfields).
+      ASSIGN lr_table-&gt;* TO &lt;fs_t_table&gt;.
+
+* Create a table to contain existing data from database
+      CREATE DATA lr_table_2 LIKE &lt;fs_t_table&gt;.
+      ASSIGN lr_table_2-&gt;* TO &lt;fs_t_table_2&gt;.
+
+* Create the filter to loop thru all DataRow entries in document for the View table
+      lo_datarow_filter = lo_tabu_node-&gt;create_filter_name( `DataRow` ).
+
+* Get an iterator to be used to cycle thru all occurrencies of DataRow entries
+      lo_datarow_iterator = lo_tabu_node-&gt;create_iterator_filtered( lo_datarow_filter ).
+
+* Collect all DataRow entries of current View table
+      lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+      WHILE lo_datarow_node IS BOUND.
+
+* Append contents of each DataRow entry to the View table
+        APPEND INITIAL LINE TO &lt;fs_t_table&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+        me-&gt;getstructurefromattributes(
+                EXPORTING   node      = lo_datarow_node
+                CHANGING    structure = &lt;fs_s_table&gt; ).
+
+* If it&apos;s a client dependent table, replace CLNT key field with logged on client
+        IF lv_clidep = abap_true.
+          ASSIGN COMPONENT 1 OF STRUCTURE &lt;fs_s_table&gt; TO &lt;fs_mandt&gt;.
+          &lt;fs_mandt&gt; = sy-mandt.
+        ENDIF.
+
+* Build table key to be stored in the object keys table
+        &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+
+* Build the table key for each DataRow entry
+        APPEND INITIAL LINE TO lt_e071k ASSIGNING &lt;fs_e071k&gt;.
+        &lt;fs_e071k&gt;-pgmid      = &apos;R3TR&apos;.
+        &lt;fs_e071k&gt;-object     = &apos;TABU&apos;.
+        &lt;fs_e071k&gt;-objname    = ls_tabu-tabname.
+        &lt;fs_e071k&gt;-mastertype = &apos;CDAT&apos;.
+        &lt;fs_e071k&gt;-mastername = ls_cdat-name.
+        &lt;fs_e071k&gt;-viewname   = ls_vdat-name.
+        &lt;fs_e071k&gt;-tabkey     = &lt;fs_struct&gt;.
+        &lt;fs_e071k&gt;-sortflag   = &apos;2&apos;.
+        &lt;fs_e071k&gt;-activity   = ls_vdat-activity.
+
+* Get next DataRow entry
+        lo_datarow_node ?= lo_datarow_iterator-&gt;get_next( ).
+
+      ENDWHILE.
+
+      IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Check if any of the entries to be inserted already exists in database
+        SELECT  (lv_keyfields)
+          FROM  (ls_tabu-tabname)
+          INTO  TABLE &lt;fs_t_table_2&gt;
+          FOR ALL ENTRIES IN &lt;fs_t_table&gt;
+          WHERE (lv_where).
+
+* At least one table entry already exists in datrabase
+        IF sy-subrc = 0.
+
+* Overwrite existing records or write only the records that does not exist in database
+*   depending on the &quot;Overwrite Originals&quot; flag of SAPLINK selection screen
+          IF overwrite = abap_true.
+            DELETE (ls_tabu-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+          ELSE.
+
+* If no overwrite is desired, delete all existing entries from the
+*   View table and also from the CHARLIKE key fields table
+            LOOP AT &lt;fs_t_table_2&gt; ASSIGNING &lt;fs_s_table&gt;.
+
+* Remove entry from View table
+              DELETE TABLE &lt;fs_t_table&gt; FROM &lt;fs_s_table&gt;.
+
+* Also remove entry from the object keys table
+              &lt;fs_struct&gt; = &lt;fs_s_table&gt;.
+              READ TABLE lt_e071k TRANSPORTING NO FIELDS
+                WITH KEY objname    = ls_tabu-tabname
+                         viewname   = ls_vdat-name
+                         mastername = ls_cdat-name
+                         tabkey     = &lt;fs_struct&gt;.
+              IF sy-subrc = 0.
+                DELETE lt_e071k INDEX sy-tabix.
+              ENDIF.
+
+            ENDLOOP.
+
+          ENDIF.
+
+        ENDIF.
+
+      ENDIF.
+
+* Store all entries that will be written to database later
+      IF &lt;fs_t_table&gt;[] IS NOT INITIAL.
+
+* Get rid of duplicate keys in the View table
+        REFRESH lt_sortfields.
+        LOOP AT lt_keyfields ASSIGNING &lt;fs_keyfields&gt;.
+          APPEND INITIAL LINE TO lt_sortfields ASSIGNING &lt;fs_sortfields&gt;.
+          &lt;fs_sortfields&gt;-name = &lt;fs_keyfields&gt;.
+        ENDLOOP.
+        SORT &lt;fs_t_table&gt; BY (lt_sortfields).
+        DELETE ADJACENT DUPLICATES FROM &lt;fs_t_table&gt;.
+
+        APPEND INITIAL LINE TO lt_entries ASSIGNING &lt;fs_entries&gt;.
+        &lt;fs_entries&gt;-tabname  = ls_tabu-tabname.
+        CREATE DATA &lt;fs_entries&gt;-table LIKE &lt;fs_t_table&gt;.
+        ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+        &lt;fs_t_table_2&gt;[] =  &lt;fs_t_table&gt;[].
+
+      ENDIF.
+
+* If not storing complete keys, append an &quot;*&quot; at the end of every key entry
+      IF lv_complete_keys = abap_false.
+        LOOP AT lt_e071k ASSIGNING &lt;fs_e071k&gt;
+          WHERE objname    = ls_tabu-tabname AND
+                viewname   = ls_vdat-name AND
+                mastername = ls_cdat-name.
+          CONCATENATE &lt;fs_e071k&gt;-tabkey &apos;*&apos; INTO &lt;fs_e071k&gt;-tabkey.
+        ENDLOOP.
+      ENDIF.
+
+* Get next TABU entry
+      lo_tabu_node ?= lo_tabu_iterator-&gt;get_next( ).
+
+    ENDWHILE.
+
+* Get next VDAT entry
+    lo_vdat_node ?= lo_vdat_iterator-&gt;get_next( ).
+
+  ENDWHILE.
+
+  IF lt_entries[] IS NOT INITIAL.
+
+* Get rid of duplicate object keys
+    SORT lt_e071k BY mastername objname tabkey.
+    DELETE ADJACENT DUPLICATES FROM lt_e071k COMPARING mastername objname tabkey.
+
+* Attach inserted entries to a request
+    ls_ko200-pgmid     = &apos;R3TR&apos;.
+    ls_ko200-object    = lv_objtype.
+    ls_ko200-obj_name  = ls_cdat-name.
+    ls_ko200-objfunc   = &apos;K&apos;.
+    ls_ko200-activity  = ls_cdat-activity.
+    ls_ko200-operation = &apos;I&apos;.
+
+    IF zsaplink_tools=&gt;add_to_request( is_ko200  = ls_ko200
+                                       it_e071k  = lt_e071k ) &lt;&gt; 0.
+      lv_str = `Error while attaching table entries to the request`.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING
+          textid = zcx_saplink=&gt;error_message
+          msg    = lv_str.
+    ENDIF.
+
+* Insert all selected records into database
+    LOOP AT lt_entries ASSIGNING &lt;fs_entries&gt;.
+      ASSIGN &lt;fs_entries&gt;-table-&gt;* TO &lt;fs_t_table_2&gt;.
+      INSERT (&lt;fs_entries&gt;-tabname) FROM TABLE &lt;fs_t_table_2&gt;.
+    ENDLOOP.
+
+  ENDIF.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method DELETEOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  DATA: v_msg TYPE string.
+
+  v_msg = `Operation not implemented`.
+  RAISE EXCEPTION TYPE zcx_saplink
+    EXPORTING
+      textid = zcx_saplink=&gt;error_message
+      msg = v_msg.
+
+endmethod.</source>
+  </method>
+  <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+   <source>method GETOBJECTTYPE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+
+* Plugin developed by Lino Lopes (lino@hr.com.br)
+
+  objecttype = &apos;CDAT&apos;.  &quot;Selected view contents
+
+endmethod.</source>
+  </method>
+ </CLAS>
+</nugget>

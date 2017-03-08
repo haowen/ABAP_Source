@@ -1,0 +1,16 @@
+ABAP Web Dynpro (requires SAPlink >= 0.1.3) 
+BI Infocube 
+BI ODS 
+BSP 
+BSP Extensions 
+DDic - Data dictionary objects 
+Documentation - SE61 
+Interfaces 
+Function Groups 
+Message Class 
+PDF Forms 
+Report Variants 
+Smartforms 
+Standard Texts(DOCT) 
+Transactions 
+XSLT 

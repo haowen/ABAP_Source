@@ -1,0 +1,27 @@
+FUNCTION zfmm_mdm_b510_zmmt_variety.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     VALUE(IS_WRITE) TYPE  CHAR1
+*"  EXPORTING
+*"     VALUE(RE_TYPE) TYPE  BAPI_MTYPE
+*"  TABLES
+*"      T_VARIETY STRUCTURE  ZMMT_VARIETY
+*"----------------------------------------------------------------------
+
+  IF is_write = 'X'.
+    MODIFY zmmt_variety FROM TABLE t_variety.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = 'S'.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = 'E'.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_variety INTO TABLE t_variety.
+    re_type = 'S'.
+  ENDIF.
+
+ENDFUNCTION.
+

@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<CLAS CLSNAME="ZSAPLINK_TYPE_GROUP" VERSION="1" LANGU="E" DESCRIPT="SAPlink - Type Group Plugin" UUID="DC5CA733134C0EF19A2000145E69908C" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="DDAVIDOV" CREATEDON="20070906" CHANGEDBY="DDAVIDOV" CHANGEDON="20070927" CHGDANYON="00000000" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="700" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " REFCLSNAME="ZSAPLINK">
+ <publicSection>class ZSAPLINK_TYPE_GROUP definition
+  public
+  inheriting from ZSAPLINK
+  final
+  create public .
+
+*&quot;* public components of class ZSAPLINK_TYPE_GROUP
+*&quot;* do not include other source files here!!!
+public section.
+
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .
+  methods CHECKEXISTS
+    redefinition .</publicSection>
+ <protectedSection>*&quot;* protected components of class ZSAPLINK_TYPE_GROUP
+*&quot;* do not include other source files here!!!
+protected section.
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+ <privateSection>*&quot;* private components of class ZSAPLINK_TYPE_GROUP
+*&quot;* do not include other source files here!!!
+PRIVATE SECTION.
+
+
+  DATA tp_state TYPE ddobjstate .</privateSection>
+ <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+ <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+ <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+ <attribute CLSNAME="ZSAPLINK_TYPE_GROUP" CMPNAME="TP_STATE" VERSION="1" LANGU="E" DESCRIPT="Read status of an ABAP/4 Dictionary object" EXPOSURE="0" STATE="1" EDITORDER="1 " AUTHOR="DDAVIDOV" CREATEDON="20070906" CHANGEDBY="DDAVIDOV" CHANGEDON="20070927" ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="DDOBJSTATE" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <inheritance CLSNAME="ZSAPLINK_TYPE_GROUP" REFCLSNAME="ZSAPLINK" VERSION="1" STATE="1" AUTHOR="DDAVIDOV" CREATEDON="20070906" CHANGEDBY="DDAVIDOV" CHANGEDON="20070927">
+  <redefinition CLSNAME="ZSAPLINK_TYPE_GROUP" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CHECKEXISTS"/>
+  <redefinition CLSNAME="ZSAPLINK_TYPE_GROUP" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEIXMLDOCFROMOBJECT"/>
+  <redefinition CLSNAME="ZSAPLINK_TYPE_GROUP" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEOBJECTFROMIXMLDOC"/>
+  <redefinition CLSNAME="ZSAPLINK_TYPE_GROUP" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="DELETEOBJECT"/>
+  <redefinition CLSNAME="ZSAPLINK_TYPE_GROUP" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="GETOBJECTTYPE"/>
+ </inheritance>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>METHOD checkexists.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+* Plugin created by:
+*   Dusan Davidovic
+*   DusanDavidovic@gmail.com
+
+
+  DATA: w_typepool TYPE typegroup.
+
+  w_typepool = me-&gt;objname.
+
+  TRY .
+      CALL FUNCTION &apos;TYPD_GET_STATE_FOR_SE11&apos;
+        EXPORTING
+          typdname       = w_typepool
+        IMPORTING
+          state          = me-&gt;tp_state
+        EXCEPTIONS
+          reps_not_exist = 1
+          OTHERS         = 2.
+      IF sy-subrc &lt;&gt; 0.
+        CLEAR exists.
+      ELSE.
+        exists = &apos;X&apos;.
+      ENDIF.
+    CATCH cx_sy_dyn_call_illegal_func .
+      DATA: w_prog TYPE syrepid.
+      CONCATENATE &apos;%_C&apos; me-&gt;objname INTO w_prog.
+      SELECT SINGLE state INTO me-&gt;tp_state
+        FROM progdir
+       WHERE name = w_prog
+         AND state = &apos;A&apos;.
+      IF sy-subrc &lt;&gt; 0.
+        CLEAR exists.
+      ELSE.
+        exists = &apos;X&apos;.
+      ENDIF.
+
+
+  ENDTRY.
+
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>method CREATEIXMLDOCFROMOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+* Plugin created by:
+*   Dusan Davidovic
+*   DusanDavidovic@gmail.com
+
+  DATA:
+         wt_smodisrc TYPE  standard table of  smodisrc with default key,
+         wt_smodilog TYPE  standard table of  smodilog with default key,
+         wt_source   TYPE  standard table of  abaptxt255 with default key,
+         wt_trdir    TYPE  standard table of 	trdir with default key,
+         w_typepool  TYPE typegroup.
+
+  IF me-&gt;checkexists( ) IS NOT INITIAL. &quot; this will set type pool state
+* get type pool information
+    w_typepool = me-&gt;objname.
+    CALL FUNCTION &apos;TYPD_GET_OBJECT&apos;
+      EXPORTING
+        typdname          = w_typepool
+        r3state           = me-&gt;tp_state
+      TABLES
+        psmodisrc         = wt_smodisrc
+        psmodilog         = wt_smodilog
+        psource           = wt_source
+        ptrdir            = wt_trdir
+      EXCEPTIONS
+        version_not_found = 1
+        reps_not_exist    = 2
+        OTHERS            = 3.
+    IF sy-subrc = 0.
+* Create XML
+      DATA: rootnode   TYPE REF TO if_ixml_element,
+            textnode   TYPE REF TO if_ixml_element,
+            sourcenode TYPE REF TO if_ixml_element.
+      DATA: ws_objtype TYPE string,
+            ws_ddtypet type ddtypet,
+            tp_attr    TYPE tadir,
+            ws_trdir   TYPE trdir,
+            sourcestring TYPE string.
+      DATA rc TYPE sysubrc.
+
+
+      ws_objtype = getobjecttype( ).
+      rootnode = xmldoc-&gt;create_element( ws_objtype ). &quot; TYPE
+      SELECT SINGLE * FROM tadir INTO tp_attr
+       WHERE pgmid   = &apos;R3TR&apos;
+         AND object  = ws_objtype
+         AND obj_name = objname.
+      me-&gt;setattributesfromstructure( node      = rootnode
+                                      structure =  tp_attr ).
+* set text node
+      textnode = xmldoc-&gt;create_element( &apos;text&apos; ).
+      SELECT SINGLE * FROM ddtypet INTO ws_ddtypet WHERE typegroup = w_typepool.
+      me-&gt;setattributesfromstructure( node      = textnode
+                                      structure = ws_ddtypet ).
+      rc = rootnode-&gt;append_child( textnode ).
+* source node
+      sourcenode = xmldoc-&gt;create_element( &apos;source&apos; ).
+      READ TABLE wt_trdir INTO ws_trdir INDEX 1.
+      me-&gt;setattributesfromstructure( node      = sourcenode
+                                      structure =  ws_trdir ).
+      DATA: wt_src TYPE rswsourcet.
+      FIELD-SYMBOLS: &lt;at&gt; TYPE  abaptxt255.
+      LOOP AT wt_source ASSIGNING &lt;at&gt; .
+        APPEND &lt;at&gt; TO wt_src.
+      ENDLOOP.
+      sourcestring = me-&gt;buildsourcestring( sourcetable = wt_src ).
+      rc = sourcenode-&gt;if_ixml_node~set_value( sourcestring ).
+
+      rc = rootnode-&gt;append_child( sourcenode ).
+      rc = xmldoc-&gt;append_child( rootnode ).
+      ixmldocument = xmldoc.
+    ENDIF.
+  ELSE.
+    CLEAR ixmldocument.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING textid = zcx_saplink=&gt;not_found.
+  ENDIF.
+endmethod.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>method CREATEOBJECTFROMIXMLDOC.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+* Plugin created by:
+*   Dusan Davidovic
+*   DusanDavidovic@gmail.com
+
+  DATA: w_devclass TYPE devclass,
+        w_typepool TYPE typegroup,
+        w_objtype  TYPE string,
+        rc TYPE sysubrc.
+* xml nodes
+  DATA: rootnode   TYPE REF TO if_ixml_element,
+        textnode   TYPE REF TO if_ixml_element,
+        sourcenode TYPE REF TO if_ixml_element.
+* structures
+  DATA:  ws_ddtypet TYPE ddtypet,
+         ws_tadir   TYPE tadir,
+         ws_trdir   TYPE trdir.
+
+  w_objtype = me-&gt;getobjecttype( ).
+  me-&gt;xmldoc = ixmldocument.
+  rootnode = xmldoc-&gt;find_from_name( w_objtype ).
+  me-&gt;getstructurefromattributes( EXPORTING node = rootnode
+                                  CHANGING  structure = ws_tadir ).
+* check if object exist
+  me-&gt;objname = ws_tadir-obj_name.
+  IF me-&gt;checkexists( ) IS NOT INITIAL.
+    IF overwrite IS INITIAL.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING textid = zcx_saplink=&gt;existing.
+    ELSE.
+*     delete object for new install
+      deleteobject( ).
+    ENDIF.
+  ENDIF.
+
+* get text
+  textnode = rootnode-&gt;find_from_name( &apos;text&apos; ).
+  me-&gt;getstructurefromattributes( EXPORTING node = textnode
+                                  CHANGING  structure = ws_ddtypet ).
+* get source
+  DATA: wt_abapsource TYPE STANDARD TABLE OF abapsource,
+        ws_abapsource TYPE abapsource,
+        wt_sourcestring TYPE STANDARD TABLE OF string,
+        w_sourcestring TYPE string.
+  sourcenode = rootnode-&gt;find_from_name( &apos;source&apos; ).
+  me-&gt;getstructurefromattributes( EXPORTING node = sourcenode
+                                  CHANGING  structure = ws_trdir ).
+  w_sourcestring = sourcenode-&gt;get_value( ).
+  wt_sourcestring = me-&gt;buildtablefromstring( w_sourcestring ).
+  LOOP AT wt_sourcestring INTO w_sourcestring .
+    ws_abapsource-line = w_sourcestring.
+    APPEND ws_abapsource TO wt_abapsource.
+  ENDLOOP.
+
+
+* create Type-Pool
+  DATA: w_corrnum TYPE trkorr.
+  w_typepool = me-&gt;objname.
+  CALL FUNCTION &apos;RS_DD_TYGR_INSERT_SOURCES&apos;
+    EXPORTING
+      typegroupname        = w_typepool
+      ddtext               = ws_ddtypet-ddtext
+      corrnum              = w_corrnum
+      devclass             = w_devclass
+    TABLES
+      SOURCE               = wt_abapsource
+    EXCEPTIONS
+      already_exists       = 1
+      not_executed         = 2
+      permission_failure   = 3
+      object_not_specified = 4
+      illegal_name         = 5
+      OTHERS               = 6.
+  IF sy-subrc &lt;&gt; 0.
+* MESSAGE ID SY-MSGID TYPE SY-MSGTY NUMBER SY-MSGNO
+*         WITH SY-MSGV1 SY-MSGV2 SY-MSGV3 SY-MSGV4.
+    CASE sy-subrc .
+      WHEN 1.
+        RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING textid = zcx_saplink=&gt;existing.
+      WHEN 3.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ELSE.
+* update unicode flag if required....TRDIR
+* Use FM&apos;s RS_TRDIR_SELECT and RS_TRDIR_UPDATE
+    IF ws_trdir-uccheck IS NOT INITIAL.
+* this is required to update UNICODE flag - UCCHECK
+* Behavior is like this...
+* Two records are created in PROGDIR, one for (A)ctive and one for (I)nactive version,
+* active ones has unicode set ptoperly while inacative one is blank. When type group is activated,
+* active record is deleted and for inactive one status is changed, therefore UCCHECK is not corect.
+* I suspect this behavior is caused by FM RS_DD_TYGR_INSERT_SOURCES where unicode can not be set
+* Note: TRDIR is also updated
+      DATA: wt_progdir_tab TYPE STANDARD TABLE OF progdir.
+      CALL FUNCTION &apos;READ_PROGDIR&apos;
+        EXPORTING
+          i_progname    = ws_trdir-name
+          i_state       = &apos; &apos;
+        IMPORTING
+          e_progdir_tab = wt_progdir_tab
+        EXCEPTIONS
+          not_exists    = 1
+          OTHERS        = 2.
+      IF sy-subrc &lt;&gt; 0.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+      ELSE.
+        FIELD-SYMBOLS: &lt;pdir&gt; TYPE progdir.
+        LOOP AT wt_progdir_tab ASSIGNING  &lt;pdir&gt; WHERE uccheck IS INITIAL.
+          &lt;pdir&gt;-uccheck = ws_trdir-uccheck.
+          CALL FUNCTION &apos;UPDATE_PROGDIR&apos;
+            EXPORTING
+              i_progdir    = &lt;pdir&gt;
+              i_progname   = ws_trdir-name
+              i_state      = &lt;pdir&gt;-state
+            EXCEPTIONS
+              not_executed = 1
+              OTHERS       = 2.
+          IF sy-subrc &lt;&gt; 0.
+            RAISE EXCEPTION TYPE zcx_saplink
+              EXPORTING textid = zcx_saplink=&gt;error_message
+                msg = &apos;PROGDIR not updated&apos;.
+          ENDIF.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+    name = w_typepool.
+  ENDIF.
+
+endmethod.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>method DELETEOBJECT.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+* Plugin created by:
+*   Dusan Davidovic
+*   DusanDavidovic@gmail.com
+
+  DATA: w_typepool TYPE typegroup,
+        w_stringobjtype TYPE string,
+        w_fmobjtype TYPE trobjtype,
+        w_eutype TYPE ddeutype.
+
+  w_typepool = me-&gt;objname.
+  w_stringobjtype  = me-&gt;getobjecttype( ).
+  w_fmobjtype = w_stringobjtype.
+
+
+  CALL FUNCTION &apos;INTERN_TRANSL_TADIR_TYPE&apos;
+    EXPORTING
+      tadir_type   = w_fmobjtype
+    IMPORTING
+      eutype       = w_eutype
+    EXCEPTIONS
+      invalid_type = 1
+      OTHERS       = 2.
+  IF sy-subrc = 0.
+
+    CALL FUNCTION &apos;RS_DD_DELETE_OBJ&apos;
+      EXPORTING
+        no_ask               = &apos;X&apos;
+        objname              = w_typepool
+        objtype              = w_eutype
+      EXCEPTIONS
+        not_executed         = 1
+        object_not_found     = 2
+        object_not_specified = 3
+        permission_failure   = 4
+        dialog_needed        = 5
+        OTHERS               = 6.
+    IF sy-subrc &lt;&gt; 0.
+      RAISE EXCEPTION TYPE zcx_saplink
+   EXPORTING
+     textid = zcx_saplink=&gt;error_message
+     msg = &apos;type-pool not deleted&apos;.
+    ENDIF.
+
+  ENDIF.
+
+endmethod.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>method GETOBJECTTYPE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+* Plugin created by:
+*   Dusan Davidovic
+*   DusanDavidovic@gmail.com
+
+ objecttype = &apos;TYPE&apos;.  &quot;Type pool
+
+
+endmethod.</source>
+ </method>
+</CLAS>

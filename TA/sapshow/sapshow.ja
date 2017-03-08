@@ -1,0 +1,104 @@
+; ****************************************
+; *                                      *
+; *       Copyright(c) SAP AG 1999       *
+; *          All rights reserved         *
+; *                                      *
+; ****************************************
+SAPShow_E00001	ファイル '%s' のオープンエラー:\n%s
+SAPShow_E00002	ファイル '%s' の読込エラー:\n%s
+SAPShow_E00003	ファイル '%s' への書込エラー:\n%s
+SAPShow_E00004	ファイル '%s' の保存エラー:\n%s
+SAPShow_E00005	ファイル '%s' は存在しません
+SAPShow_E00011	オートメーションエラー (E_STG_COPY) '%s':\n%s
+SAPShow_E00012	'%s' の作成エラー:\n%s
+SAPShow_E00013	オートメーションエラー (E_STG_COMMIT) %s:\n%s
+SAPShow_E00014	オートメーションエラー (E_STG_OPEN) '%s':\n%s
+SAPShow_E00015	オートメーションエラー (E_STG_READ) '%s':\n%s
+SAPShow_E00016	オートメーションエラー (E_STG_WRITE) '%s':\n%s
+SAPShow_E00017	オートメーションエラー (E_STG_STAT) %s:\n%s
+SAPShow_E00023	プレゼンテーションの期限が切れています
+SAPShow_E00024	過去の時刻です\nシステム時刻をチェックしてください
+SAPShow_E00025	重大エラー: 不正チェックサム
+SAPShow_E00026	ディスクシリアル番号の読込エラー
+SAPShow_E00027	ライセンスキーエラー
+SAPShow_E00033	オートメーションエラー (OLE_ADVISE) %s:\n%s
+SAPShow_E00034	オートメーションエラー (OLE_CLIENT) %s:\n%s
+SAPShow_E00035	オートメーションエラー (OLE_COPY) %s:\n%s
+SAPShow_E00036	オートメーションエラー (OLE_CREATE) %s:\n%s
+SAPShow_E00037	オートメーションエラー (OLE_LOAD) %s:\n%s
+SAPShow_E00038	オートメーションエラー (OLE_QUERY) %s:\n%s
+SAPShow_E00039	オートメーションエラー (OLE_SAVE) %s:\n%s
+SAPShow_E00040	オートメーションエラー (OLE_RUN) %s:\n%s
+SAPShow_E00041	オートメーションエラー (OLE_VERB) %s:\n%s
+SAPShow_E00042	 オートメーションエラー (OLE_DRAW) %s:\n%s
+SAPShow_E00047	KXF ファイルのエラー: セクション '%s' ('%s') がありません
+SAPShow_E00048	KXF ファイルのエラー: キー '%s' (セクション '%s' ) がありません
+SAPShow_E00049	KXF 書式エラー %s %s
+SAPShow_E00050	KXF 記述エラー: %s::%s
+SAPShow_E00056	外部ヘルプビューアが見つかりません\n追加パス情報: %s
+SAPShow_E00057	外部ヘルプビューア (SHH) のレジストリエントリがありません
+SAPShow_E00058	外部ヘルプビューアの起動エラー : %s
+SAPShow_E00059	URL 書式エラー: %s
+SAPShow_E00060	"SAPDOCCD.INI" がありません
+SAPShow_E00064	%s の実行エラー:\n%s
+SAPShow_E00065	メモリ不足\n(ファイル: %s、行:%s)
+SAPShow_E00066	オートメーションエラー
+SAPShow_E00067	リンクの欠落: %s
+SAPShow_M32774	全画面
+SAPShow_M32775	注釈
+SAPShow_M32784	再生
+SAPShow_M32787	自動実行
+SAPShow_M57601	開く...\tCtrl+O
+SAPShow_M57607	印刷...\tCtrl+P
+SAPShow_M57608	印刷設定...
+SAPShow_M57609	印刷プレビュー(&V)
+SAPShow_M57616	最近使ったファイル
+SAPShow_M57664	SAPShow について...
+SAPShow_M57665	終了(&X)
+SAPShow_M59392	標準
+SAPShow_M59393	ステータスバー
+SAPShow_MFile	ファイル
+SAPShow_MHelp	ヘルプ(&H)
+SAPShow_MToolbars	ツールバー
+SAPShow_MView	ビュー(&V)
+SAPShow_R32771	前のトピック\n前
+SAPShow_R32772	次のトピック\n次
+SAPShow_R32774	全画面\n全画面
+SAPShow_R32775	注釈ウィンドウの表示/非表示\n注釈
+SAPShow_R32778	履歴で前のノード\n前 (履歴)
+SAPShow_R32779	履歴で次のノード\n次 (履歴)
+SAPShow_R32782	再生\n再生
+SAPShow_R32783	停止\n停止
+SAPShow_R32784	ツールバー表示/非表示\nツールバーのトグル
+SAPShow_R32786	自動実行\n自動実行
+SAPShow_R32787	自動実行モードの開始/停止\n自動実行
+SAPShow_R57600	新規文書を作成\n新規作成
+SAPShow_R57601	既存の文書を開く\n開く
+SAPShow_R57602	アクティブ文書を閉じる\n閉じる
+SAPShow_R57603	アクティブ文書を保存\n保存
+SAPShow_R57604	アクティブ文書を新規名称で保存\n別名保存
+SAPShow_R57606	プリンタと印刷オプションの変更\n印刷設定
+SAPShow_R57607	アクティブ文書の印刷\n印刷
+SAPShow_R57608	全ページ表示\n印刷プレビュー
+SAPShow_R57616	この文書を開く
+SAPShow_R57617	この文書を開く
+SAPShow_R57618	この文書を開く
+SAPShow_R57619	この文書を開く
+SAPShow_R57620	この文書を開く
+SAPShow_R57621	この文書を開く
+SAPShow_R57622	この文書を開く
+SAPShow_R57623	この文書を開く
+SAPShow_R57624	この文書を開く
+SAPShow_R57625	この文書を開く
+SAPShow_R57626	この文書を開く
+SAPShow_R57627	この文書を開く
+SAPShow_R57628	この文書を開く
+SAPShow_R57629	この文書を開く
+SAPShow_R57630	この文書を開く
+SAPShow_R57631	この文書を開く
+SAPShow_R57664	プログラム情報 (バージョンと著作権) 表示\nバージョン情報
+SAPShow_R57665	アプリケーション終了、文書保存要求\n終了
+SAPShow_R59392	ツールバー表示/非表示\nツールバーのトグル
+SAPShow_R59393	ステータスバー表示/非表示\nステータスバーのトグル
+SAPShow_R57345	準備完了
+     

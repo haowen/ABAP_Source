@@ -1,0 +1,27 @@
+FUNCTION zfmm_mdm_b509_zmmt_hydm.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     VALUE(IS_WRITE) TYPE  CHAR1
+*"  EXPORTING
+*"     VALUE(RE_TYPE) TYPE  BAPI_MTYPE
+*"  TABLES
+*"      T_HYDM STRUCTURE  ZMMT_HYDM
+*"----------------------------------------------------------------------
+
+  IF is_write = 'X'.
+    MODIFY zmmt_hydm FROM TABLE t_hydm.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = 'S'.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = 'E'.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_hydm INTO TABLE t_hydm.
+    re_type = 'S'.
+  ENDIF.
+
+ENDFUNCTION.
+

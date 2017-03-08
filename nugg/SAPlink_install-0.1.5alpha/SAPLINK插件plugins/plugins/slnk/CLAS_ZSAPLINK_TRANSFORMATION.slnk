@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<CLAS CLSNAME="ZSAPLINK_TRANSFORMATION" VERSION="0" LANGU="E" DESCRIPT="SAPlink - XSLT Plugin" UUID="AE4590457341D81AE1000000C39B9B01" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="DEVELOPER" CREATEDON="20061225" CHANGEDON="00000000" CHGDANYON="00000000" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="640" CLSBCCAT="00" REFCLSNAME="ZSAPLINK">
+ <publicSection>class ZSAPLINK_TRANSFORMATION definition
+  public
+  inheriting from ZSAPLINK
+  create public .
+
+*&quot;* public components of class ZSAPLINK_TRANSFORMATION
+*&quot;* do not include other source files here!!!
+public section.
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+ <protectedSection>*&quot;* protected components of class ZSAPLINK_TRANSFORMATION
+*&quot;* do not include other source files here!!!
+protected section.
+
+  constants C_OBJECT_TYPE type STRING value &apos;XSLT&apos;. &quot;#EC NOTEXT
+  data XSLT_NAME type CXSLTDESC .
+  constants C_TAG_SOURCE type STRING value &apos;source&apos;. &quot;#EC NOTEXT
+
+  methods SET_XSLT_NAME .
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+ <privateSection>*&quot;* private components of class ZSAPLINK_TRANSFORMATION
+*&quot;* do not include other source files here!!!
+private section.</privateSection>
+ <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+ <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+ <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+ <attribute CLSNAME="ZSAPLINK_TRANSFORMATION" CMPNAME="C_OBJECT_TYPE" VERSION="0" LANGU="E" DESCRIPT="XSLT Object Type" EXPOSURE="1" STATE="1" EDITORDER="0 " AUTHOR="DEVELOPER" CREATEDON="20061225" CHANGEDON="00000000" ATTDECLTYP="2" ATTVALUE="&apos;XSLT&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="640" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSFORMATION" CMPNAME="C_TAG_SOURCE" VERSION="0" LANGU="E" DESCRIPT="XML Tag for Source" EXPOSURE="1" STATE="1" EDITORDER="3 " AUTHOR="DEVELOPER" CREATEDON="20061225" CHANGEDON="00000000" ATTDECLTYP="2" ATTVALUE="&apos;source&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="640" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSFORMATION" CMPNAME="XSLT_NAME" VERSION="0" LANGU="E" DESCRIPT="XSLT Name" EXPOSURE="1" STATE="1" EDITORDER="1 " AUTHOR="DEVELOPER" CREATEDON="20061225" CHANGEDON="00000000" ATTDECLTYP="0" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CXSLTDESC" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="640" TYPESRC_LENG="0 "/>
+ <inheritance CLSNAME="ZSAPLINK_TRANSFORMATION" REFCLSNAME="ZSAPLINK" VERSION="0" STATE="1" AUTHOR="DEVELOPER" CREATEDON="20061225" CHANGEDON="00000000">
+  <redefinition CLSNAME="ZSAPLINK_TRANSFORMATION" REFCLSNAME="ZSAPLINK" VERSION="0" MTDNAME="CHECKEXISTS"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSFORMATION" REFCLSNAME="ZSAPLINK" VERSION="0" MTDNAME="CREATEIXMLDOCFROMOBJECT"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSFORMATION" REFCLSNAME="ZSAPLINK" VERSION="0" MTDNAME="CREATEOBJECTFROMIXMLDOC"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSFORMATION" REFCLSNAME="ZSAPLINK" VERSION="0" MTDNAME="DELETEOBJECT"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSFORMATION" REFCLSNAME="ZSAPLINK" VERSION="0" MTDNAME="GETOBJECTTYPE"/>
+ </inheritance>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD checkexists .
+
+  CONSTANTS:
+    lc_exists TYPE char1 VALUE &apos;1&apos;.
+
+  set_xslt_name( ).
+
+  IF cl_o2_api_xsltdesc=&gt;exists( xslt_name ) EQ lc_exists.
+    exists = abap_true.
+  ENDIF.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD createixmldocfromobject .
+
+  DATA:
+    lo_xslt TYPE REF TO cl_o2_api_xsltdesc,
+    ls_attributes TYPE o2xsltattr,
+    lo_rootnode TYPE REF TO if_ixml_element,
+    lt_xslt_source TYPE o2pageline_table,
+    lo_node TYPE REF TO if_ixml_element,
+    l_source TYPE string.
+
+* set internal object name
+  set_xslt_name( ).
+
+* load XSLT transformation
+  cl_o2_api_xsltdesc=&gt;load(
+    EXPORTING
+      p_xslt_desc                  = xslt_name
+    IMPORTING
+      p_obj                        = lo_xslt
+    EXCEPTIONS
+      not_existing                 = 1
+      permission_failure           = 2
+      OTHERS                       = 5 ).
+
+  IF sy-subrc &lt;&gt; 0.
+    CASE sy-subrc.
+      WHEN 1.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_found.
+      WHEN 2.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+* create parent node with attributes
+  lo_rootnode = xmldoc-&gt;create_element( c_object_type ).
+
+* 1. get attributes
+  ls_attributes = lo_xslt-&gt;get_attributes( ).
+  setattributesfromstructure( node = lo_rootnode structure = ls_attributes ).
+
+* 2. get XSLT source
+  lt_xslt_source = lo_xslt-&gt;get_source( ).
+
+  l_source = zsaplink_transformation=&gt;buildsourcestring( pagetable = lt_xslt_source ).
+  lo_node = xmldoc-&gt;create_element( c_tag_source ).
+  lo_node-&gt;set_value( l_source ).
+  lo_rootnode-&gt;append_child( lo_node ).
+
+  xmldoc-&gt;append_child( lo_rootnode ).
+
+  ixmldocument = xmldoc.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD createobjectfromixmldoc .
+
+  DATA:
+    lo_rootnode TYPE REF TO if_ixml_element,
+    lo_node TYPE REF TO if_ixml_element,
+    lo_filter TYPE REF TO if_ixml_node_filter,
+    lo_iterator TYPE REF TO if_ixml_node_iterator,
+    lo_xslt TYPE REF TO cl_o2_api_xsltdesc,
+    ls_attributes TYPE o2xsltattr,
+    lt_xslt_source TYPE o2pageline_table,
+    ls_xslt_source LIKE LINE OF lt_xslt_source,
+    l_source TYPE string,
+    lt_source TYPE table_of_strings.
+
+* try to find a XSLT transformation in the XML tree
+  xmldoc = ixmldocument.
+  lo_rootnode = xmldoc-&gt;find_from_name( c_object_type ).
+
+* 1. get attributes
+  getstructurefromattributes( EXPORTING node = lo_rootnode CHANGING structure = ls_attributes ).
+
+* set XSLT transformation name
+  objname = ls_attributes-xsltdesc.
+  set_xslt_name( ).
+
+* check whether object already exists and if overwriting
+* is allowed
+  IF checkexists( ) IS NOT INITIAL.
+    IF overwrite IS INITIAL.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING textid = zcx_saplink=&gt;existing.
+    ELSE.
+*     delete object for new install
+      deleteobject( ).
+    ENDIF.
+  ENDIF.
+
+* 2. get XSLT source
+  CLEAR: lo_filter, lo_iterator, lo_node.
+  lo_filter = xmldoc-&gt;create_filter_name( c_tag_source ).
+  lo_iterator = xmldoc-&gt;create_iterator_filtered( lo_filter ).
+  lo_node ?= lo_iterator-&gt;get_next( ).
+
+  IF lo_node IS NOT INITIAL.
+    l_source = lo_node-&gt;get_value( ).
+    lt_source = zsaplink_transformation=&gt;buildtablefromstring( source = l_source ).
+
+    LOOP AT lt_source INTO l_source.
+      CLEAR ls_xslt_source.
+      ls_xslt_source-line = l_source.
+      APPEND ls_xslt_source TO lt_xslt_source.
+    ENDLOOP.
+  ENDIF.
+
+* create new XSLT transformation
+  cl_o2_api_xsltdesc=&gt;create_new(
+    EXPORTING
+      p_source                     = lt_xslt_source
+      p_attr                       = ls_attributes
+    IMPORTING
+      p_obj                        = lo_xslt
+    EXCEPTIONS
+      object_already_existing      = 1
+      not_authorized               = 2
+      undefined_name               = 3
+      OTHERS                       = 4 ).
+
+  IF sy-subrc NE 0.
+    CASE sy-subrc.
+      WHEN 1.
+        IF overwrite EQ abap_false.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING textid = zcx_saplink=&gt;existing.
+        ENDIF.
+      WHEN 2.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN 3.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_found.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+* overwriting needs loading
+  IF overwrite EQ abap_true AND lo_xslt IS NOT BOUND.
+
+* load XSLT transformation
+    cl_o2_api_xsltdesc=&gt;load(
+      EXPORTING
+        p_xslt_desc                  = xslt_name
+      IMPORTING
+        p_obj                        = lo_xslt
+      EXCEPTIONS
+        not_existing                 = 1
+        permission_failure           = 2
+        OTHERS                       = 5 ).
+
+    IF sy-subrc &lt;&gt; 0.
+      CASE sy-subrc.
+        WHEN 1.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING textid = zcx_saplink=&gt;not_found.
+        WHEN 2.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING textid = zcx_saplink=&gt;not_authorized.
+        WHEN OTHERS.
+          RAISE EXCEPTION TYPE zcx_saplink
+            EXPORTING textid = zcx_saplink=&gt;system_error.
+      ENDCASE.
+    ENDIF.
+
+  ENDIF.
+
+* save XSLT transformation
+  lo_xslt-&gt;save(
+    EXCEPTIONS
+      permission_failure        = 5
+      OTHERS                    = 6 ).
+
+  IF sy-subrc &lt;&gt; 0.
+    CASE sy-subrc.
+      WHEN 5.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+* reset
+  lo_xslt-&gt;set_changeable(
+    EXPORTING
+      p_changeable                = abap_false
+    EXCEPTIONS
+      permission_failure          = 9
+      OTHERS                      = 10 ).
+
+  IF sy-subrc NE 0.
+    CASE sy-subrc.
+      WHEN 9.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+  name = objname.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD deleteobject .
+
+  DATA:
+    lo_xslt TYPE REF TO cl_o2_api_xsltdesc.
+
+* set internal object name
+  set_xslt_name( ).
+
+* load XSLT transformation
+  cl_o2_api_xsltdesc=&gt;load(
+    EXPORTING
+      p_xslt_desc                  = xslt_name
+    IMPORTING
+      p_obj                        = lo_xslt
+    EXCEPTIONS
+      not_existing                 = 1
+      permission_failure           = 2
+      OTHERS                       = 5 ).
+
+  IF sy-subrc &lt;&gt; 0.
+    CASE sy-subrc.
+      WHEN 1.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_found.
+      WHEN 2.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+* set changeable
+  lo_xslt-&gt;set_changeable(
+    EXPORTING
+      p_changeable                = abap_true
+    EXCEPTIONS
+      object_already_unlocked     = 4
+      object_already_changeable   = 5
+      object_locked_by_other_user = 3
+      permission_failure          = 2
+      OTHERS                      = 10 ).
+
+  IF sy-subrc &lt;&gt; 0.
+    CASE sy-subrc.
+      WHEN 1.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_found.
+      WHEN 2.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+      WHEN 3.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;locked.
+      WHEN 4 OR 5. &quot; do nothing, continue
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+* delete XSLT transformation
+  lo_xslt-&gt;delete(
+    EXCEPTIONS
+      object_invalid        = 1
+      object_not_changeable = 2
+      OTHERS                = 3 ).
+
+  IF sy-subrc &lt;&gt; 0.
+    CASE sy-subrc.
+      WHEN 1.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_found.
+      WHEN 2.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;locked.
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;system_error.
+    ENDCASE.
+  ENDIF.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD getobjecttype .
+
+  objecttype = c_object_type. &quot; XSLT transformation
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK_TRANSFORMATION" CMPNAME="SET_XSLT_NAME" VERSION="0" LANGU="E" DESCRIPT="Setzt XSLT Name" EXPOSURE="1" STATE="1" EDITORDER="0 " DISPID="0 " AUTHOR="DEVELOPER" CREATEDON="20061225" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" R3RELEASE="640" BCMTDCAT="00" BCMTDSYN="0">
+  <source>METHOD set_xslt_name.
+
+  xslt_name = objname.
+
+ENDMETHOD.</source>
+ </method>
+</CLAS>

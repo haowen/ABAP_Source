@@ -1,0 +1,3230 @@
+<?xml version="1.0" encoding="utf-16"?>
+<nugget name="FM_GROUP">
+ <FUGR SPRAS="1" AREA="ZFMM_MDM_FUNCG" AREAT="MDM平台函数组">
+  <mainprogram NAME="SAPLZFMM_MDM_FUNCG" VARCL="X" DBAPL="S" DBNA="D$" SUBC="F" APPL="S" CNAM="TS-LIYJ" CDAT="20140516" UNAM="TS-LIYJ" UDAT="20140528" VERN="000001" RMAND="020" RLOAD="1" FIXPT="X" SDATE="20151119" STIME="123605" IDATE="20140528" ITIME="171103" LDBNAME="D$S" UCCHECK="X">
+   <textPool/>
+   <source>*******************************************************************
+*   System-defined Include-files.                                 *
+*******************************************************************
+  INCLUDE LZFMM_MDM_FUNCGTOP.                &quot; Global Data
+  INCLUDE LZFMM_MDM_FUNCGUXX.                &quot; Function Modules
+
+*******************************************************************
+*   User-defined Include-files (if necessary).                    *
+*******************************************************************
+* INCLUDE LZFMM_MDM_FUNCGF...                &quot; Subroutines
+* INCLUDE LZFMM_MDM_FUNCGO...                &quot; PBO-Modules
+* INCLUDE LZFMM_MDM_FUNCGI...                &quot; PAI-Modules
+* INCLUDE LZFMM_MDM_FUNCGE...                &quot; Events
+* INCLUDE LZFMM_MDM_FUNCGP...                &quot; Local class implement.</source>
+  </mainprogram>
+  <includeprograms>
+   <include NAME="LZFMM_MDM_FUNCGTOP" DBAPL="S" DBNA="D$" SUBC="I" APPL="S" CNAM="TS-LIYJ" CDAT="20140516" UNAM="TS-LIYJ" UDAT="20140528" VERN="000001" RMAND="020" FIXPT="X" SDATE="20140528" STIME="171103" IDATE="20140528" ITIME="171103" LDBNAME="D$S" UCCHECK="X">
+    <include_source>FUNCTION-POOL ZFMM_MDM_FUNCG.               &quot;MESSAGE-ID ..
+
+* INCLUDE LZFMM_MDM_FUNCGD...                &quot; Local class definition</include_source>
+   </include>
+  </includeprograms>
+  <functionmodules>
+   <functionmodule NAME="ZFMM_MDM_BATCH_INPUT" REMOTE="R" STEXT="物料主数据导入(类、特性)">
+    <tables PARAMETER="T_CLASS" DBSTRUCT="ZMM_S_CLASS" OPTIONAL="X"/>
+    <tables PARAMETER="T_CHARACT" DBSTRUCT="ZMM_S_CHARACT" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="T_CLASS" KIND="P" STEXT="物料主数据-类-结构" INDEX=" 001"/>
+    <documentation PARAMETER="T_CHARACT" KIND="P" STEXT="物料主数据-特性-结构" INDEX=" 002"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 003"/>
+    <fm_source_new>*******CHARACT数据定义
+  DATA: lw_charact LIKE LINE OF t_charact,
+        lt_charactdetail TYPE TABLE OF bapicharactdetail,
+        lw_charactdetail TYPE          bapicharactdetail,
+        lt_describle TYPE TABLE OF bapicharactdescr,
+        lw_describle TYPE          bapicharactdescr,
+        lt_return TYPE TABLE OF bapiret2,
+        lw_return TYPE          bapiret2.
+*******CHARACT导入****************************************************
+  LOOP AT t_charact INTO lw_charact.
+    CLEAR: lt_charactdetail,
+           lw_charactdetail,
+           lt_describle,
+           lw_describle.
+    lw_charactdetail-charact_name   = lw_charact-charact_name.
+    lw_charactdetail-data_type      = lw_charact-data_type.
+    lw_charactdetail-length         = lw_charact-length.
+    lw_charactdetail-decimals       = lw_charact-decimals.
+    lw_charactdetail-currency       = lw_charact-currency.
+    lw_charactdetail-case_sensitiv  = lw_charact-case_sensitiv.
+    lw_charactdetail-with_sign      = lw_charact-with_sign.
+    lw_charactdetail-unit_of_measurement  = lw_charact-unit_of_measurement.
+    lw_charactdetail-charact_group         = lw_charact-charact_group.
+    lw_charactdetail-value_assignment     = lw_charact-value_assignment.
+    lw_charactdetail-entry_required       = lw_charact-entry_required.
+    lw_charactdetail-interval_allowed     = lw_charact-interval_allowed.
+    lw_charactdetail-status = &apos;1&apos;.
+    APPEND lw_charactdetail TO lt_charactdetail.
+
+    lw_describle-language_int = &apos;1&apos;.
+    lw_describle-description = lw_charact-description.
+    APPEND lw_describle TO lt_describle.
+
+    CLEAR lt_return.
+    CALL FUNCTION &apos;BAPI_CHARACT_GETDETAIL&apos;
+      EXPORTING
+        charactname               = lw_charact-charact_name
+*       KEYDATE                   = SY-DATUM
+*       LANGUAGE                  =
+*     IMPORTING
+*       CHARACTDETAIL             =
+      TABLES
+*       CHARACTDESCR              =
+*       CHARACTVALUESNUM          =
+*       CHARACTVALUESCHAR         =
+*       CHARACTVALUESCURR         =
+*       CHARACTVALUESDESCR        =
+*       CHARACTREFERENCES         =
+*       CHARACTRESTRICTIONS       =
+        return                    = lt_return
+              .
+    READ TABLE lt_return INTO lw_return WITH KEY type = &apos;E&apos; id = &apos;C1&apos; number = &apos;0003&apos;.&quot;特征未找到或无效
+    CLEAR lt_return.
+    IF sy-subrc = 0.
+
+      CALL FUNCTION &apos;BAPI_CHARACT_CREATE&apos;
+        EXPORTING
+          charactdetail       = lw_charactdetail
+*         CHANGENUMBER        =
+*         KEYDATE             = SY-DATUM
+        TABLES
+          charactdescr        = lt_describle
+*         CHARACTVALUESNUM    =
+*         CHARACTVALUESCHAR   =
+*         CHARACTVALUESCURR   =
+*         CHARACTVALUESDESCR  =
+*         CHARACTREFERENCES   =
+*         CHARACTRESTRICTIONS =
+          return              = lt_return.
+      READ TABLE lt_return INTO lw_return WITH KEY type = &apos;E&apos;.
+      IF sy-subrc &lt;&gt; 0.
+        READ TABLE lt_return INTO lw_return WITH KEY type = &apos;A&apos;.
+        IF sy-subrc &lt;&gt; 0.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+            EXPORTING
+              wait = &apos;X&apos;.
+          APPEND LINES OF lt_return TO t_return.
+        ELSE.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+          APPEND LINES OF lt_return TO t_return.
+        ENDIF.
+      ELSE.
+        CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+        APPEND LINES OF lt_return TO t_return.
+      ENDIF.
+*    ELSE.
+*      CLEAR lt_return.
+*
+*      CALL FUNCTION &apos;BAPI_CHARACT_CHANGE&apos;
+*        EXPORTING
+*          charactname            = lw_charact-charact_name
+**         CHANGENUMBER           =
+**         KEYDATE                = SY-DATUM
+*        TABLES
+*          charactdetailnew       = lt_charactdetail
+*          charactdescrnew        = lt_describle
+**         CHARACTVALUESNUMNEW    =
+**         CHARACTVALUESCHARNEW   =
+**         CHARACTVALUESCURRNEW   =
+**         CHARACTVALUESDESCRNEW  =
+**         CHARACTREFERENCESNEW   =
+**         CHARACTRESTRICTIONSNEW =
+*          return                 = lt_return.
+*      READ TABLE lt_return INTO lw_return WITH KEY type = &apos;E&apos;.
+*      IF sy-subrc &lt;&gt; 0.
+*        READ TABLE lt_return INTO lw_return WITH KEY type = &apos;A&apos;.
+*        IF sy-subrc &lt;&gt; 0.
+*          CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+*            EXPORTING
+*              wait = &apos;X&apos;.
+*          APPEND LINES OF lt_return TO t_return.
+*        ELSE.
+*          CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+*          APPEND LINES OF lt_return TO t_return.
+*        ENDIF.
+*      ELSE.
+*        CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+*        APPEND LINES OF lt_return TO t_return.
+*      ENDIF.
+    ENDIF.
+  ENDLOOP.
+**********************************************************************
+
+
+*******CLASS创建数据定义
+  DATA: lw_classnumnew TYPE bapi_class_key-classnum,
+        lw_classtypenew TYPE bapi_class_key-classtype,
+        lw_classbasicdata TYPE bapi1003_basic,
+        lt_classdescriptions TYPE TABLE OF bapi1003_catch,
+        lw_classdescriptions TYPE          bapi1003_catch,
+        lt_classcharacteristics TYPE TABLE OF bapi1003_charact,
+        lw_classcharacteristics TYPE          bapi1003_charact.
+*******CLASS修改数据定义
+  DATA: lw_classbasicdatanew TYPE bapi1003_basic_new,
+        lt_classdescriptionsnew TYPE TABLE OF bapi1003_catch_new,
+        lw_classdescriptionsnew TYPE          bapi1003_catch_new,
+        lt_classcharacteristicsnew TYPE TABLE OF bapi1003_charact_new,
+        lw_classcharacteristicsnew TYPE          bapi1003_charact_new.
+
+  DATA: lw_class LIKE LINE OF t_class[],
+        l_clint TYPE klah-clint,
+        l_create TYPE c,
+        l_change TYPE c,
+        lt_ksml TYPE TABLE OF ksml,
+        lw_ksml TYPE          ksml,
+        lt_cabn TYPE TABLE OF cabn,
+        lw_cabn TYPE          cabn.
+  DATA: lw_zmmt_industry TYPE zmmt_industry.
+  DATA: l_classnum TYPE zmm_s_class-classnum.
+*******CLASS导入******************************************************
+  SORT t_class[] BY classnum classtype catchword name_char.
+
+  LOOP AT t_class.&quot;[] INTO lw_class.
+    lw_class = t_class.
+    AT NEW classnum.
+      CLEAR l_classnum.
+      CONCATENATE &apos;MDMC&apos; lw_class-classnum INTO l_classnum.
+      SELECT SINGLE clint FROM klah INTO l_clint
+        WHERE klart = lw_class-classtype
+          AND class = l_classnum.
+      IF sy-subrc &lt;&gt; 0.
+        l_create = &apos;X&apos;.
+      ELSE.
+        l_change = &apos;X&apos;.
+      ENDIF.
+      lw_classtypenew = lw_class-classtype.
+      lw_classnumnew = l_classnum.
+      lw_classbasicdata-status = 1.
+      lw_classbasicdata-valid_from = sy-datum.
+      lw_classbasicdata-valid_to = &apos;99991231&apos;.
+      lw_classbasicdata-same_value_no = &apos;X&apos;.
+    ENDAT.
+
+    IF l_create = &apos;X&apos;.
+      lw_classdescriptions-langu = 1.
+      lw_classdescriptions-langu_iso = &apos;ZH&apos;.
+      lw_classdescriptions-catchword = lw_class-catchword.
+      APPEND lw_classdescriptions TO lt_classdescriptions.
+      CLEAR lw_classdescriptions.
+
+      IF lw_class-name_char IS NOT INITIAL.
+        lw_classcharacteristics-name_char = lw_class-name_char.
+        APPEND lw_classcharacteristics TO lt_classcharacteristics.
+        CLEAR lw_classcharacteristics.
+      ENDIF.
+    ENDIF.
+
+    IF l_change = &apos;X&apos;.
+      lw_classdescriptions-langu = 1.
+      lw_classdescriptions-langu_iso = &apos;ZH&apos;.
+      lw_classdescriptions-catchword = lw_class-catchword.
+      APPEND lw_classdescriptions TO lt_classdescriptions.
+      CLEAR lw_classdescriptions.
+
+      lw_classdescriptionsnew-langu = 1.
+      lw_classdescriptionsnew-langu_iso = &apos;ZH&apos;.
+      lw_classdescriptionsnew-catchword = lw_class-catchword.
+      APPEND lw_classdescriptionsnew TO lt_classdescriptionsnew.
+
+      IF lw_class-name_char IS NOT INITIAL.
+        lw_classcharacteristicsnew-name_char = lw_class-name_char.
+        lw_classcharacteristicsnew-deletevalue = lw_class-deletevalue.
+        APPEND lw_classcharacteristicsnew TO lt_classcharacteristicsnew.
+        CLEAR lw_classcharacteristicsnew.
+      ENDIF.
+    ENDIF.
+
+    AT END OF classnum.
+      IF l_create = &apos;X&apos;.
+        DELETE ADJACENT DUPLICATES FROM lt_classdescriptions COMPARING ALL FIELDS.
+        DELETE ADJACENT DUPLICATES FROM lt_classcharacteristics COMPARING ALL FIELDS.
+        IF lt_classcharacteristics IS INITIAL.
+          CALL FUNCTION &apos;BAPI_CLASS_CREATE&apos;
+            EXPORTING
+              classnumnew       = lw_classnumnew
+              classtypenew      = lw_classtypenew
+              classbasicdata    = lw_classbasicdata
+            TABLES
+              return            = lt_return
+              classdescriptions = lt_classdescriptions.
+
+          CLEAR: lt_classdescriptions,
+                 lt_classcharacteristics,
+                 lt_classdescriptionsnew,
+                 lt_classcharacteristicsnew.
+        ELSE.
+          CALL FUNCTION &apos;BAPI_CLASS_CREATE&apos;
+            EXPORTING
+              classnumnew          = lw_classnumnew
+              classtypenew         = lw_classtypenew
+              classbasicdata       = lw_classbasicdata
+            TABLES
+              return               = lt_return
+              classdescriptions    = lt_classdescriptions
+              classcharacteristics = lt_classcharacteristics.
+
+          CLEAR: lt_classdescriptions,
+                 lt_classcharacteristics,
+                 lt_classdescriptionsnew,
+                 lt_classcharacteristicsnew.
+        ENDIF.
+      ENDIF.
+
+      IF l_change = &apos;X&apos;.
+        SELECT SINGLE clint FROM klah INTO l_clint
+          WHERE klart = t_class-classtype
+            AND class = l_classnum.
+
+        SELECT * FROM ksml
+          INTO CORRESPONDING FIELDS OF TABLE lt_ksml
+          WHERE clint = l_clint.
+        IF lt_ksml IS NOT INITIAL .
+          SELECT * FROM cabn
+            INTO CORRESPONDING FIELDS OF TABLE lt_cabn
+            FOR ALL ENTRIES IN lt_ksml
+            WHERE atinn =  lt_ksml-imerk.
+
+          LOOP AT lt_cabn INTO lw_cabn.
+            lw_classcharacteristics-name_char = lw_cabn-atnam.
+            APPEND lw_classcharacteristics TO lt_classcharacteristics.
+            CLEAR lw_classcharacteristics.
+          ENDLOOP.
+
+          SORT lt_classcharacteristicsnew BY name_char.
+          DELETE ADJACENT DUPLICATES FROM lt_classcharacteristicsnew.
+        ENDIF.
+
+        DELETE ADJACENT DUPLICATES FROM lt_classdescriptions COMPARING ALL FIELDS.
+        DELETE ADJACENT DUPLICATES FROM lt_classdescriptionsnew COMPARING ALL FIELDS.
+        DELETE ADJACENT DUPLICATES FROM lt_classcharacteristicsnew COMPARING ALL FIELDS.
+
+        CALL FUNCTION &apos;BAPI_CLASS_CHANGE&apos;
+          EXPORTING
+            classnum                = lw_classnumnew
+            classtype               = lw_classtypenew
+            classbasicdata          = lw_classbasicdata
+            classbasicdatanew       = lw_classbasicdatanew
+          TABLES
+            return                  = lt_return
+            classdescriptions       = lt_classdescriptions
+            classdescriptionsnew    = lt_classdescriptionsnew
+            classcharacteristicsnew = lt_classcharacteristicsnew.
+
+        CLEAR: lt_classdescriptions,
+               lt_classcharacteristics,
+               lt_classdescriptionsnew,
+               lt_classcharacteristicsnew.
+      ENDIF.
+
+      READ TABLE lt_return INTO lw_return WITH KEY type = &apos;E&apos;.
+      IF sy-subrc &lt;&gt; 0.
+        READ TABLE lt_return INTO lw_return WITH KEY type = &apos;A&apos;.
+        IF sy-subrc &lt;&gt; 0.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+            EXPORTING
+              wait = &apos;X&apos;.
+          APPEND LINES OF lt_return TO t_return.
+          &quot;更新品名
+          CLEAR lw_zmmt_industry.
+          lw_zmmt_industry-zindustry = l_classnum+4(6).
+          lw_zmmt_industry-zindustry_des = lw_class-catchword.
+          MODIFY zmmt_industry FROM lw_zmmt_industry.
+        ELSE.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+          APPEND LINES OF lt_return TO t_return.
+        ENDIF.
+      ELSE.
+        CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+        APPEND LINES OF lt_return TO t_return.
+      ENDIF.
+
+      CLEAR: lt_classdescriptions,
+             lt_classcharacteristics,
+             lt_return,
+             lt_classdescriptionsnew,
+             lt_classcharacteristicsnew,
+             l_create,
+             l_change.
+    ENDAT.
+  ENDLOOP.
+**********************************************************************</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_MATERIAL_GETDETAILS" REMOTE="R" STEXT="获取物料主数据">
+    <importing PARAMETER="MATNR_L" OPTIONAL="X" TYP="MATNR"/>
+    <importing PARAMETER="MATNR_H" OPTIONAL="X" TYP="MATNR"/>
+    <importing PARAMETER="ZZMTB_L" OPTIONAL="X" TYP="ZZMTB"/>
+    <importing PARAMETER="ZZMTB_H" OPTIONAL="X" TYP="ZZMTB"/>
+    <importing PARAMETER="ZZWZXT_L" OPTIONAL="X" TYP="ZZWZXT"/>
+    <importing PARAMETER="ZZWZXT_H" OPTIONAL="X" TYP="ZZWZXT"/>
+    <importing PARAMETER="ZVARIETY_L" OPTIONAL="X" TYP="ZE_VARIETY"/>
+    <importing PARAMETER="ZVARIETY_H" OPTIONAL="X" TYP="ZE_VARIETY"/>
+    <importing PARAMETER="ZZHYDM_L" OPTIONAL="X" TYP="ZZHYDM"/>
+    <importing PARAMETER="ZZHYDM_H" OPTIONAL="X" TYP="ZZHYDM"/>
+    <importing PARAMETER="ZINDUSTRY_L" OPTIONAL="X" TYP="ZE_INDYSTRY"/>
+    <importing PARAMETER="ZINDUSTRY_H" OPTIONAL="X" TYP="ZE_INDYSTRY"/>
+    <importing PARAMETER="ERSDA_L" OPTIONAL="X" TYP="ERSDA"/>
+    <importing PARAMETER="ERSDA_H" OPTIONAL="X" TYP="ERSDA"/>
+    <importing PARAMETER="LAEDA_L" OPTIONAL="X" TYP="LAEDA"/>
+    <importing PARAMETER="LAEDA_H" OPTIONAL="X" TYP="LAEDA"/>
+    <tables PARAMETER="T_MARA" DBSTRUCT="MARA" OPTIONAL="X"/>
+    <tables PARAMETER="T_MARC" DBSTRUCT="MARC" OPTIONAL="X"/>
+    <tables PARAMETER="T_MAPR" DBSTRUCT="MAPR" OPTIONAL="X"/>
+    <tables PARAMETER="T_PROP" DBSTRUCT="PROP" OPTIONAL="X"/>
+    <tables PARAMETER="T_MARD" DBSTRUCT="MARD" OPTIONAL="X"/>
+    <tables PARAMETER="T_MBEW" DBSTRUCT="MBEW" OPTIONAL="X"/>
+    <tables PARAMETER="T_MLGN" DBSTRUCT="MLGN" OPTIONAL="X"/>
+    <tables PARAMETER="T_MVKE" DBSTRUCT="MVKE" OPTIONAL="X"/>
+    <tables PARAMETER="T_MLGT" DBSTRUCT="MLGT" OPTIONAL="X"/>
+    <tables PARAMETER="T_MAKT" DBSTRUCT="MAKT" OPTIONAL="X"/>
+    <tables PARAMETER="T_MARM" DBSTRUCT="MARM" OPTIONAL="X"/>
+    <tables PARAMETER="T_MEAN" DBSTRUCT="MEAN" OPTIONAL="X"/>
+    <tables PARAMETER="T_MLAN" DBSTRUCT="MLAN" OPTIONAL="X"/>
+    <tables PARAMETER="T_JBSJ_TEXT" DBSTRUCT="ZFMM_S_JBSJTEXT" OPTIONAL="X"/>
+    <tables PARAMETER="T_CGDD_TEXT" DBSTRUCT="ZFMM_S_CGDDTEXT" OPTIONAL="X"/>
+    <tables PARAMETER="T_JY_TEXT" DBSTRUCT="ZFMM_S_JYTEXT" OPTIONAL="X"/>
+    <tables PARAMETER="T_XS_TEXT" DBSTRUCT="ZFMM_S_XSTEXT" OPTIONAL="X"/>
+    <documentation PARAMETER="MATNR_L" KIND="P" STEXT="物料号" INDEX=" 001"/>
+    <documentation PARAMETER="MATNR_H" KIND="P" STEXT="物料号" INDEX=" 002"/>
+    <documentation PARAMETER="ZZMTB_L" KIND="P" STEXT="基础材质" INDEX=" 003"/>
+    <documentation PARAMETER="ZZMTB_H" KIND="P" STEXT="基础材质" INDEX=" 004"/>
+    <documentation PARAMETER="ZZWZXT_L" KIND="P" STEXT="物资形态" INDEX=" 005"/>
+    <documentation PARAMETER="ZZWZXT_H" KIND="P" STEXT="物资形态" INDEX=" 006"/>
+    <documentation PARAMETER="ZVARIETY_L" KIND="P" STEXT="产品目录" INDEX=" 007"/>
+    <documentation PARAMETER="ZVARIETY_H" KIND="P" STEXT="产品目录" INDEX=" 008"/>
+    <documentation PARAMETER="ZZHYDM_L" KIND="P" STEXT="行业代码" INDEX=" 009"/>
+    <documentation PARAMETER="ZZHYDM_H" KIND="P" STEXT="行业代码" INDEX=" 010"/>
+    <documentation PARAMETER="ZINDUSTRY_L" KIND="P" STEXT="品名" INDEX=" 011"/>
+    <documentation PARAMETER="ZINDUSTRY_H" KIND="P" STEXT="品名" INDEX=" 012"/>
+    <documentation PARAMETER="ERSDA_L" KIND="P" STEXT="创建日期" INDEX=" 013"/>
+    <documentation PARAMETER="ERSDA_H" KIND="P" STEXT="创建日期" INDEX=" 014"/>
+    <documentation PARAMETER="LAEDA_L" KIND="P" STEXT="上次更改的日期" INDEX=" 015"/>
+    <documentation PARAMETER="LAEDA_H" KIND="P" STEXT="上次更改的日期" INDEX=" 016"/>
+    <documentation PARAMETER="T_MARA" KIND="P" STEXT="常规物料数据" INDEX=" 017"/>
+    <documentation PARAMETER="T_MARC" KIND="P" STEXT="物料的工厂数据" INDEX=" 018"/>
+    <documentation PARAMETER="T_MAPR" KIND="P" STEXT="有关预测的物料索引" INDEX=" 019"/>
+    <documentation PARAMETER="T_PROP" KIND="P" STEXT="预测参数" INDEX=" 020"/>
+    <documentation PARAMETER="T_MARD" KIND="P" STEXT="物料的仓储位置数据" INDEX=" 021"/>
+    <documentation PARAMETER="T_MBEW" KIND="P" STEXT="物料评估" INDEX=" 022"/>
+    <documentation PARAMETER="T_MLGN" KIND="P" STEXT="每一仓库号物料数据" INDEX=" 023"/>
+    <documentation PARAMETER="T_MVKE" KIND="P" STEXT="物料销售数据" INDEX=" 024"/>
+    <documentation PARAMETER="T_MLGT" KIND="P" STEXT="每一存储类型的物料数据" INDEX=" 025"/>
+    <documentation PARAMETER="T_MAKT" KIND="P" STEXT="物料描述" INDEX=" 026"/>
+    <documentation PARAMETER="T_MARM" KIND="P" STEXT="物料的计量单位" INDEX=" 027"/>
+    <documentation PARAMETER="T_MEAN" KIND="P" STEXT="物料的国际商品号" INDEX=" 028"/>
+    <documentation PARAMETER="T_MLAN" KIND="P" STEXT="物料的税分类" INDEX=" 029"/>
+    <documentation PARAMETER="T_JBSJ_TEXT" KIND="P" STEXT="MDM物料主数据-基本数据文本-结构" INDEX=" 030"/>
+    <documentation PARAMETER="T_CGDD_TEXT" KIND="P" STEXT="MDM物料主数据-采购订单文本-结构" INDEX=" 031"/>
+    <documentation PARAMETER="T_JY_TEXT" KIND="P" STEXT="MDM物料主数据-检验文本-结构" INDEX=" 032"/>
+    <documentation PARAMETER="T_XS_TEXT" KIND="P" STEXT="MDM物料主数据-销售文本-结构" INDEX=" 033"/>
+    <fm_source_new>CLEAR: t_mara[],
+         t_marc[],
+         t_mapr[],
+         t_prop[],
+         t_mard[],
+         t_mbew[],
+         t_mlgn[],
+         t_mvke[],
+         t_mlgt[],
+         t_makt[],
+         t_marm[],
+         t_mean[],
+         t_mlan[].
+
+  RANGES: s_matnr FOR mara-matnr,
+          s_zzmtb FOR mara-zzmtb,
+          s_zzwzxt FOR mara-zzwzxt,
+          s_zvariety FOR mara-zvariety,
+          s_zzhydm FOR mara-zzhydm,
+          s_zindustry FOR mara-zindustry,
+          s_ersda FOR mara-ersda,
+          s_laeda FOR mara-laeda.
+  IF matnr_l IS NOT INITIAL.
+    IF matnr_h IS NOT INITIAL.
+      s_matnr-sign = &apos;I&apos;.
+      s_matnr-option = &apos;BT&apos;.
+      s_matnr-low = matnr_l.
+      s_matnr-high = matnr_h.
+      APPEND s_matnr.
+    ELSE.
+      s_matnr-sign = &apos;I&apos;.
+      s_matnr-option = &apos;EQ&apos;.
+      s_matnr-low = matnr_l.
+      APPEND s_matnr.
+    ENDIF.
+  ENDIF.
+
+  IF zzmtb_l IS NOT INITIAL.
+    IF zzmtb_h IS NOT INITIAL.
+      s_zzmtb-sign = &apos;I&apos;.
+      s_zzmtb-option = &apos;BT&apos;.
+      s_zzmtb-low = zzmtb_l.
+      s_zzmtb-high = zzmtb_h.
+      APPEND s_zzmtb.
+    ELSE.
+      s_zzmtb-sign = &apos;I&apos;.
+      s_zzmtb-option = &apos;EQ&apos;.
+      s_zzmtb-low = zzmtb_l.
+      APPEND s_zzmtb.
+    ENDIF.
+  ENDIF.
+
+  IF zzwzxt_l IS NOT INITIAL.
+    IF zzwzxt_h IS NOT INITIAL.
+      s_zzwzxt-sign = &apos;I&apos;.
+      s_zzwzxt-option = &apos;BT&apos;.
+      s_zzwzxt-low = zzwzxt_l.
+      s_zzwzxt-high = zzwzxt_h.
+      APPEND s_zzwzxt.
+    ELSE.
+      s_zzwzxt-sign = &apos;I&apos;.
+      s_zzwzxt-option = &apos;EQ&apos;.
+      s_zzwzxt-low = zzwzxt_l.
+      APPEND s_zzwzxt.
+    ENDIF.
+  ENDIF.
+
+  IF zvariety_l IS NOT INITIAL.
+    IF zvariety_h IS NOT INITIAL.
+      s_zvariety-sign = &apos;I&apos;.
+      s_zvariety-option = &apos;BT&apos;.
+      s_zvariety-low = zvariety_l.
+      s_zvariety-high = zvariety_h.
+      APPEND s_zvariety.
+    ELSE.
+      s_zvariety-sign = &apos;I&apos;.
+      s_zvariety-option = &apos;EQ&apos;.
+      s_zvariety-low = zvariety_l.
+      APPEND s_zvariety.
+    ENDIF.
+  ENDIF.
+
+  IF zzhydm_l IS NOT INITIAL.
+    IF zzhydm_h IS NOT INITIAL.
+      s_zzhydm-sign = &apos;I&apos;.
+      s_zzhydm-option = &apos;BT&apos;.
+      s_zzhydm-low = zzhydm_l.
+      s_zzhydm-high = zzhydm_h.
+      APPEND s_zzhydm.
+    ELSE.
+      s_zzhydm-sign = &apos;I&apos;.
+      s_zzhydm-option = &apos;EQ&apos;.
+      s_zzhydm-low = zzhydm_l.
+      APPEND s_zzhydm.
+    ENDIF.
+  ENDIF.
+
+  IF zindustry_l IS NOT INITIAL.
+    IF zindustry_h IS NOT INITIAL.
+      s_zindustry-sign = &apos;I&apos;.
+      s_zindustry-option = &apos;BT&apos;.
+      s_zindustry-low = zindustry_l.
+      s_zindustry-high = zindustry_h.
+      APPEND s_zindustry.
+    ELSE.
+      s_zindustry-sign = &apos;I&apos;.
+      s_zindustry-option = &apos;EQ&apos;.
+      s_zindustry-low = zindustry_l.
+      APPEND s_zindustry.
+    ENDIF.
+  ENDIF.
+
+  IF ersda_l IS NOT INITIAL.
+    IF ersda_h IS NOT INITIAL.
+      s_ersda-sign = &apos;I&apos;.
+      s_ersda-option = &apos;BT&apos;.
+      s_ersda-low = ersda_l.
+      s_ersda-high = ersda_h.
+      APPEND s_ersda.
+    ELSE.
+      s_ersda-sign = &apos;I&apos;.
+      s_ersda-option = &apos;EQ&apos;.
+      s_ersda-low = ersda_l.
+      APPEND s_ersda.
+    ENDIF.
+  ENDIF.
+
+  IF laeda_l IS NOT INITIAL.
+    IF laeda_h IS NOT INITIAL.
+      s_laeda-sign = &apos;I&apos;.
+      s_laeda-option = &apos;BT&apos;.
+      s_laeda-low = laeda_l.
+      s_laeda-high = laeda_h.
+      APPEND s_laeda.
+    ELSE.
+      s_laeda-sign = &apos;I&apos;.
+      s_laeda-option = &apos;EQ&apos;.
+      s_laeda-low = laeda_l.
+      APPEND s_laeda.
+    ENDIF.
+  ENDIF.
+
+  SELECT * FROM mara INTO TABLE t_mara
+    WHERE matnr IN s_matnr
+      AND zzmtb IN s_zzmtb
+      AND zzwzxt IN s_zzwzxt
+      AND zvariety IN s_zvariety
+      AND zzhydm IN s_zzhydm
+      AND zindustry IN s_zindustry
+      AND ersda IN s_ersda
+      AND laeda IN s_laeda.
+
+  IF t_mara[] IS NOT INITIAL.
+    SELECT * FROM marc INTO TABLE t_marc
+      FOR ALL ENTRIES IN t_mara[]
+      WHERE matnr = t_mara-matnr.
+
+    IF t_marc[] IS NOT INITIAL.
+      SELECT * FROM mapr INTO TABLE t_mapr
+        FOR ALL ENTRIES IN t_marc
+        WHERE matnr = t_marc-matnr
+          AND werks = t_marc-werks.
+
+      IF t_mapr[] IS NOT INITIAL.
+        SELECT * FROM prop INTO TABLE t_prop
+          FOR ALL ENTRIES IN t_mapr
+          WHERE pnum1 = t_mapr-pnum1.
+      ENDIF.
+    ENDIF.
+
+    SELECT * FROM mard INTO TABLE t_mard FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM mbew INTO TABLE t_mbew FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM mlgn INTO TABLE t_mlgn FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM mvke INTO TABLE t_mvke FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM mlgt INTO TABLE t_mlgt FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM makt INTO TABLE t_makt FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM marm INTO TABLE t_marm FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM mean INTO TABLE t_mean FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+
+    SELECT * FROM mlan INTO TABLE t_mlan FOR ALL ENTRIES IN t_mara[] WHERE matnr = t_mara-matnr.
+    DATA: l_name TYPE thead-tdname.
+    LOOP AT t_mara.
+      l_name = t_mara-matnr.
+      CLEAR t_jbsj_text.
+      t_jbsj_text-matnr = t_mara-matnr.
+      PERFORM f_read_text USING &apos;GRUN&apos; l_name &apos;MATERIAL&apos; CHANGING t_jbsj_text-text.
+      APPEND t_jbsj_text.
+
+      CLEAR t_cgdd_text.
+      t_cgdd_text-matnr = t_mara-matnr.
+      PERFORM f_read_text USING &apos;BEST&apos; l_name &apos;MATERIAL&apos; CHANGING t_cgdd_text-text.
+      APPEND t_cgdd_text.
+
+      CLEAR t_jy_text.
+      t_jy_text-matnr = t_mara-matnr.
+      PERFORM f_read_text USING &apos;PRUE&apos; l_name &apos;MATERIAL&apos; CHANGING t_jy_text-text.
+      APPEND t_jy_text.
+    ENDLOOP.
+
+    LOOP AT t_mvke.
+      CONCATENATE t_mvke-matnr t_mvke-vkorg t_mvke-vtweg INTO l_name.
+      CLEAR t_xs_text.
+      t_xs_text-matnr = t_mvke-matnr.
+      t_xs_text-vkorg = t_mvke-vkorg.
+      t_xs_text-vtweg = t_mvke-vtweg.
+      PERFORM f_read_text USING &apos;0001&apos; l_name &apos;MVKE&apos; CHANGING t_jy_text-text.
+      APPEND t_xs_text.
+    ENDLOOP.
+  ENDIF.
+
+FORM f_read_text USING id name object CHANGING txt.
+  DATA: lt_line TYPE TABLE OF tline,
+        lw_line TYPE          tline.
+  CLEAR lt_line.
+  CALL FUNCTION &apos;READ_TEXT&apos;
+    EXPORTING
+*     CLIENT                        = SY-MANDT
+      id                            = id
+      language                      = sy-langu
+      NAME                          = name
+      OBJECT                        = object
+*     ARCHIVE_HANDLE                = 0
+*     LOCAL_CAT                     = &apos; &apos;
+*   IMPORTING
+*     HEADER                        =
+    TABLES
+      lines                         = lt_line
+    EXCEPTIONS
+      ID                            = 1
+      LANGUAGE                      = 2
+      NAME                          = 3
+      NOT_FOUND                     = 4
+      OBJECT                        = 5
+      REFERENCE_CHECK               = 6
+      WRONG_ACCESS_TO_ARCHIVE       = 7
+      OTHERS                        = 8
+            .
+  IF sy-subrc &lt;&gt; 0.
+*Implement suitable error handling here
+  ENDIF.
+  LOOP AT lt_line INTO lw_line.
+    CONCATENATE txt lw_line-tdline INTO txt.
+  ENDLOOP.
+ENDFORM.</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_OBJCL_GETDETAIL" REMOTE="R" STEXT="读取物料分类视图">
+    <exporting PARAMETER="COUNT" TYP="INT4"/>
+    <tables PARAMETER="T_MARA" DBSTRUCT="ZFMM_S_OBJCL_GETDETAIL"/>
+    <tables PARAMETER="T_NUM" DBSTRUCT="ZFMM_S_ALLOC_VALUES_NUM"/>
+    <tables PARAMETER="T_CHAR" DBSTRUCT="ZFMM_S_ALLOC_VALUES_CHAR"/>
+    <tables PARAMETER="T_CURR" DBSTRUCT="ZFMM_S_ALLOC_VALUES_CURR"/>
+    <documentation PARAMETER="COUNT" KIND="P" STEXT="自然数" INDEX=" 001"/>
+    <documentation PARAMETER="T_MARA" KIND="P" STEXT="读取物料分类视图传入参数" INDEX=" 002"/>
+    <documentation PARAMETER="T_NUM" KIND="P" STEXT="分配NUM、DATE、TIME 类型的值" INDEX=" 003"/>
+    <documentation PARAMETER="T_CHAR" KIND="P" STEXT="分配CHAR、BOOL 类型的值" INDEX=" 004"/>
+    <documentation PARAMETER="T_CURR" KIND="P" STEXT="分配CURR 类型值" INDEX=" 005"/>
+    <fm_source_new>CLEAR: count,
+         t_num[],
+         t_char[],
+         t_curr[].
+
+  DATA: l_zindustry TYPE mara-zindustry,
+        l_key TYPE bapi1003_key-object,
+        l_classnum TYPE bapi1003_key-classnum,
+        lt_num TYPE TABLE OF bapi1003_alloc_values_num,
+        lw_num TYPE          bapi1003_alloc_values_num,
+        lt_char TYPE TABLE OF bapi1003_alloc_values_char,
+        lw_char TYPE          bapi1003_alloc_values_char,
+        lt_curr TYPE TABLE OF bapi1003_alloc_values_curr,
+        lw_curr TYPE          bapi1003_alloc_values_curr,
+        lt_return TYPE TABLE OF bapiret2,
+        lw_return TYPE          bapiret2.
+
+  LOOP AT t_mara.
+    CLEAR: l_key,
+           l_classnum,
+           lt_num,
+           lt_char,
+           lt_curr,
+           lt_return.
+    SELECT SINGLE zindustry INTO l_zindustry FROM mara WHERE matnr = t_mara-matnr.
+    l_key = t_mara-matnr.
+    CONCATENATE &apos;MDMC&apos; l_zindustry INTO l_classnum.
+    CALL FUNCTION &apos;BAPI_OBJCL_GETDETAIL&apos;
+      EXPORTING
+        objectkey              = l_key
+        objecttable            = &apos;MARA&apos;
+        classnum               = l_classnum
+        classtype              = &apos;001&apos;
+*       KEYDATE                = SY-DATUM
+*       UNVALUATED_CHARS       = &apos; &apos;
+*       LANGUAGE               = SY-LANGU
+*     IMPORTING
+*       STATUS                 =
+*       STANDARDCLASS          =
+      TABLES
+        allocvaluesnum         = lt_num
+        allocvalueschar        = lt_char
+        allocvaluescurr        = lt_curr
+        RETURN                 = lt_return
+              .
+    READ TABLE lt_return INTO lw_return WITH KEY type = &apos;S&apos; id = &apos;CL&apos; number = &apos;731&apos;.
+    IF sy-subrc = 0.
+      ADD 1 TO count.
+      LOOP AT lt_num INTO lw_num.
+        CLEAR t_num.
+        MOVE-CORRESPONDING lw_num TO t_num.
+        t_num-matnr = t_mara-matnr.
+        APPEND t_num.
+      ENDLOOP.
+      LOOP AT lt_char INTO lw_char.
+        CLEAR t_char.
+        MOVE-CORRESPONDING lw_char TO t_char.
+        t_char-matnr = t_mara-matnr.
+        APPEND t_char.
+      ENDLOOP.
+      LOOP AT lt_curr INTO lw_curr.
+        CLEAR t_curr.
+        MOVE-CORRESPONDING lw_curr TO t_curr.
+        t_curr-matnr = t_mara-matnr.
+        APPEND t_curr.
+      ENDLOOP.
+    ENDIF.
+  ENDLOOP.</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B507_T006A" REMOTE="R" STEXT="读取计量单位">
+    <importing PARAMETER="I_MSEHI" OPTIONAL="X" TYP="MSEHI"/>
+    <tables PARAMETER="T_T006A" DBSTRUCT="T006A"/>
+    <documentation PARAMETER="I_MSEHI" KIND="P" STEXT="度量单位" INDEX=" 001"/>
+    <documentation PARAMETER="T_T006A" KIND="P" STEXT="分配内部到语言相关单位" INDEX=" 002"/>
+    <fm_source>CLEAR t_t006a[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t006a INTO TABLE t_t006a
+*\  WHERE spras = &apos;1&apos;.
+IF i_MSEHI IS NOT INITIAL.
+  SELECT * FROM t006a INTO TABLE t_t006a
+  WHERE spras = &apos;1&apos; and MSEHI = i_MSEHI.
+ELSE.
+  SELECT * FROM t006a INTO TABLE t_t006a
+  WHERE spras = &apos;1&apos;.
+ENDIF.
+
+*}   REPLACE</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B508_T137T" REMOTE="R" STEXT="读取行业领域">
+    <tables PARAMETER="T_T137T" DBSTRUCT="T137T"/>
+    <documentation PARAMETER="T_T137T" KIND="P" STEXT="行业描述" INDEX=" 001"/>
+    <fm_source>CLEAR t_t137t[].
+
+SELECT * FROM t137t INTO TABLE t_t137t
+  WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B510_ZMMT_VARIETY" REMOTE="R" STEXT="读取产品目录">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_VARIETY" DBSTRUCT="ZMMT_VARIETY"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 002"/>
+    <documentation PARAMETER="T_VARIETY" KIND="P" STEXT="酒钢物料品名" INDEX=" 003"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_variety FROM TABLE t_variety.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_variety INTO TABLE t_variety.
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B511_T179T" REMOTE="R" STEXT="读取产品层次">
+    <importing PARAMETER="I_PRODH" OPTIONAL="X" TYP="PRODH_D"/>
+    <tables PARAMETER="T_T179T" DBSTRUCT="T179T"/>
+    <documentation PARAMETER="I_PRODH" KIND="P" STEXT="产品层次" INDEX=" 001"/>
+    <documentation PARAMETER="T_T179T" KIND="P" STEXT="材料: 生产等级: 文本" INDEX=" 002"/>
+    <fm_source_new>CLEAR t_t179t[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t179t INTO TABLE t_t179t WHERE spras = &apos;1&apos;.
+IF I_PRODH IS NOT INITIAL .
+  SELECT * FROM t179t INTO TABLE t_t179t WHERE spras = &apos;1&apos; AND PRODH = I_PRODH.
+ELSE.
+  SELECT * FROM t179t INTO TABLE t_t179t WHERE spras = &apos;1&apos;.
+ENDIF.
+*}   REPLACE</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B513_DD07V_SERLV" REMOTE="R" STEXT="读取序列化层次">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;SERLV&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B514_T024" REMOTE="R" STEXT="读取采购组文本">
+    <importing PARAMETER="I_EKGRP" OPTIONAL="X" TYP="EKGRP"/>
+    <tables PARAMETER="T_T024" DBSTRUCT="T024"/>
+    <documentation PARAMETER="I_EKGRP" KIND="P" STEXT="采购组" INDEX=" 001"/>
+    <documentation PARAMETER="T_T024" KIND="P" STEXT="采购组" INDEX=" 002"/>
+    <fm_source>CLEAR t_t024[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t024 INTO TABLE t_t024.
+IF I_EKGRP IS NOT INITIAL.
+  SELECT * FROM t024 INTO TABLE t_t024 WHERE EKGRP = I_EKGRP.
+ELSE.
+  SELECT * FROM t024 INTO TABLE t_t024.
+ENDIF.
+
+*}   REPLACE</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B517_T438X" REMOTE="R" STEXT="读取MRP组文本">
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <importing PARAMETER="I_DISGR" OPTIONAL="X" TYP="DISGR"/>
+    <tables PARAMETER="T_T438X" DBSTRUCT="T438X"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" STEXT="关于国家(集中批准)合同的工厂表" INDEX=" 001"/>
+    <documentation PARAMETER="I_DISGR" KIND="P" STEXT="物料需求计划组" INDEX=" 002"/>
+    <documentation PARAMETER="T_T438X" KIND="P" STEXT="MRP组文本" INDEX=" 003"/>
+    <fm_source>CLEAR t_t438x[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t438x INTO TABLE t_t438x WHERE spras = &apos;1&apos;.
+IF I_WERKS is NOT INITIAL and I_DISGR is NOT INITIAL.
+  SELECT * FROM t438x INTO TABLE t_t438x WHERE spras = &apos;1&apos;
+    and WERKS = I_WERKS and DISGR = I_DISGR.
+else.
+  SELECT * FROM t438x INTO TABLE t_t438x WHERE spras = &apos;1&apos;.
+ENDIF.
+*}   REPLACE</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B518_T438T" REMOTE="R" STEXT="读取MRP类型文本">
+    <tables PARAMETER="T_T438T" DBSTRUCT="T438T"/>
+    <documentation PARAMETER="T_T438T" KIND="P" STEXT="MRP描述" INDEX=" 001"/>
+    <fm_source>CLEAR t_t438t[].
+
+SELECT * FROM t438t INTO TABLE t_t438t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B519_T024D" REMOTE="R" STEXT="读取MRP控制者文本">
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <importing PARAMETER="I_DISPO" OPTIONAL="X" TYP="DISPO"/>
+    <tables PARAMETER="T_T024D" DBSTRUCT="T024D"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" STEXT="工厂" INDEX=" 001"/>
+    <documentation PARAMETER="I_DISPO" KIND="P" STEXT="MRP 控制者（物料计划人）" INDEX=" 002"/>
+    <documentation PARAMETER="T_T024D" KIND="P" STEXT="MRP控制者" INDEX=" 003"/>
+    <fm_source_new>CLEAR t_t024d[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t024d INTO TABLE t_t024d.
+IF I_WERKS IS NOT INITIAL AND I_DISPO IS NOT INITIAL .
+  SELECT * FROM t024d INTO TABLE t_t024d WHERE WERKS = I_WERKS AND DISPO = I_DISPO.
+ELSE.
+  SELECT * FROM t024d INTO TABLE t_t024d.
+ENDIF.
+*}   REPLACE</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B520_T439H" REMOTE="R" STEXT="读取计划周期文本">
+    <tables PARAMETER="T_T439H" DBSTRUCT="T439H"/>
+    <documentation PARAMETER="T_T439H" KIND="P" STEXT="PP计划期间: 长文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_t439h[].
+
+SELECT * FROM t439h INTO TABLE t_t439h WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B522_T460T" REMOTE="R" STEXT="读取特殊采购类型文本">
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <importing PARAMETER="I_SOBSL" OPTIONAL="X" TYP="SOBSL"/>
+    <tables PARAMETER="T_T460T" DBSTRUCT="T460T"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" STEXT="工厂" INDEX=" 001"/>
+    <documentation PARAMETER="I_SOBSL" KIND="P" STEXT="特殊采购类型" INDEX=" 002"/>
+    <documentation PARAMETER="T_T460T" KIND="P" STEXT="有关特别采购码的文本" INDEX=" 003"/>
+    <fm_source>CLEAR t_t460t[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t460t INTO TABLE t_t460t WHERE spras = &apos;1&apos;.
+IF I_WERKS IS NOT INITIAL AND I_SOBSL IS NOT INITIAL.
+  SELECT * FROM t460t INTO TABLE t_t460t WHERE spras = &apos;1&apos;
+    AND WERKS = I_WERKS AND SOBSL = I_SOBSL.
+ELSE.
+  SELECT * FROM t460t INTO TABLE t_t460t WHERE spras = &apos;1&apos;.
+ENDIF.
+*}   REPLACE</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B533_T024F" REMOTE="R" STEXT="读取生产管理员文本">
+    <tables PARAMETER="T_T024F" DBSTRUCT="T024F"/>
+    <documentation PARAMETER="T_T024F" KIND="P" STEXT="生产调度员" INDEX=" 001"/>
+    <fm_source>CLEAR t_t024f[].
+
+SELECT * FROM t024f INTO TABLE t_t024f.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B534_TMVFT" REMOTE="R" STEXT="读取可用性检查组文本">
+    <tables PARAMETER="T_TMVFT" DBSTRUCT="TMVFT"/>
+    <documentation PARAMETER="T_TMVFT" KIND="P" STEXT="可用量检查控制：文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tmvft[].
+
+SELECT * FROM tmvft INTO TABLE t_tmvft WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B535_T461X" REMOTE="R" STEXT="读取计划策略组文本">
+    <tables PARAMETER="T_T461X" DBSTRUCT="T461X"/>
+    <documentation PARAMETER="T_T461X" KIND="P" STEXT="计划策略组文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_t461x[].
+
+SELECT * FROM t461x INTO TABLE t_t461x WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B538_T377P_T" REMOTE="R" STEXT="读取序列化参数配置文本">
+    <tables PARAMETER="T_T377P_T" DBSTRUCT="T377P_T"/>
+    <documentation PARAMETER="T_T377P_T" KIND="P" STEXT="序列号管理参数文件的文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_t377p_t[].
+
+SELECT * FROM t377p_t INTO TABLE t_t377p_t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B540_TVKOT" REMOTE="R" STEXT="读取销售组织文本">
+    <tables PARAMETER="T_TVKOT" DBSTRUCT="TVKOT"/>
+    <documentation PARAMETER="T_TVKOT" KIND="P" STEXT="机构单位：销售机构：文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tvkot[].
+
+SELECT * FROM tvkot INTO TABLE t_tvkot WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B541_TVTWT" REMOTE="R" STEXT="读取分销渠道文本">
+    <tables PARAMETER="T_TVTWT" DBSTRUCT="TVTWT"/>
+    <documentation PARAMETER="T_TVTWT" KIND="P" STEXT="机构单位：分销渠道：文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tvtwt[].
+
+SELECT * FROM tvtwt INTO TABLE t_tvtwt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B542_TPTMT" REMOTE="R" STEXT="读取项目类别组文本">
+    <tables PARAMETER="T_TPTMT" DBSTRUCT="TPTMT"/>
+    <documentation PARAMETER="T_TPTMT" KIND="P" STEXT="材料: 物资主记录中的项目目录组: 文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tptmt[].
+
+SELECT * FROM tptmt INTO TABLE t_tptmt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B543_TLGRT" REMOTE="R" STEXT="读取装载组文本">
+    <tables PARAMETER="T_TLGRT" DBSTRUCT="TLGRT"/>
+    <documentation PARAMETER="T_TLGRT" KIND="P" STEXT="途径： 装运组： 文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tlgrt[].
+
+SELECT * FROM tlgrt INTO TABLE t_tlgrt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B544_TVSMT" REMOTE="R" STEXT="读取物料统计组文本">
+    <tables PARAMETER="T_TVSMT" DBSTRUCT="TVSMT"/>
+    <documentation PARAMETER="T_TVSMT" KIND="P" STEXT="材料: 统计组: 文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tvsmt[].
+
+SELECT * FROM tvsmt INTO TABLE t_tvsmt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B546_TVKMT" REMOTE="R" STEXT="读取科目设置组文本">
+    <tables PARAMETER="T_TVKMT" DBSTRUCT="TVKMT"/>
+    <documentation PARAMETER="T_TVKMT" KIND="P" STEXT="物料 ： 帐户分配组文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tvkmt[].
+
+SELECT * FROM tvkmt INTO TABLE t_tvkmt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B551_TQ30T" REMOTE="R" STEXT="读取检验类型文本">
+    <tables PARAMETER="T_TQ30T" DBSTRUCT="TQ30T"/>
+    <documentation PARAMETER="T_TQ30T" KIND="P" STEXT="检验类型文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tq30t[].
+
+SELECT * FROM tq30t INTO TABLE t_tq30t WHERE sprache = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B554_T178T" REMOTE="R" STEXT="读取物料定价组文本">
+    <importing PARAMETER="I_KONDM" OPTIONAL="X" TYP="KONDM"/>
+    <tables PARAMETER="T_T178T" DBSTRUCT="ZFMM_S_T178T"/>
+    <documentation PARAMETER="I_KONDM" KIND="P" STEXT="物料定价组" INDEX=" 001"/>
+    <documentation PARAMETER="T_T178T" KIND="P" STEXT="物料定价组结构带ASCII" INDEX=" 002"/>
+    <fm_source_new>CLEAR t_t178t[].
+
+  DATA: l_string TYPE string,
+        l_ascii TYPE xstring,
+        l_convert TYPE REF TO cl_rpe_convert.
+
+  IF l_convert IS INITIAL.
+    CREATE OBJECT l_convert.
+  ENDIF.
+
+*{   REPLACE        CP0K900366                                        1
+*\  SELECT * FROM t178t	INTO CORRESPONDING FIELDS OF TABLE t_t178t WHERE spras = &apos;1&apos;.
+IF i_KONDM IS NOT INITIAL.
+  SELECT * FROM t178t	INTO CORRESPONDING FIELDS OF TABLE t_t178t WHERE spras = &apos;1&apos;
+    AND kondm = I_KONDM.
+ELSE.
+  SELECT * FROM t178t	INTO CORRESPONDING FIELDS OF TABLE t_t178t WHERE spras = &apos;1&apos;.
+ENDIF.
+*}   REPLACE
+
+  LOOP AT t_t178t.
+    CLEAR: l_string, l_ascii.
+    l_string = t_t178t-kondm.
+    CALL METHOD l_convert-&gt;string_to_xstring
+      EXPORTING
+        input  = l_string
+      IMPORTING
+        output = l_ascii.
+    t_t178t-kondm_ascii = l_ascii.
+    MODIFY t_t178t.
+  ENDLOOP.</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B509_ZMMT_HYDM" REMOTE="R" STEXT="读取行业代码文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_HYDM" DBSTRUCT="ZMMT_HYDM"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 002"/>
+    <documentation PARAMETER="T_HYDM" KIND="P" STEXT="行业代码表维护" INDEX=" 003"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_hydm FROM TABLE t_hydm.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_hydm INTO TABLE t_hydm.
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B521_DD07V_BESKZ" REMOTE="R" STEXT="读取采购类型文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;BESKZ&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B525_DD07V_PERKZ" REMOTE="R" STEXT="读取期间标识文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;PERKZ&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B526_T009T" REMOTE="R" STEXT="读取会计年度变式文本">
+    <tables PARAMETER="T_T009T" DBSTRUCT="T009T"/>
+    <documentation PARAMETER="T_T009T" KIND="P" STEXT="会计年度变式名" INDEX=" 001"/>
+    <fm_source>CLEAR t_t009t[].
+
+SELECT * FROM t009t INTO TABLE t_t009t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B528_DD07V_SBDKZ" REMOTE="R" STEXT="读取需求汇总方式">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;SBDKZ&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B529_DD07V_ALTSL" REMOTE="R" STEXT="读取替换BOM的选择方法文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;ALTSL&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B530_DD07V_MISKZ" REMOTE="R" STEXT="读取MRP综合标识文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;MISKZ&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B532_DD07V_RGEKM" REMOTE="R" STEXT="读取反冲标识文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;RGEKM&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B536_DD07V_VRMOD" REMOTE="R" STEXT="读取消耗模式文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;VRMOD&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B545_TVBOT" REMOTE="R" STEXT="读取成交额回扣组">
+    <tables PARAMETER="T_TVBOT" DBSTRUCT="TVBOT"/>
+    <documentation PARAMETER="T_TVBOT" KIND="P" STEXT="销售回扣组 ： 文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tvbot[].
+
+SELECT * FROM tvbot INTO TABLE t_tvbot WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B549_T149T" REMOTE="R" STEXT="读取评估类别文本">
+    <tables PARAMETER="T_T149T" DBSTRUCT="T149T"/>
+    <documentation PARAMETER="T_T149T" KIND="P" STEXT="全局估价类别描述" INDEX=" 001"/>
+    <fm_source>CLEAR t_t149t[].
+
+SELECT * FROM t149t INTO TABLE t_t149t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B550_DD07V_VPRSV" REMOTE="R" STEXT="读取价格控制标识文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;VPRSV&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B552_TQ06T" REMOTE="R" STEXT="读取质量积分过程文本">
+    <tables PARAMETER="T_TQ06T" DBSTRUCT="TQ06T"/>
+    <documentation PARAMETER="T_TQ06T" KIND="P" STEXT="表 TQ06 的特殊语言文本" INDEX=" 001"/>
+    <fm_source>CLEAR t_tq06t[].
+
+SELECT * FROM tq06t INTO TABLE t_tq06t WHERE sprache = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_MATERIAL_SAVEDATA" REMOTE="R" STEXT="MDM物料导入接口">
+    <importing PARAMETER="HEADDATA" DBFIELD="BAPIMATHEAD"/>
+    <importing PARAMETER="CLIENTDATA" DBFIELD="BAPI_MARA" OPTIONAL="X"/>
+    <importing PARAMETER="CLIENTDATAX" DBFIELD="BAPI_MARAX" OPTIONAL="X"/>
+    <importing PARAMETER="PLANTDATA" DBFIELD="BAPI_MARC" OPTIONAL="X"/>
+    <importing PARAMETER="PLANTDATAX" DBFIELD="BAPI_MARCX" OPTIONAL="X"/>
+    <importing PARAMETER="FORECASTPARAMETERS" DBFIELD="BAPI_MPOP" OPTIONAL="X"/>
+    <importing PARAMETER="FORECASTPARAMETERSX" DBFIELD="BAPI_MPOPX" OPTIONAL="X"/>
+    <importing PARAMETER="PLANNINGDATA" DBFIELD="BAPI_MPGD" OPTIONAL="X"/>
+    <importing PARAMETER="PLANNINGDATAX" DBFIELD="BAPI_MPGDX" OPTIONAL="X"/>
+    <importing PARAMETER="STORAGELOCATIONDATA" DBFIELD="BAPI_MARD" OPTIONAL="X"/>
+    <importing PARAMETER="STORAGELOCATIONDATAX" DBFIELD="BAPI_MARDX" OPTIONAL="X"/>
+    <importing PARAMETER="VALUATIONDATA" DBFIELD="BAPI_MBEW" OPTIONAL="X"/>
+    <importing PARAMETER="VALUATIONDATAX" DBFIELD="BAPI_MBEWX" OPTIONAL="X"/>
+    <importing PARAMETER="WAREHOUSENUMBERDATA" DBFIELD="BAPI_MLGN" OPTIONAL="X"/>
+    <importing PARAMETER="WAREHOUSENUMBERDATAX" DBFIELD="BAPI_MLGNX" OPTIONAL="X"/>
+    <importing PARAMETER="SALESDATA" DBFIELD="BAPI_MVKE" OPTIONAL="X"/>
+    <importing PARAMETER="SALESDATAX" DBFIELD="BAPI_MVKEX" OPTIONAL="X"/>
+    <importing PARAMETER="STORAGETYPEDATA" DBFIELD="BAPI_MLGT" OPTIONAL="X"/>
+    <importing PARAMETER="STORAGETYPEDATAX" DBFIELD="BAPI_MLGTX" OPTIONAL="X"/>
+    <importing PARAMETER="FLAG_ONLINE" DBFIELD="BAPIE1GLOBAL_DATA-TESTRUN" DEFAULT="SPACE" OPTIONAL="X"/>
+    <importing PARAMETER="FLAG_CAD_CALL" DBFIELD="BAPIE1GLOBAL_DATA-TESTRUN" DEFAULT="SPACE" OPTIONAL="X"/>
+    <importing PARAMETER="NO_DEQUEUE" DBFIELD="BAPIE1GLOBAL_DATA-TESTRUN" DEFAULT="SPACE" OPTIONAL="X"/>
+    <importing PARAMETER="NO_ROLLBACK_WORK" DBFIELD="BAPIE1GLOBAL_DATA-TESTRUN" DEFAULT="SPACE" OPTIONAL="X"/>
+    <importing PARAMETER="JBSJTEXT" OPTIONAL="X" TYP="CHAR512"/>
+    <importing PARAMETER="CGDDTEXT" OPTIONAL="X" TYP="CHAR512"/>
+    <importing PARAMETER="JYTEXT" OPTIONAL="X" TYP="CHAR512"/>
+    <importing PARAMETER="XSTEXT" DBFIELD="ZFMM_S_XSTEXT" OPTIONAL="X"/>
+    <importing PARAMETER="BAPI_TE_MARA" DBFIELD="BAPI_TE_MARA" OPTIONAL="X"/>
+    <importing PARAMETER="BAPI_TE_MARAX" DBFIELD="BAPI_TE_MARAX" OPTIONAL="X"/>
+    <importing PARAMETER="ZBASE_UOM" OPTIONAL="X" TYP="CHAR3"/>
+    <importing PARAMETER="BAPI_TE_MARC" DBFIELD="BAPI_TE_MARC" OPTIONAL="X"/>
+    <importing PARAMETER="BAPI_TE_MARCX" DBFIELD="BAPI_TE_MARCX" OPTIONAL="X"/>
+    <importing PARAMETER="CLASSNUM1" OPTIONAL="X" TYP="BAPI_CLASS_KEY-CLASSNUM"/>
+    <importing PARAMETER="CLASSNUM2" OPTIONAL="X" TYP="BAPI_CLASS_KEY-CLASSNUM"/>
+    <exporting PARAMETER="RETURN" DBFIELD="BAPIRET2"/>
+    <tables PARAMETER="MATERIALDESCRIPTION" DBSTRUCT="BAPI_MAKT" OPTIONAL="X"/>
+    <tables PARAMETER="UNITSOFMEASURE" DBSTRUCT="BAPI_MARM" OPTIONAL="X"/>
+    <tables PARAMETER="UNITSOFMEASUREX" DBSTRUCT="BAPI_MARMX" OPTIONAL="X"/>
+    <tables PARAMETER="INTERNATIONALARTNOS" DBSTRUCT="BAPI_MEAN" OPTIONAL="X"/>
+    <tables PARAMETER="MATERIALLONGTEXT" DBSTRUCT="BAPI_MLTX" OPTIONAL="X"/>
+    <tables PARAMETER="TAXCLASSIFICATIONS" DBSTRUCT="BAPI_MLAN" OPTIONAL="X"/>
+    <tables PARAMETER="RETURNMESSAGES" DBSTRUCT="BAPI_MATRETURN2" OPTIONAL="X"/>
+    <tables PARAMETER="PRTDATA" DBSTRUCT="BAPI_MFHM" OPTIONAL="X"/>
+    <tables PARAMETER="PRTDATAX" DBSTRUCT="BAPI_MFHMX" OPTIONAL="X"/>
+    <tables PARAMETER="EXTENSIONIN" DBSTRUCT="BAPIPAREX" OPTIONAL="X"/>
+    <tables PARAMETER="EXTENSIONINX" DBSTRUCT="BAPIPAREXX" OPTIONAL="X"/>
+    <tables PARAMETER="NFMCHARGEWEIGHTS" DBSTRUCT="/NFM/BAPITVGW" OPTIONAL="X"/>
+    <tables PARAMETER="NFMCHARGEWEIGHTSX" DBSTRUCT="/NFM/BAPITVGWX" OPTIONAL="X"/>
+    <tables PARAMETER="NFMSTRUCTURALWEIGHTS" DBSTRUCT="/NFM/BAPITKGW" OPTIONAL="X"/>
+    <tables PARAMETER="NFMSTRUCTURALWEIGHTSX" DBSTRUCT="/NFM/BAPITKGWX" OPTIONAL="X"/>
+    <tables PARAMETER="T_NUM" DBSTRUCT="BAPI1003_ALLOC_VALUES_NUM"/>
+    <tables PARAMETER="T_CHAR" DBSTRUCT="BAPI1003_ALLOC_VALUES_CHAR"/>
+    <tables PARAMETER="T_CURR" DBSTRUCT="BAPI1003_ALLOC_VALUES_CURR"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2"/>
+    <tables PARAMETER="T_QMAT" DBSTRUCT="BAPI1001004_QMAT"/>
+    <tables PARAMETER="T_RETURN_QMAT" DBSTRUCT="BAPIRET2"/>
+    <tables PARAMETER="T_NUM1" DBSTRUCT="BAPI1003_ALLOC_VALUES_NUM" OPTIONAL="X"/>
+    <tables PARAMETER="T_NUM2" DBSTRUCT="BAPI1003_ALLOC_VALUES_NUM" OPTIONAL="X"/>
+    <documentation PARAMETER="HEADDATA" KIND="P" STEXT="带有控制信息的表头段" INDEX=" 001"/>
+    <documentation PARAMETER="CLIENTDATA" KIND="P" STEXT="客户端层次物料数据" INDEX=" 002"/>
+    <documentation PARAMETER="CLIENTDATAX" KIND="P" STEXT="BAPI_MARA 的复选框结构" INDEX=" 003"/>
+    <documentation PARAMETER="PLANTDATA" KIND="P" STEXT="工厂级别的物料数据" INDEX=" 004"/>
+    <documentation PARAMETER="PLANTDATAX" KIND="P" STEXT="BAPI_MARC 的复选框结构" INDEX=" 005"/>
+    <documentation PARAMETER="FORECASTPARAMETERS" KIND="P" STEXT="预测参数" INDEX=" 006"/>
+    <documentation PARAMETER="FORECASTPARAMETERSX" KIND="P" STEXT="BAPI_MPOP 复选框结构" INDEX=" 007"/>
+    <documentation PARAMETER="PLANNINGDATA" KIND="P" STEXT="更改物料主记录/产品组的凭证结构" INDEX=" 008"/>
+    <documentation PARAMETER="PLANNINGDATAX" KIND="P" STEXT="BAPI_MPGD 复选框结构" INDEX=" 009"/>
+    <documentation PARAMETER="STORAGELOCATIONDATA" KIND="P" STEXT="存储位置级别的物料数据" INDEX=" 010"/>
+    <documentation PARAMETER="STORAGELOCATIONDATAX" KIND="P" STEXT="BAPI_MARD 的复选框结构" INDEX=" 011"/>
+    <documentation PARAMETER="VALUATIONDATA" KIND="P" STEXT="评估数据" INDEX=" 012"/>
+    <documentation PARAMETER="VALUATIONDATAX" KIND="P" STEXT="BAPI_MBEW 的复选框结构" INDEX=" 013"/>
+    <documentation PARAMETER="WAREHOUSENUMBERDATA" KIND="P" STEXT="仓库号数据" INDEX=" 014"/>
+    <documentation PARAMETER="WAREHOUSENUMBERDATAX" KIND="P" STEXT="BAPI_MLGN 的复选框结构" INDEX=" 015"/>
+    <documentation PARAMETER="SALESDATA" KIND="P" STEXT="销售数据" INDEX=" 016"/>
+    <documentation PARAMETER="SALESDATAX" KIND="P" STEXT="BAPI_MVKE 复选框结构" INDEX=" 017"/>
+    <documentation PARAMETER="STORAGETYPEDATA" KIND="P" STEXT="存储类型数据" INDEX=" 018"/>
+    <documentation PARAMETER="STORAGETYPEDATAX" KIND="P" STEXT="BAPI_MLGT 的复选框结构" INDEX=" 019"/>
+    <documentation PARAMETER="FLAG_ONLINE" KIND="P" STEXT="切换到编写 BAPI 的模拟会话" INDEX=" 020"/>
+    <documentation PARAMETER="FLAG_CAD_CALL" KIND="P" STEXT="切换到编写 BAPI 的模拟会话" INDEX=" 021"/>
+    <documentation PARAMETER="NO_DEQUEUE" KIND="P" STEXT="切换到编写 BAPI 的模拟会话" INDEX=" 022"/>
+    <documentation PARAMETER="NO_ROLLBACK_WORK" KIND="P" STEXT="切换到编写 BAPI 的模拟会话" INDEX=" 023"/>
+    <documentation PARAMETER="JBSJTEXT" KIND="P" STEXT="字符512" INDEX=" 024"/>
+    <documentation PARAMETER="CGDDTEXT" KIND="P" STEXT="字符512" INDEX=" 025"/>
+    <documentation PARAMETER="JYTEXT" KIND="P" STEXT="字符512" INDEX=" 026"/>
+    <documentation PARAMETER="XSTEXT" KIND="P" STEXT="MDM物料主数据-销售文本-结构" INDEX=" 027"/>
+    <documentation PARAMETER="BAPI_TE_MARA" KIND="P" STEXT="客户定义字段:客户级别的物料数据" INDEX=" 028"/>
+    <documentation PARAMETER="BAPI_TE_MARAX" KIND="P" STEXT="客户定义字段:客户级别的物料数据" INDEX=" 029"/>
+    <documentation PARAMETER="ZBASE_UOM" KIND="P" STEXT="三字节字段" INDEX=" 030"/>
+    <documentation PARAMETER="BAPI_TE_MARC" KIND="P" STEXT="客户定义字段: 工厂级别的物料数据" INDEX=" 031"/>
+    <documentation PARAMETER="BAPI_TE_MARCX" KIND="P" STEXT="客户定义字段: 工厂级别的物料数据" INDEX=" 032"/>
+    <documentation PARAMETER="CLASSNUM1" KIND="P" STEXT="023批次类别名称" INDEX=" 033"/>
+    <documentation PARAMETER="CLASSNUM2" KIND="P" STEXT="300可配置类别名称" INDEX=" 034"/>
+    <documentation PARAMETER="RETURN" KIND="P" STEXT="返回参数" INDEX=" 035"/>
+    <documentation PARAMETER="MATERIALDESCRIPTION" KIND="P" STEXT="物料描述" INDEX=" 036"/>
+    <documentation PARAMETER="UNITSOFMEASURE" KIND="P" STEXT="计量单位" INDEX=" 037"/>
+    <documentation PARAMETER="UNITSOFMEASUREX" KIND="P" STEXT="BAPI_MARM 的复选框结构" INDEX=" 038"/>
+    <documentation PARAMETER="INTERNATIONALARTNOS" KIND="P" STEXT="国际物品号 (EAN)" INDEX=" 039"/>
+    <documentation PARAMETER="MATERIALLONGTEXT" KIND="P" STEXT="长文本" INDEX=" 040"/>
+    <documentation PARAMETER="TAXCLASSIFICATIONS" KIND="P" STEXT="税收数据" INDEX=" 041"/>
+    <documentation PARAMETER="RETURNMESSAGES" KIND="P" STEXT="返回参数 BAPIRET2 的替代结构" INDEX=" 042"/>
+    <documentation PARAMETER="PRTDATA" KIND="P" STEXT="物料主数据中的生产资源工具(PRT)字段" INDEX=" 043"/>
+    <documentation PARAMETER="PRTDATAX" KIND="P" STEXT="BAPI_MFHM 的复选框结构" INDEX=" 044"/>
+    <documentation PARAMETER="EXTENSIONIN" KIND="P" STEXT="BAPI 参数 ExtensionIn/ExtensionOut 的参考结构" INDEX=" 045"/>
+    <documentation PARAMETER="EXTENSIONINX" KIND="P" STEXT="Extension In/Extension Out 的复选框结构" INDEX=" 046"/>
+    <documentation PARAMETER="NFMCHARGEWEIGHTS" KIND="P" STEXT="/NFM/: 在组织等级物料中的有色的按重量收费" INDEX=" 047"/>
+    <documentation PARAMETER="NFMCHARGEWEIGHTSX" KIND="P" STEXT="/NFM/: 更新 /NFM/BAPITVGW 的信息" INDEX=" 048"/>
+    <documentation PARAMETER="NFMSTRUCTURALWEIGHTS" KIND="P" STEXT="/NFM/: 有色的结构重量" INDEX=" 049"/>
+    <documentation PARAMETER="NFMSTRUCTURALWEIGHTSX" KIND="P" STEXT="/NFM/: 更新 /NFM/BAPITKGW 的信息" INDEX=" 050"/>
+    <documentation PARAMETER="T_NUM" KIND="P" STEXT="分配 BAPI - NUM、DATE、TIME 类型的值" INDEX=" 051"/>
+    <documentation PARAMETER="T_CHAR" KIND="P" STEXT="分配 BAPI - CHAR、BOOL 类型的值" INDEX=" 052"/>
+    <documentation PARAMETER="T_CURR" KIND="P" STEXT="分配 BAPI - CURR 类型值" INDEX=" 053"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 054"/>
+    <documentation PARAMETER="T_QMAT" KIND="P" STEXT="具有 BAPI 的物料 (QMAT) ALE 分配的检验设置" INDEX=" 055"/>
+    <documentation PARAMETER="T_RETURN_QMAT" KIND="P" STEXT="返回参数" INDEX=" 056"/>
+    <documentation PARAMETER="T_NUM1" KIND="P" STEXT="分配 BAPI - NUM、DATE、TIME 类型的值" INDEX=" 057"/>
+    <documentation PARAMETER="T_NUM2" KIND="P" STEXT="分配 BAPI - NUM、DATE、TIME 类型的值" INDEX=" 058"/>
+    <fm_source_new>DATA: l_value(960),
+        lw_exten TYPE bapiparex,
+        lw_extenx TYPE bapiparexx.
+  IF bapi_te_mara IS NOT INITIAL.
+    CLEAR l_value.
+    l_value = bapi_te_mara.
+    lw_exten-structure = &apos;BAPI_TE_MARA&apos;.
+    lw_exten-valuepart1 = l_value(240).
+    lw_exten-valuepart2 = l_value+240(240).
+    lw_exten-valuepart3 = l_value+480(240).
+    lw_exten-valuepart4 = l_value+720(240).
+    APPEND lw_exten TO extensionin[].
+
+    CLEAR l_value.
+    bapi_te_marax-material = bapi_te_mara-material.
+    l_value = bapi_te_marax.
+    lw_extenx-structure = &apos;BAPI_TE_MARAX&apos;.
+    lw_extenx-valuepart1 = l_value(240).
+    lw_extenx-valuepart2 = l_value+240(240).
+    lw_extenx-valuepart3 = l_value+480(240).
+    lw_extenx-valuepart4 = l_value+720(240).
+    APPEND lw_extenx TO extensioninx[].
+  ENDIF.
+
+  IF bapi_te_marc IS NOT INITIAL.
+    CLEAR l_value.
+    l_value = bapi_te_marc.
+    lw_exten-structure = &apos;BAPI_TE_MARC&apos;.
+    lw_exten-valuepart1 = l_value(240).
+    lw_exten-valuepart2 = l_value+240(240).
+    lw_exten-valuepart3 = l_value+480(240).
+    lw_exten-valuepart4 = l_value+720(240).
+    APPEND lw_exten TO extensionin[].
+
+    CLEAR l_value.
+    l_value = bapi_te_marcx.
+    lw_exten-structure = &apos;BAPI_TE_MARCX&apos;.
+    lw_exten-valuepart1 = l_value(240).
+    lw_exten-valuepart2 = l_value+240(240).
+    lw_exten-valuepart3 = l_value+480(240).
+    lw_exten-valuepart4 = l_value+720(240).
+    APPEND lw_exten TO extensioninx[].
+  ENDIF.
+
+  IF zbase_uom IS NOT INITIAL.
+    clientdata-base_uom = zbase_uom.
+    clientdatax-base_uom = &apos;X&apos;.
+    LOOP AT unitsofmeasure.
+      unitsofmeasure-alt_unit = zbase_uom.
+      MODIFY unitsofmeasure.
+    ENDLOOP.
+    LOOP AT unitsofmeasurex.
+      unitsofmeasurex-alt_unit = zbase_uom.
+      MODIFY unitsofmeasurex.
+    ENDLOOP.
+  ENDIF.
+
+  DATA: w_return_mat TYPE bapi_matreturn2,
+        w_return TYPE bapiret2.
+
+  CALL FUNCTION &apos;BAPI_MATERIAL_SAVEDATA&apos;
+    EXPORTING
+      headdata                    = headdata
+      CLIENTDATA                  = CLIENTDATA
+      CLIENTDATAX                 = CLIENTDATAX
+      PLANTDATA                   = PLANTDATA
+      PLANTDATAX                  = PLANTDATAX
+      FORECASTPARAMETERS          = FORECASTPARAMETERS
+      FORECASTPARAMETERSX         = FORECASTPARAMETERSX
+      PLANNINGDATA                = PLANNINGDATA
+      PLANNINGDATAX               = PLANNINGDATAX
+      STORAGELOCATIONDATA         = STORAGELOCATIONDATA
+      STORAGELOCATIONDATAX        = STORAGELOCATIONDATAX
+      VALUATIONDATA               = VALUATIONDATA
+      VALUATIONDATAX              = VALUATIONDATAX
+      WAREHOUSENUMBERDATA         = WAREHOUSENUMBERDATA
+      WAREHOUSENUMBERDATAX        = WAREHOUSENUMBERDATAX
+      SALESDATA                   = SALESDATA
+      SALESDATAX                  = SALESDATAX
+      STORAGETYPEDATA             = STORAGETYPEDATA
+      STORAGETYPEDATAX            = STORAGETYPEDATAX
+      FLAG_ONLINE                 = FLAG_ONLINE
+      FLAG_CAD_CALL               = FLAG_CAD_CALL
+      NO_DEQUEUE                  = NO_DEQUEUE
+      NO_ROLLBACK_WORK            = NO_ROLLBACK_WORK
+    IMPORTING
+      RETURN                      = RETURN
+    TABLES
+      MATERIALDESCRIPTION         = MATERIALDESCRIPTION
+      UNITSOFMEASURE              = UNITSOFMEASURE
+      UNITSOFMEASUREX             = UNITSOFMEASUREX
+      INTERNATIONALARTNOS         = INTERNATIONALARTNOS
+      MATERIALLONGTEXT            = MATERIALLONGTEXT
+      TAXCLASSIFICATIONS          = TAXCLASSIFICATIONS
+      RETURNMESSAGES              = RETURNMESSAGES
+      PRTDATA                     = PRTDATA
+      PRTDATAX                    = PRTDATAX
+      EXTENSIONIN                 = EXTENSIONIN
+      EXTENSIONINX                = EXTENSIONINX
+      NFMCHARGEWEIGHTS            = NFMCHARGEWEIGHTS
+      NFMCHARGEWEIGHTSX           = NFMCHARGEWEIGHTSX
+      NFMSTRUCTURALWEIGHTS        = NFMSTRUCTURALWEIGHTS
+      NFMSTRUCTURALWEIGHTSX       = NFMSTRUCTURALWEIGHTSX
+            .
+
+  DATA: l_key TYPE bapi1003_key-object,
+        l_classnum TYPE bapi1003_key-classnum.
+  READ TABLE returnmessages[] INTO w_return_mat WITH KEY type = &apos;E&apos;.
+  IF sy-subrc &lt;&gt; 0.
+    READ TABLE returnmessages[] INTO w_return_mat WITH KEY type = &apos;A&apos;.
+    IF sy-subrc &lt;&gt; 0.
+      CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+        EXPORTING
+          WAIT          = &apos;X&apos;
+                .
+
+      DATA: w_return_qmat TYPE bapiret2.
+
+      CALL FUNCTION &apos;BAPI_MATINSPCTRL_SAVEREPLICA&apos;
+        TABLES
+          return               = t_return_qmat[]
+          inspectionctrl       = t_qmat[]
+                .
+
+      READ TABLE t_return_qmat[] INTO w_return_qmat WITH KEY type = &apos;E&apos;.
+      IF sy-subrc &lt;&gt; 0.
+        READ TABLE t_return_qmat[] INTO w_return_qmat WITH KEY type = &apos;A&apos;.
+        IF sy-subrc &lt;&gt; 0.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+            EXPORTING
+              WAIT          = &apos;X&apos;.
+        ELSE.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+        ENDIF.
+      ELSE.
+        CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+      ENDIF.
+
+
+      l_key = headdata-material.
+      CONCATENATE &apos;MDMC&apos; bapi_te_mara-zindustry INTO l_classnum.
+      DATA: t_num_tmp TYPE TABLE OF bapi1003_alloc_values_num,
+            t_char_tmp TYPE TABLE OF bapi1003_alloc_values_char,
+            t_curr_tmp TYPE TABLE OF bapi1003_alloc_values_curr.
+      IF t_num[] IS NOT INITIAL OR t_char[] IS NOT INITIAL OR t_curr[] IS NOT INITIAL.
+        CLEAR t_return.
+        CALL FUNCTION &apos;BAPI_OBJCL_GETDETAIL&apos;
+          EXPORTING
+            objectkey              = l_key
+            objecttable            = &apos;MARA&apos;
+            classnum               = l_classnum
+            classtype              = &apos;001&apos;
+*           KEYDATE                = SY-DATUM
+*           UNVALUATED_CHARS       = &apos; &apos;
+*           LANGUAGE               = SY-LANGU
+*         IMPORTING
+*           STATUS                 =
+*           STANDARDCLASS          =
+          TABLES
+            allocvaluesnum         = t_num_tmp
+            allocvalueschar        = t_char_tmp
+            allocvaluescurr        = t_curr_tmp
+            RETURN                 = t_return
+                  .
+        READ TABLE t_return INTO w_return WITH KEY type = &apos;S&apos; id = &apos;CL&apos; number = &apos;731&apos;.
+        IF sy-subrc = 0.
+          CLEAR t_return.
+          CALL FUNCTION &apos;BAPI_OBJCL_CHANGE&apos;
+            EXPORTING
+              objectkey                = l_key
+              objecttable              = &apos;MARA&apos;
+              classnum                 = l_classnum
+              classtype                = &apos;001&apos;
+*             STATUS                   = &apos;1&apos;
+*             STANDARDCLASS            =
+*             CHANGENUMBER             =
+*             KEYDATE                  = SY-DATUM
+*             NO_DEFAULT_VALUES        = &apos; &apos;
+*           IMPORTING
+*             CLASSIF_STATUS           =
+            TABLES
+              allocvaluesnumnew        = t_num
+              allocvaluescharnew       = t_char
+              allocvaluescurrnew       = t_curr
+              RETURN                   = t_return
+                    .
+        ELSE.
+          CALL FUNCTION &apos;BAPI_OBJCL_CREATE&apos;
+            EXPORTING
+              objectkeynew            = l_key
+              objecttablenew          = &apos;MARA&apos;
+              classnumnew             = l_classnum
+              classtypenew            = &apos;001&apos;
+*             STATUS                  = &apos;1&apos;
+*             STANDARDCLASS           =
+*             CHANGENUMBER            =
+*             KEYDATE                 = SY-DATUM
+*             NO_DEFAULT_VALUES       = &apos; &apos;
+*           IMPORTING
+*             CLASSIF_STATUS          =
+            TABLES
+              ALLOCVALUESNUM          = t_num
+              ALLOCVALUESCHAR         = t_char
+              ALLOCVALUESCURR         = t_curr
+              return                  = t_return
+                    .
+        ENDIF.
+      ENDIF.
+      READ TABLE t_return INTO w_return WITH KEY type = &apos;E&apos;.
+      IF sy-subrc = 0.
+        CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+      ELSE.
+        READ TABLE t_return INTO w_return WITH KEY type = &apos;A&apos;.
+        IF sy-subrc = 0.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+        ELSE.
+          CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+            EXPORTING
+              WAIT          = &apos;X&apos;
+                    .
+        ENDIF.
+      ENDIF.
+    ELSE.
+      CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+    ENDIF.
+  ELSE.
+    CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+  ENDIF.
+
+  DATA: l_name TYPE tdobname.
+  IF headdata-material IS NOT INITIAL.
+    l_name = headdata-material.
+    IF jbsjtext IS NOT INITIAL.
+      PERFORM f_save_text USING jbsjtext &apos;MATERIAL&apos; l_name &apos;GRUN&apos;.
+    ENDIF.
+    IF cgddtext IS NOT INITIAL.
+      PERFORM f_save_text USING cgddtext &apos;MATERIAL&apos; l_name &apos;BEST&apos;.
+    ENDIF.
+    IF jytext IS NOT INITIAL.
+      PERFORM f_save_text USING jytext &apos;MATERIAL&apos; l_name &apos;PRUE&apos;.
+    ENDIF.
+  ENDIF.
+
+  IF xstext-matnr IS NOT INITIAL AND xstext-vkorg IS NOT INITIAL AND xstext-vtweg IS NOT INITIAL AND xstext-text IS NOT INITIAL.
+    CLEAR l_name.
+    CONCATENATE xstext-matnr xstext-vkorg xstext-vtweg INTO l_name.
+    PERFORM f_save_text USING xstext-text &apos;MVKE&apos; l_name &apos;0001&apos;.
+  ENDIF.
+*{   INSERT         CP0K900358                                        1
+  IF classnum1 is NOT INITIAL.
+    PERFORM F_SAVE_CLASS TABLES RETURNMESSAGES
+                                T_NUM1
+                                t_char
+                                t_curr
+                    USING HEADDATA-MATERIAL
+                       CLASSNUM1
+                       &apos;023&apos;
+                   .
+  ENDIF.
+  IF classnum2 is NOT INITIAL.
+    PERFORM F_SAVE_CLASS TABLES RETURNMESSAGES
+                                T_NUM2
+                                t_char
+                                t_curr
+                    USING HEADDATA-MATERIAL
+                       CLASSNUM1
+                       &apos;300&apos;
+                   .
+  ENDIF.
+*}   INSERT
+
+*{   INSERT         CP0K900358                                        1
+*增加物料类 023：CLASSNUM1  300：CLASSNUM2
+FORM F_SAVE_CLASS TABLES RE_TABLE STRUCTURE BAPIRET2
+            t_num STRUCTURE bapi1003_alloc_values_num
+            t_char STRUCTURE bapi1003_alloc_values_char
+            t_curr STRUCTURE bapi1003_alloc_values_curr
+                    USING MATNR TYPE MATNR
+                       CLASSNUM TYPE  BAPI1003_KEY-CLASSNUM
+                       CLASSTYPE TYPE  BAPI1003_KEY-CLASSTYPE
+                   .
+
+  DATA:RETURN_MESSAGES TYPE TABLE OF BAPIRET2 WITH HEADER LINE,
+        OBJECTKEYNEW LIKE  BAPI1003_KEY-OBJECT,
+        CLASSNUMNEW LIKE  BAPI1003_KEY-CLASSNUM,
+        CLASSTYPENEW LIKE  BAPI1003_KEY-CLASSTYPE.
+
+  OBJECTKEYNEW = MATNR.
+  CLASSNUMNEW = CLASSNUM.
+  CLASSTYPENEW = CLASSTYPE.
+
+      DATA: t_num_tmp TYPE TABLE OF bapi1003_alloc_values_num,
+            t_char_tmp TYPE TABLE OF bapi1003_alloc_values_char,
+            t_curr_tmp TYPE TABLE OF bapi1003_alloc_values_curr.
+      IF t_num[] IS NOT INITIAL OR t_char[] IS NOT INITIAL OR t_curr[] IS NOT INITIAL.
+        CLEAR return_messages[].
+        CALL FUNCTION &apos;BAPI_OBJCL_GETDETAIL&apos;
+          EXPORTING
+            objectkey              = OBJECTKEYNEW
+            objecttable            = &apos;MARA&apos;
+            classnum               = CLASSNUMNEW
+            classtype              = CLASSTYPENEW
+*           KEYDATE                = SY-DATUM
+*           UNVALUATED_CHARS       = &apos; &apos;
+*           LANGUAGE               = SY-LANGU
+*         IMPORTING
+*           STATUS                 =
+*           STANDARDCLASS          =
+          TABLES
+            allocvaluesnum         = t_num_tmp
+            allocvalueschar        = t_char_tmp
+            allocvaluescurr        = t_curr_tmp
+            RETURN                 = return_messages
+                  .
+        READ TABLE return_messages WITH KEY type = &apos;S&apos; id = &apos;CL&apos; number = &apos;731&apos;.
+        IF sy-subrc = 0.
+          CLEAR return_messages[].
+          CALL FUNCTION &apos;BAPI_OBJCL_CHANGE&apos;
+            EXPORTING
+              objectkey              = OBJECTKEYNEW
+            objecttable            = &apos;MARA&apos;
+            classnum               = CLASSNUMNEW
+            classtype              = CLASSTYPENEW
+*             STATUS                   = &apos;1&apos;
+*             STANDARDCLASS            =
+*             CHANGENUMBER             =
+*             KEYDATE                  = SY-DATUM
+*             NO_DEFAULT_VALUES        = &apos; &apos;
+*           IMPORTING
+*             CLASSIF_STATUS           =
+            TABLES
+              allocvaluesnumnew        = t_num
+              allocvaluescharnew       = t_char
+              allocvaluescurrnew       = t_curr
+              RETURN                   = return_messages
+                    .
+        ELSE.
+          CALL FUNCTION &apos;BAPI_OBJCL_CREATE&apos;
+            EXPORTING
+              objectkey            = OBJECTKEYNEW
+            objecttable            = &apos;MARA&apos;
+            classnum               = CLASSNUMNEW
+            classtype              = CLASSTYPENEW
+*             STATUS                  = &apos;1&apos;
+*             STANDARDCLASS           =
+*             CHANGENUMBER            =
+*             KEYDATE                 = SY-DATUM
+*             NO_DEFAULT_VALUES       = &apos; &apos;
+*           IMPORTING
+*             CLASSIF_STATUS          =
+            TABLES
+              ALLOCVALUESNUM          = t_num
+              ALLOCVALUESCHAR         = t_char
+              ALLOCVALUESCURR         = t_curr
+              return                  = return_messages
+                    .
+        ENDIF.
+    ENDIF.
+
+
+  LOOP AT RETURN_MESSAGES WHERE TYPE EQ &apos;E&apos;.
+    MOVE-CORRESPONDING RETURN_MESSAGES to RE_TABLE.
+    append RE_TABLE.
+  ENDLOOP.
+
+  IF sy-subrc NE 0.
+    CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+      EXPORTING
+        wait          = &apos;X&apos;
+              .
+  ENDIF.
+ENDFORM.
+
+*}   INSERT
+
+FORM f_save_text USING txt object name id.
+  DATA: lt_line TYPE TABLE OF tline,
+        lw_line TYPE          tline,
+        lw_header TYPE thead.
+  CLEAR: lt_line, lw_header.
+  DATA: l_len TYPE i,
+        l_pos TYPE i.
+  CLEAR: l_len, l_pos.
+  l_pos = 0.
+  l_len = strlen( txt ).
+  IF l_len &lt;= 132.
+    CLEAR lw_line.
+    lw_line-tdline = txt.
+    APPEND lw_line TO lt_line.
+  ELSE.
+    WHILE l_len &gt; 0.
+      IF l_pos = 0.
+        CLEAR lw_line.
+        lw_line-tdline = txt+0(132).
+        APPEND lw_line TO lt_line.
+        l_len = l_len - 132.
+        l_pos = l_pos + 132.
+      ELSE.
+        CLEAR lw_line.
+        lw_line-tdformat = &apos;/&apos;.
+        IF l_len &lt;= 132.
+          lw_line-tdline = txt+l_pos(l_len).
+        ELSE.
+          lw_line-tdline = txt+l_pos(132).
+        ENDIF.
+        APPEND lw_line TO lt_line.
+        l_len = l_len - 132.
+        l_pos = l_pos + 132.
+      ENDIF.
+    ENDWHILE.
+  ENDIF.
+
+  lw_header-tdobject = object.
+  lw_header-tdname = name.
+  lw_header-tdid = id.
+  lw_header-tdspras = sy-langu.
+
+  CALL FUNCTION &apos;SAVE_TEXT&apos;
+    EXPORTING
+*     CLIENT                = SY-MANDT
+      header                = lw_header
+*     INSERT                = &apos; &apos;
+*     SAVEMODE_DIRECT       = &apos; &apos;
+*     OWNER_SPECIFIED       = &apos; &apos;
+*     LOCAL_CAT             = &apos; &apos;
+*   IMPORTING
+*     FUNCTION              =
+*     NEWHEADER             =
+    tables
+      lines                 = lt_line
+    EXCEPTIONS
+      ID                    = 1
+      LANGUAGE              = 2
+      NAME                  = 3
+      OBJECT                = 4
+      OTHERS                = 5
+            .
+  IF sy-subrc &lt;&gt; 0.
+* Implement suitable error handling here
+  ENDIF.
+
+ENDFORM.</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C555_ZMMT_INDUSTRY" REMOTE="R" STEXT="读取品名文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_INDUSTRY" DBSTRUCT="ZMMT_INDUSTRY" OPTIONAL="X"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 002"/>
+    <documentation PARAMETER="T_INDUSTRY" KIND="P" STEXT="酒钢物料客户化字段-行业" INDEX=" 003"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_industry FROM TABLE t_industry.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_industry INTO TABLE t_industry.
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C558_ZMMT_MATBASIC" REMOTE="R" STEXT="读取基础材质文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_MATBASIC" DBSTRUCT="ZMMT_MATBASIC"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 002"/>
+    <documentation PARAMETER="T_MATBASIC" KIND="P" STEXT="基础材质配置表" INDEX=" 003"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_matbasic FROM TABLE t_matbasic.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_matbasic INTO TABLE t_matbasic.
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C559_ZMMT_MTART" REMOTE="R" STEXT="读取物料类型文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <importing PARAMETER="I_ZZMTART" OPTIONAL="X" TYP="ZE_MTART"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_MTART" DBSTRUCT="ZMMT_MTART"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" STEXT="工厂" INDEX=" 002"/>
+    <documentation PARAMETER="I_ZZMTART" KIND="P" STEXT="工厂" INDEX=" 003"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 004"/>
+    <documentation PARAMETER="T_MTART" KIND="P" STEXT="酒钢公司级物料类型" INDEX=" 005"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_mtart FROM TABLE t_mtart.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+*{   REPLACE        CP0K900366                                        1
+*\    SELECT * FROM zmmt_mtart INTO TABLE t_mtart.
+IF i_werks IS NOT INITIAL AND i_zzmtart is NOT INITIAL .
+    SELECT * FROM zmmt_mtart INTO TABLE t_mtart
+      WHERE werks = i_werks and zzmtart = i_zzmtart.
+ELSE.
+    SELECT * FROM zmmt_mtart INTO TABLE t_mtart.
+ENDIF.
+*}   REPLACE
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C560_ZMMT_MATKL" REMOTE="R" STEXT="读取物料组文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <importing PARAMETER="I_ZZMATKL" OPTIONAL="X" TYP="ZE_MATKL"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_MATKL" DBSTRUCT="ZMMT_MATKL"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" STEXT="工厂" INDEX=" 002"/>
+    <documentation PARAMETER="I_ZZMATKL" KIND="P" STEXT="单一字符标识" INDEX=" 003"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 004"/>
+    <documentation PARAMETER="T_MATKL" KIND="P" STEXT="酒钢公司级物料组" INDEX=" 005"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_matkl FROM TABLE t_matkl.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+*{   REPLACE        CP0K900366                                        1
+*\    SELECT * FROM zmmt_matkl INTO TABLE t_matkl.
+  IF i_werks IS NOT INITIAL AND i_zzmatkl IS NOT INITIAL.
+    SELECT * FROM zmmt_matkl INTO TABLE t_matkl
+      WHERE werks = i_werks and zzmatkl = i_zzmatkl.
+  else.
+    SELECT * FROM zmmt_matkl INTO TABLE t_matkl.
+  ENDIF.
+*}   REPLACE
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C561_ZMMT_SPART" REMOTE="R" STEXT="读取产品组文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <importing PARAMETER="I_ZZSPART" OPTIONAL="X" TYP="ZE_SPART"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_SPART" DBSTRUCT="ZMMT_SPART"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" INDEX=" 002"/>
+    <documentation PARAMETER="I_ZZSPART" KIND="P" INDEX=" 003"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 004"/>
+    <documentation PARAMETER="T_SPART" KIND="P" STEXT="酒钢公司产品组" INDEX=" 005"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_spart FROM TABLE t_spart.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+*{   REPLACE        CP0K900366                                        1
+*\    SELECT * FROM zmmt_spart INTO TABLE t_spart.
+  IF i_werks is NOT INITIAL and i_zzspart is NOT INITIAL.
+    SELECT * FROM zmmt_spart INTO TABLE t_spart
+      WHERE werks = i_werks and zzspart = i_zzspart.
+  else.
+    SELECT * FROM zmmt_spart INTO TABLE t_spart.
+  ENDIF.
+*}   REPLACE
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C562_TWEWT" REMOTE="R" STEXT="读取外部物料组文本">
+    <tables PARAMETER="T_TWEWT" DBSTRUCT="TWEWT"/>
+    <documentation PARAMETER="T_TWEWT" KIND="P" STEXT="外部物料组的分销" INDEX=" 001"/>
+    <fm_source>SELECT * FROM twewt INTO TABLE t_twewt WHERE spras = sy-langu.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C557_T007S" REMOTE="R" STEXT="读取销项税分类文本">
+    <importing PARAMETER="I_KALSM" OPTIONAL="X" TYP="KALSM_D"/>
+    <importing PARAMETER="I_MWSKZ" OPTIONAL="X" TYP="MWSKZ"/>
+    <tables PARAMETER="T_T007S" DBSTRUCT="T007S"/>
+    <documentation PARAMETER="I_KALSM" KIND="P" STEXT="成本核算单的 F4 帮助的结构" INDEX=" 001"/>
+    <documentation PARAMETER="I_MWSKZ" KIND="P" STEXT="销售税代码" INDEX=" 002"/>
+    <documentation PARAMETER="T_T007S" KIND="P" STEXT="税码名" INDEX=" 003"/>
+    <fm_source>*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t007s INTO TABLE t_t007s WHERE spras = &apos;1&apos;.
+IF I_KALSM IS NOT INITIAL AND I_MWSKZ IS NOT INITIAL.
+  SELECT * FROM t007s INTO TABLE t_t007s WHERE spras = &apos;1&apos;
+    AND KALSM = I_KALSM AND MWSKZ = I_MWSKZ.
+ELSE.
+  SELECT * FROM t007s INTO TABLE t_t007s WHERE spras = &apos;1&apos;.
+ENDIF.
+*}   REPLACE</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C559_T134T" REMOTE="R" STEXT="读取物料类型文本">
+    <tables PARAMETER="T_T134T" DBSTRUCT="T134T"/>
+    <documentation PARAMETER="T_T134T" KIND="P" STEXT="物料类型描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t134t INTO TABLE t_t134t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C560_T023T" REMOTE="R" STEXT="读取物料组文本">
+    <tables PARAMETER="T_T023T" DBSTRUCT="T023T"/>
+    <documentation PARAMETER="T_T023T" KIND="P" STEXT="物料组描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t023t INTO TABLE t_t023t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C561_TSPAT" REMOTE="R" STEXT="读取产品组文本">
+    <tables PARAMETER="T_TSPAT" DBSTRUCT="TSPAT"/>
+    <documentation PARAMETER="T_TSPAT" KIND="P" STEXT="组织单位: 销售分部: 文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tspat INTO TABLE t_tspat WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C523_T439T" REMOTE="R" STEXT="读取批量计算方式文本">
+    <tables PARAMETER="T_T439T" DBSTRUCT="T439T"/>
+    <documentation PARAMETER="T_T439T" KIND="P" STEXT="有关批量处理的文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t439t INTO TABLE t_t439t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B524_DD07V_KZECH" REMOTE="R" STEXT="读取批次确定方式文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;KZECH&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B527_T439P" REMOTE="R" STEXT="读取需求分割标识文本">
+    <tables PARAMETER="T_T439P" DBSTRUCT="T439P"/>
+    <documentation PARAMETER="T_T439P" KIND="P" STEXT="预测需求的分隔" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t439p INTO TABLE t_t439p.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B531_T436A" REMOTE="R" STEXT="读取浮动计划边际码文本">
+    <tables PARAMETER="T_T436A" DBSTRUCT="T436A"/>
+    <documentation PARAMETER="T_T436A" KIND="P" STEXT="计划的浮动" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t436a INTO TABLE t_t436a.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B539_TKV02" REMOTE="R" STEXT="读取差异码文本">
+    <tables PARAMETER="T_TKV02" DBSTRUCT="TKV02"/>
+    <documentation PARAMETER="T_TKV02" KIND="P" STEXT="差异关键字名" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tkv02 INTO TABLE t_tkv02 WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B547_BWKEY" REMOTE="R" STEXT="读取评估范围文本">
+    <tables PARAMETER="T_T001W" DBSTRUCT="ZFMM_S_T001W"/>
+    <documentation PARAMETER="T_T001W" KIND="P" STEXT="MDM平台 工厂-评估范围-名称 结构" INDEX=" 001"/>
+    <fm_source>SELECT werks bwkey name1 FROM t001w INTO TABLE t_t001w.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B548_T149D" REMOTE="R" STEXT="读取评估类型文本">
+    <tables PARAMETER="T_T149D" DBSTRUCT="T149D"/>
+    <documentation PARAMETER="T_T149D" KIND="P" STEXT="全局估价类型" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t149d INTO TABLE t_t149d.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B553_DD07V_Q1WELOS" REMOTE="R" STEXT="读取检验批创建方式文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>CLEAR t_dd07v[].
+
+SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;Q1WELOS&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B512_DD07V_ZZWZXT" REMOTE="R" STEXT="读取物资形态文本">
+    <tables PARAMETER="T_DD07V" DBSTRUCT="DD07V"/>
+    <documentation PARAMETER="T_DD07V" KIND="P" INDEX=" 001"/>
+    <fm_source>SELECT * FROM dd07v INTO TABLE t_dd07v
+  WHERE domname = &apos;ZZWZXT&apos;
+    AND ddlanguage = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_MSTAE" REMOTE="R" STEXT="跨工厂物料状态/工厂特定物料状态">
+    <tables PARAMETER="T_T141T" DBSTRUCT="T141T"/>
+    <documentation PARAMETER="T_T141T" KIND="P" STEXT="有关MM/PP视图的物料状况的描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t141t INTO TABLE t_t141t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_C556_ZMMT_ZZZXBZ" REMOTE="R" STEXT="读取执行标准文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <tables PARAMETER="T_ZZZXBZ" DBSTRUCT="ZMMT_ZZZXBZ"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="T_ZZZXBZ" KIND="P" STEXT="执行标准" INDEX=" 002"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+  MODIFY zmmt_zzzxbz FROM TABLE t_zzzxbz.
+ELSE.
+  SELECT * FROM zmmt_zzzxbz INTO TABLE t_zzzxbz.
+ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVMST" REMOTE="R" STEXT="跨分销链物料状态">
+    <tables PARAMETER="T_TVMST" DBSTRUCT="TVMST"/>
+    <documentation PARAMETER="T_TVMST" KIND="P" STEXT="物料: 销售状态: 文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvmst INTO TABLE t_tvmst WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T024X" REMOTE="R" STEXT="设计实验室">
+    <tables PARAMETER="T_T024X" DBSTRUCT="T024X"/>
+    <documentation PARAMETER="T_T024X" KIND="P" STEXT="实验室/办公室文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t024x INTO TABLE t_t024x WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T405" REMOTE="R" STEXT="采购价值代码">
+    <tables PARAMETER="T_T405" DBSTRUCT="T405"/>
+    <documentation PARAMETER="T_T405" KIND="P" STEXT="采购价值代码" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t405 INTO TABLE t_t405.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T144T" REMOTE="R" STEXT="容器需求">
+    <tables PARAMETER="T_T144T" DBSTRUCT="T144T"/>
+    <documentation PARAMETER="T_T144T" KIND="P" STEXT="集装箱要求文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t144t INTO TABLE t_t144t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T142T" REMOTE="R" STEXT="存储条件">
+    <tables PARAMETER="T_T142T" DBSTRUCT="T142T"/>
+    <documentation PARAMETER="T_T142T" KIND="P" STEXT="库存条件文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t142t INTO TABLE t_t142t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T143T" REMOTE="R" STEXT="温度条件">
+    <tables PARAMETER="T_T143T" DBSTRUCT="T143T"/>
+    <documentation PARAMETER="T_T143T" KIND="P" STEXT="温度条件文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t143t INTO TABLE t_t143t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TTGRT" REMOTE="R" STEXT="运输工具组">
+    <tables PARAMETER="T_TTGRT" DBSTRUCT="TTGRT"/>
+    <documentation PARAMETER="T_TTGRT" KIND="P" STEXT="装运计划 ： 运输组 ： 文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM ttgrt INTO TABLE t_ttgrt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TMFGT" REMOTE="R" STEXT="货运组">
+    <tables PARAMETER="T_TMFGT" DBSTRUCT="TMFGT"/>
+    <documentation PARAMETER="T_TMFGT" KIND="P" STEXT="物料货运组:描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tmfgt INTO TABLE t_tmfgt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TQGRPT" REMOTE="R" STEXT="质量检查组">
+    <tables PARAMETER="T_TQGRPT" DBSTRUCT="TQGRPT"/>
+    <documentation PARAMETER="T_TQGRPT" KIND="P" STEXT="质量检验组描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tqgrpt INTO TABLE t_tqgrpt WHERE langu = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_LFA1" REMOTE="R" STEXT="制造商">
+    <tables PARAMETER="T_LFA1" DBSTRUCT="ZFMM_S_LFA1"/>
+    <documentation PARAMETER="T_LFA1" KIND="P" STEXT="MDM平台 供应商-名称 结构" INDEX=" 001"/>
+    <fm_source>SELECT lifnr name1 FROM lfa1 INTO TABLE t_lfa1.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TMABCT" REMOTE="R" STEXT="ABC标识">
+    <tables PARAMETER="T_TMABCT" DBSTRUCT="TMABCT"/>
+    <documentation PARAMETER="T_TMABCT" KIND="P" STEXT="物料的ABC标识符的文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tmabct INTO TABLE t_tmabct WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TMBWT" REMOTE="R" STEXT="货源">
+    <tables PARAMETER="T_TMBWT" DBSTRUCT="TMBWT"/>
+    <documentation PARAMETER="T_TMBWT" KIND="P" STEXT="供应编码源" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tmbwt INTO TABLE t_tmbwt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVFMT" REMOTE="R" STEXT="国际贸易物料组">
+    <tables PARAMETER="T_TVFMT" DBSTRUCT="TVFMT"/>
+    <documentation PARAMETER="T_TVFMT" KIND="P" STEXT="外贸：出口物料定价组 - 说明" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvfmt INTO TABLE t_tvfmt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T434H" REMOTE="R" STEXT="库存确定组">
+    <tables PARAMETER="T_T434H" DBSTRUCT="T434H"/>
+    <documentation PARAMETER="T_T434H" KIND="P" STEXT="库存确定规则(T434G)的文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t434h INTO TABLE t_t434h WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TLOGT" REMOTE="R" STEXT="物流搬运组">
+    <tables PARAMETER="T_TLOGT" DBSTRUCT="TLOGT"/>
+    <documentation PARAMETER="T_TLOGT" KIND="P" STEXT="后勤处理组的描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tlogt INTO TABLE t_tlogt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T460T" REMOTE="R" STEXT="成本核算的特殊采购类型">
+    <tables PARAMETER="T_T460T" DBSTRUCT="T460T"/>
+    <documentation PARAMETER="T_T460T" KIND="P" STEXT="有关特别采购码的文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t460t INTO TABLE t_t460t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_CEPCT" REMOTE="R" STEXT="利润中心">
+    <tables PARAMETER="T_CEPCT" DBSTRUCT="CEPCT"/>
+    <documentation PARAMETER="T_CEPCT" KIND="P" STEXT="利润中心主数据文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM cepct INTO TABLE t_cepct WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T001L" REMOTE="R" STEXT="生产收货库房">
+    <importing PARAMETER="I_WERKS" OPTIONAL="X" TYP="WERKS_D"/>
+    <tables PARAMETER="T_T001L" DBSTRUCT="ZFMM_S_T001L"/>
+    <documentation PARAMETER="I_WERKS" KIND="P" STEXT="工厂" INDEX=" 001"/>
+    <documentation PARAMETER="T_T001L" KIND="P" STEXT="MDM平台 库存地点-文本 结构" INDEX=" 002"/>
+    <fm_source>*{   REPLACE        CP0K900366                                        1
+*\SELECT werks lgort lgobe FROM t001l INTO TABLE t_t001l.
+IF I_WERKS IS NOT INITIAL.
+  SELECT werks lgort lgobe FROM t001l INTO TABLE t_t001l
+    WHERE WERKS = I_WERKS.
+ELSE.
+    SELECT werks lgort lgobe FROM t001l INTO TABLE t_t001l.
+ENDIF.
+*}   REPLACE</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVPRT" REMOTE="R" STEXT="佣金组">
+    <tables PARAMETER="T_TVPRT" DBSTRUCT="TVPRT"/>
+    <documentation PARAMETER="T_TVPRT" KIND="P" STEXT="佣金组文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvprt INTO TABLE t_tvprt WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVM1T" REMOTE="R" STEXT="物料组1">
+    <tables PARAMETER="T_TVM1T" DBSTRUCT="TVM1T"/>
+    <documentation PARAMETER="T_TVM1T" KIND="P" STEXT="物料定价组 1 : 描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvm1t INTO TABLE t_tvm1t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVM2T" REMOTE="R" STEXT="物料组2">
+    <tables PARAMETER="T_TVM2T" DBSTRUCT="TVM2T"/>
+    <documentation PARAMETER="T_TVM2T" KIND="P" STEXT="物料定价组 2 : 描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvm2t INTO TABLE t_tvm2t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVM3T" REMOTE="R" STEXT="物料组3">
+    <tables PARAMETER="T_TVM3T" DBSTRUCT="TVM3T"/>
+    <documentation PARAMETER="T_TVM3T" KIND="P" STEXT="物料定价组 3 : 描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvm3t INTO TABLE t_tvm3t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVM4T" REMOTE="R" STEXT="物料组4">
+    <tables PARAMETER="T_TVM4T" DBSTRUCT="TVM4T"/>
+    <documentation PARAMETER="T_TVM4T" KIND="P" STEXT="物料定价组 4 : 描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvm4t INTO TABLE t_tvm4t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_TVM5T" REMOTE="R" STEXT="物料组5">
+    <tables PARAMETER="T_TVM5T" DBSTRUCT="TVM5T"/>
+    <documentation PARAMETER="T_TVM5T" KIND="P" STEXT="物料定价组 5 : 描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM tvm5t INTO TABLE t_tvm5t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_T025T" REMOTE="R" STEXT="评估类">
+    <tables PARAMETER="T_T025T" DBSTRUCT="T025T"/>
+    <documentation PARAMETER="T_T025T" KIND="P" STEXT="估价类描述" INDEX=" 001"/>
+    <fm_source>SELECT * FROM t025t INTO TABLE t_t025t WHERE spras = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_QDSVT" REMOTE="R" STEXT="采样过程">
+    <tables PARAMETER="T_QDSVT" DBSTRUCT="QDSVT"/>
+    <documentation PARAMETER="T_QDSVT" KIND="P" STEXT="抽样过程：文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM qdsvt INTO TABLE t_qdsvt WHERE sprache = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_QDDRT" REMOTE="R" STEXT="动态修改规则">
+    <tables PARAMETER="T_QDDRT" DBSTRUCT="QDDRT"/>
+    <documentation PARAMETER="T_QDDRT" KIND="P" STEXT="动态修改规则：文本" INDEX=" 001"/>
+    <fm_source>SELECT * FROM qddrt INTO TABLE t_qddrt WHERE sprache = &apos;1&apos;.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_B512_ZMMT_WZXT" REMOTE="R" STEXT="物资形态文本">
+    <importing PARAMETER="IS_WRITE" TYP="CHAR1"/>
+    <exporting PARAMETER="RE_TYPE" TYP="BAPI_MTYPE"/>
+    <tables PARAMETER="T_WZXT" DBSTRUCT="ZMMT_WZXT"/>
+    <documentation PARAMETER="IS_WRITE" KIND="P" STEXT="单一字符标识" INDEX=" 001"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 002"/>
+    <documentation PARAMETER="T_WZXT" KIND="P" STEXT="物资形态" INDEX=" 003"/>
+    <fm_source>IF is_write = &apos;X&apos;.
+    MODIFY zmmt_wzxt FROM TABLE t_wzxt.
+    IF sy-subrc = 0.
+      COMMIT WORK AND WAIT .
+      re_type = &apos;S&apos;.
+    ELSE.
+      ROLLBACK WORK .
+      re_type = &apos;E&apos;.
+    ENDIF.
+  ELSE.
+    SELECT * FROM zmmt_wzxt INTO TABLE t_wzxt.
+    re_type = &apos;S&apos;.
+  ENDIF.</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_BANK_SAVEDATA" REMOTE="R" STEXT="银行主数据创建与修改">
+    <exporting PARAMETER="RE_TYPE" TYP="CHAR1"/>
+    <tables PARAMETER="T_BANK" DBSTRUCT="ZMDM_BNKA" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 001"/>
+    <documentation PARAMETER="T_BANK" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 002"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 003"/>
+    <fm_source_new>*{   INSERT         CP0K900347                                        1
+
+  data:l_bankct type bnka-banks,&quot;国家代码
+       l_bankey type bnka-bankl,&quot;银行代码
+       ls_bankadrr type BAPI1011_ADDRESS,&quot;银行主数据
+       ls_bkaddrx type BAPI1011_ADDRESSX,
+       l_method type bnka-chkme,&quot;检查方法
+       l_format type bnka-vers,&quot;含有银行数据文件的格式
+       ls_addr1 type BAPIADDR1.&quot;银行其他主数据
+  data:l_return type TABLE OF BAPIRET2 WITH HEADER LINE,&quot;返回信息
+       l_banks type bnka-banks,&quot;国家代码
+       l_BANKL type bnka-bankl.&quot;银行代码
+  data:wa_bnka type bnka.
+       &quot;
+
+  FIELD-SYMBOLS:&lt;fs_data&gt; like T_BANK.
+  DEFINE mapping_data.
+       IF &amp;1-banks IS INITIAL.
+         &amp;1-banks = &apos;CN&apos;.
+       ENDIF.
+
+       l_bankct = &amp;1-banks.
+       l_bankey = &amp;1-bankl.
+       l_method = &amp;1-chkme.
+       l_format = &amp;1-vers.
+
+        ls_bankadrr-BANK_NAME  = &amp;1-banka .
+        ls_bankadrr-REGION  = &amp;1-PROVZ .
+        ls_bankadrr-STREET  = &amp;1-STRAS .
+        ls_bankadrr-CITY  = &amp;1-ORT01 .
+        ls_bankadrr-SWIFT_CODE  = &amp;1-SWIFT .
+        ls_bankadrr-BANK_GROUP  = &amp;1-BGRUP .
+        ls_bankadrr-POBK_CURAC  = &amp;1-XPGRO .
+        ls_bankadrr-BANK_NO  = &amp;1-BNKLZ .
+        ls_bankadrr-POST_BANK  = &amp;1-PSKTO .
+        ls_bankadrr-BANK_BRANCH  = &amp;1-BRNCH .
+        ls_bankadrr-ADDR_NO  = &amp;1-ADRNR .
+
+     IF &amp;2 eq &apos;M&apos;.
+        ls_bkaddrx-BANK_NAME   = &apos;X&apos; .
+        ls_bkaddrx-REGION      = &apos;X&apos; .
+        ls_bkaddrx-STREET      = &apos;X&apos; .
+        ls_bkaddrx-CITY        = &apos;X&apos; .
+        ls_bkaddrx-SWIFT_CODE  = &apos;X&apos; .
+        ls_bkaddrx-BANK_GROUP  = &apos;X&apos; .
+        ls_bkaddrx-POBK_CURAC  = &apos;X&apos; .
+         ls_bkaddrx-BANK_NO     = &apos;X&apos; .
+        ls_bkaddrx-POST_BANK   = &apos;X&apos; .
+        ls_bkaddrx-BANK_BRANCH = &apos;X&apos; .
+        ls_bkaddrx-ADDR_NO     = &apos;X&apos; .
+     ENDIF.
+
+  END-OF-DEFINITION.
+
+  DEFINE add_return.
+    LOOP AT &amp;1 WHERE TYPE eq &apos;E&apos;.
+            ENDLOOP.
+            IF sy-subrc ne 0.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+                  EXPORTING
+                    WAIT = &apos;X&apos;
+                         .
+               &amp;2-RETYP = &apos;S&apos;.&quot;处理成功
+             ELSE.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+               &amp;2-RETYP = &apos;E&apos;.&quot;处理失败
+               LOOP AT &amp;1.
+                t_return = &amp;1.
+                append t_return .
+                CLEAR t_return.
+             ENDLOOP.
+            ENDIF.
+  END-OF-DEFINITION.
+
+
+    IF T_BANK[] is NOT INITIAL.
+      RE_TYPE = &apos;S&apos;.&quot;接收成功
+
+
+      LOOP AT T_BANK ASSIGNING &lt;fs_data&gt;.
+
+        SELECT SINGLE * FROM bnka into wa_bnka
+          WHERE banks = &lt;fs_data&gt;-banks and bankl = &lt;fs_data&gt;-bankl.&quot;查询数据在SAP中是否存在
+        IF sy-subrc eq 0.&quot;在SAP中存在：修改操作
+            mapping_data &lt;fs_data&gt; &apos;M&apos;.
+
+            CALL FUNCTION &apos;BAPI_BANK_CHANGE&apos;
+              EXPORTING
+                bankcountry          = l_bankct
+                bankkey              = l_bankey
+                bank_address         = ls_bankadrr
+                bank_addressx        = ls_bkaddrx
+             IMPORTING
+               RETURN               = l_return
+                      .
+
+            add_return l_return &lt;fs_data&gt;.&quot;结束消息返回
+
+        else.&quot;在SAP中不存在：新增操作
+          mapping_data &lt;fs_data&gt; &apos;&apos;.
+
+          CALL FUNCTION &apos;BAPI_BANK_CREATE&apos;
+           EXPORTING
+             bank_ctry             = l_bankct
+             BANK_KEY              = l_bankey
+             bank_address          = ls_bankadrr
+             BANK_METHOD           = l_method
+             BANK_FORMATTING       = l_format
+             BANK_ADDRESS1         = ls_addr1
+          IMPORTING
+             RETURN                = l_return
+             BANKCOUNTRY           = l_banks
+             BANKKEY               = l_bankl
+                   .
+
+          add_return l_return &lt;fs_data&gt;.&quot;结束消息返回
+
+        ENDIF.
+
+      ENDLOOP.
+
+    else.
+      RE_TYPE = &apos;E&apos;.&quot;接收失败
+    ENDIF.
+*}   INSERT</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFFI_MDM_CSKB_SAVEDATA" REMOTE="R" STEXT="成本要素创建">
+    <importing PARAMETER="L_KOKRS" OPTIONAL="X" TYP="KOKRS"/>
+    <exporting PARAMETER="RE_TYPE" TYP="CHAR1"/>
+    <tables PARAMETER="T_CSKB1" DBSTRUCT="ZMDM_CSKB" OPTIONAL="X"/>
+    <tables PARAMETER="T_CSKB2" DBSTRUCT="ZMDM_CSKB1" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="L_KOKRS" KIND="P" STEXT="控制范围" INDEX=" 001"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 002"/>
+    <documentation PARAMETER="T_CSKB1" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 003"/>
+    <documentation PARAMETER="T_CSKB2" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 004"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 005"/>
+    <fm_source_new>*{   INSERT         CP0K900347                                        1
+&quot;新增以系统标准函数：BAPI_COSTELEM_CREATEMULTIPLE进行创建
+&quot;修改以系统标准函数：BAPI_COSTELEM_CHANGEMULTIPLE进行修改
+
+
+
+   data:l_coarea type KOKRS,&quot;控制范围
+        l_costel type CO_KAINT,&quot;成本要素分类 (初级: 1  /次级:  2)
+        lt_costlist type TABLE OF BAPI1030_CEINPUTLIST WITH HEADER LINE.
+
+  data:l_return type table of BAPIRET2 WITH HEADER LINE,&quot;返回信息
+       l_banks type bnka-banks,&quot;国家代码
+       l_BANKL type bnka-bankl,&quot;银行代码
+       l_subrc like sy-subrc.
+  data:wa_cskb type cskb,
+       wa_cska type cska.
+       &quot;
+
+  FIELD-SYMBOLS:&lt;fs_data1&gt; like T_CSKB1,
+                &lt;fs_data2&gt; like T_CSKB2.
+
+ IF T_CSKB1[] IS NOT INITIAL &quot;成本要素基本视图
+   or T_CSKB2[] IS NOT INITIAL .&quot;成本要素业务视图
+
+  DEFINE mapping_data1.
+    l_coarea = L_KOKRS.&quot;控制范围
+    l_costel = &apos;1&apos;.
+
+    lt_costlist-COST_ELEM = &amp;1-KSTAR.&quot;        成本要素
+    lt_costlist-NAME = &amp;1-NAME   .&quot;      名称
+    lt_costlist-DESCRIPT = &amp;1-DESCRIPTION.&quot;  描述
+    lt_costlist-FUNC_AREA = &amp;1-FUNC_AREA    .&quot;功能范围
+    APPEND lt_costlist.
+    CLEAR lt_costlist.
+  END-OF-DEFINITION.
+  DEFINE mapping_data2.
+    l_coarea = &amp;1-KOKRS.&quot;控制范围
+    l_costel = &apos;2&apos;.
+
+    lt_costlist-COST_ELEM = &amp;1-KSTAR.&quot; 成本要素
+    lt_costlist-VALID_TO = &amp;1-DATAB.&quot; 起始日期
+    lt_costlist-VALID_FROM = &amp;1-DATBI.&quot; 截至日期
+    lt_costlist-CELEM_CATEGORY = &amp;1-KATYP.&quot; 成本要素类别
+*    lt_costlist-COST_ELEM = &amp;1-USNAM.&quot; 输入者
+    lt_costlist-CELEM_ATTRIBUTE = &amp;1-EIGEN.&quot; 属性组
+*    lt_costlist-COST_ELEM = &amp;1-PLAZU.&quot; 计划存取
+*    lt_costlist-COST_ELEM = &amp;1-PLAOR.&quot; PL
+*    lt_costlist-COST_ELEM = &amp;1-PLAUS.&quot; PU
+    lt_costlist-DEFAULT_COSTCENTER = &amp;1-KOSTL.&quot; 成本中心
+    lt_costlist-DEFAULT_ORDER = &amp;1-AUFNR.&quot; 订单号
+    lt_costlist-RECORD_QUANTITY = &amp;1-MGEFL.&quot; 数量
+    lt_costlist-UNIT_OF_MEASURE = &amp;1-MSEHI.&quot; MU
+*    lt_costlist-COST_ELEM = &amp;1-DEAKT.&quot; DA
+*    lt_costlist-COST_ELEM = &amp;1-LOEVM.&quot; DF
+    lt_costlist-JV_REC_IND = &amp;1-RECID.&quot; 回收
+*    lt_costlist- = &amp;1-ERSDA.&quot; 创建日期
+    APPEND lt_costlist.
+    CLEAR lt_costlist.
+  END-OF-DEFINITION.
+  DEFINE add_return.
+          LOOP AT &amp;1 WHERE TYPE eq &apos;E&apos;.
+          ENDLOOP.
+            IF sy-subrc ne 0.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+                  EXPORTING
+                    WAIT = &apos;X&apos;
+                         .
+               &amp;2-RETYP = &apos;S&apos;.&quot;处理成功
+             ELSE.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+               &amp;2-RETYP = &apos;E&apos;.&quot;处理失败
+               LOOP AT &amp;1.
+                t_return = &amp;1.
+                t_return-MESSAGE = &apos;成本要素：&apos; &amp;&amp; &amp;2-KSTAR &amp;&amp; &apos;报错：&apos; &amp;&amp; t_return-message.
+                append t_return .
+                CLEAR t_return.
+             ENDLOOP.
+            ENDIF.
+  END-OF-DEFINITION.
+
+      LOOP AT T_CSKB1 ASSIGNING &lt;fs_data1&gt;.&quot;初级成本要素：成本要素基础视图
+        REFRESH lt_costlist.
+        SELECT SINGLE * FROM cska INTO wa_cska
+          WHERE KTOPL = &lt;fs_data1&gt;-KTOPL
+          and KSTAR = &lt;fs_data1&gt;-KSTAR.&quot;检查是否存在
+        IF sy-subrc eq 0.&quot;存在执行修改操作
+            IF L_KOKRS is NOT INITIAL.
+                mapping_data1 &lt;fs_data1&gt; .
+
+              CALL FUNCTION &apos;BAPI_COSTELEM_CHANGEMULTIPLE&apos;
+                EXPORTING
+                  coarea                = l_coarea
+                tables
+                  costelementlist       = lt_costlist
+                  return                = l_return
+                        .
+              add_return l_return &lt;fs_data1&gt;.
+             else.
+               l_return-type = &apos;E&apos;.
+               l_return-message = &apos;请检查输入参数L_KOKRS:控制范围是否有值&apos;.
+               APPEND l_return.
+               add_return l_return &lt;fs_data1&gt;.
+            ENDIF.
+
+        else.&quot;不存在执行新增操作
+
+          IF L_KOKRS is NOT INITIAL.
+            mapping_data1 &lt;fs_data1&gt; .
+
+            CALL FUNCTION &apos;BAPI_COSTELEM_CREATEMULTIPLE&apos;
+              EXPORTING
+                coarea                = l_coarea
+                COSTELEMCLASS         = l_costel
+              tables
+                costelementlist       = lt_costlist
+                return                = l_return
+                      .
+            add_return l_return &lt;fs_data1&gt;.
+           else.
+               l_return-type = &apos;E&apos;.
+               l_return-message = &apos;请检查输入参数L_KOKRS:控制范围是否有值&apos;.
+               append l_return.
+               add_return l_return &lt;fs_data1&gt;.
+            ENDIF.
+        ENDIF.
+
+
+
+      ENDLOOP.
+
+      LOOP AT T_CSKB2 ASSIGNING &lt;fs_data2&gt;.&quot;次级成本要素：成本要素业务视图
+        REFRESH lt_costlist.
+        SELECT SINGLE * FROM cskb INTO wa_cskb
+          WHERE KOKRS = &lt;fs_data2&gt;-KOKRS
+          and KSTAR = &lt;fs_data2&gt;-KSTAR
+          and DATBI = &lt;fs_data2&gt;-DATBI
+          .&quot;检查成本要素是否存在
+
+        IF sy-subrc eq 0.&quot;存在执行修改操作
+
+          mapping_data2 &lt;fs_data2&gt; .
+
+          CALL FUNCTION &apos;BAPI_COSTELEM_CHANGEMULTIPLE&apos;
+            EXPORTING
+              coarea                = l_coarea
+            tables
+              costelementlist       = lt_costlist
+              return                = l_return
+                    .
+            add_return l_return &lt;fs_data2&gt;.
+         ELSE.&quot;不存在执行新增操作
+            mapping_data2 &lt;fs_data2&gt; .
+
+           CALL FUNCTION &apos;BAPI_COSTELEM_CREATEMULTIPLE&apos;
+             EXPORTING
+               coarea                = l_coarea
+               COSTELEMCLASS         = l_costel
+             tables
+               costelementlist       = lt_costlist
+               return                = l_return
+                     .
+           add_return l_return &lt;fs_data2&gt;.
+
+        ENDIF.
+
+
+      ENDLOOP.
+      RE_TYPE = &apos;S&apos;    .
+  ELSE.
+    RE_TYPE = &apos;E&apos;    .
+
+ENDIF.
+
+*}   INSERT</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFFI_MDM_ACCT_SAVEDATA" REMOTE="R" STEXT="会计科目创建">
+    <exporting PARAMETER="RE_TYPE" TYP="CHAR1"/>
+    <tables PARAMETER="T_SKA1" DBSTRUCT="ZMDM_SKA1" OPTIONAL="X"/>
+    <tables PARAMETER="T_SKB1" DBSTRUCT="ZMDM_SKB1" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 001"/>
+    <documentation PARAMETER="T_SKA1" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 002"/>
+    <documentation PARAMETER="T_SKB1" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 003"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 004"/>
+    <fm_source_new>*{   INSERT         CP0K900347                                        1
+
+*    ACTIVITY_MODIFY: VALUE &apos;2&apos;,
+*    ACTIVITY_CREATE: VALUE &apos;3&apos;,
+DATA:l_activity(1),
+     l_acct_no type saknr,
+     l_ct_acct type ktopl,
+     l_data_coa type glaccount_coa_data,
+     l_data_name type glaccount_name_data,
+     l_compy_code type bukrs,
+     l_data_ccode type glaccount_ccode_data.
+
+DATA:ACCOUNT_COA  TYPE  GLACCOUNT_COA,
+      ACCOUNT_NAMES TYPE  GLACCOUNT_NAME_TABLE,
+      ACCOUNT_KEYWORDS  TYPE  GLACCOUNT_KEYWORD_TABLE,
+      ACCOUNT_CCODES  TYPE  GLACCOUNT_CCODE_TABLE,
+      RETURN  TYPE TABLE OF BAPIRET2 WITH HEADER LINE.
+data:l_coa_key type GLACCOUNT_COA_KEY,
+     l_ccode_key type GLACCOUNT_CCODE_KEY.
+
+  DATA:l_ACCT_NAME_key type GLACCOUNT_NAME_KEY.
+  data:lt_GLACCT_NAME type TABLE OF GLACCOUNT_NAME WITH HEADER LINE,
+       lt_acct_NAME_DATA type GLACCOUNT_NAME_DATA.
+
+  data:lt_acct_ccodes type TABLE OF GLACCOUNT_CCODE WITH HEADER LINE.
+
+  DATA:WA_SKA1 TYPE SKA1,
+        WA_SKB1 TYPE SKB1.
+
+FIELD-SYMBOLS:&lt;fs_data1&gt; like t_ska1,
+              &lt;fs_data2&gt; like t_skb1.
+  DEFINE add_return.
+            LOOP AT &amp;1 WHERE TYPE eq &apos;E&apos;.
+            ENDLOOP.
+            IF sy-subrc ne 0.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+                  EXPORTING
+                    WAIT = &apos;X&apos;
+                         .
+               &amp;2-RETYP = &apos;S&apos;.&quot;处理成功
+             ELSE.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+               &amp;2-RETYP = &apos;E&apos;.&quot;处理失败
+               LOOP AT &amp;1.
+                t_return = &amp;1.
+                t_return-MESSAGE = &apos;科目&apos; &amp;&amp; &amp;2-SAKNR &amp;&amp; &apos;出错:&apos; &amp;&amp; t_return-MESSAGE .
+                append t_return .
+                CLEAR t_return.
+             ENDLOOP.
+            ENDIF.
+  END-OF-DEFINITION.
+
+
+DEFINE add_ska1_data.
+
+  l_coa_key-KTOPL = &amp;1-KTOPL.&quot;帐目表
+  l_coa_key-SAKNR = &amp;1-SAKNR.&quot;总账科目编号
+
+
+  l_ACCT_NAME_key-KTOPL = &amp;1-KTOPL.&quot;帐目表
+  l_ACCT_NAME_key-SAKNR = &amp;1-SAKNR.&quot;总账科目编号
+  l_ACCT_NAME_key-SPRAS = &apos;1&apos;.&quot;默认为中文描述
+  lt_acct_NAME_DATA-TXT20 = &amp;1-TXT20     .&quot;总帐科目名称
+  lt_acct_NAME_DATA-TXT50 = &amp;1-TXT50    .&quot;长文本
+
+  lt_GLACCT_NAME-keyy = l_ACCT_NAME_key.
+  lt_GLACCT_NAME-data = lt_acct_NAME_DATA.
+
+  l_data_coa-XBILK = &amp;1-XBILK     .&quot;B/S科目
+  l_data_coa-BILKT = &amp;1-BILKT     .&quot;集团科目
+*  &amp;1-ERDAT     .&quot;日期
+*  &amp;1-ERNAM     .&quot;创建者
+  l_data_coa-GVTYP = &amp;1-GVTYP    .&quot;AT
+  l_data_coa-KTOKS = &amp;1-KTOKS     .&quot;组
+  l_data_coa-MUSTR = &amp;1-MUSTR     .&quot;样本科目
+  l_data_coa-VBUND = &amp;1-VBUND    .&quot;Tr.prt
+  l_data_coa-XLOEV = &amp;1-XLOEV     .&quot;XLOEV
+  l_data_coa-XSPEA = &amp;1-XSPEA    .&quot;冻结创建
+  l_data_coa-XSPEB = &amp;1-XSPEB    .&quot;过帐冻结
+  l_data_coa-XSPEP = &amp;1-XSPEP    .&quot;冻结计划
+  l_data_coa-FUNC_AREA = &amp;1-FUNC_AREA .&quot;功能范围
+  l_data_name-TXT20 = &amp;1-TXT20     .&quot;总帐科目名称
+  l_data_name-TXT50 = &amp;1-TXT50    .&quot;长文本
+*  MCOD1     .&quot;MCOD1
+END-OF-DEFINITION.
+DEFINE add_skb1_data.
+  l_ccode_key-SAKNR = &amp;1-SAKNR    .&quot;总账科目编号
+  l_ccode_key-BUKRS = &amp;1-BUKRS    .&quot;公司代码
+
+  l_acct_no = &amp;1-SAKNR    .&quot;总账科目编号
+  l_compy_code = &amp;1-BUKRS    .&quot;公司代码
+  l_data_ccode-BEGRU = &amp;1-BEGRU    .&quot;权限组
+
+*ERDAT    .&quot;日期
+*ERNAM    .&quot;创建者
+*FDGRV    .&quot;计划组
+*FIPLS    .&quot;FBI
+
+*STEXT    .&quot;总帐科目附加文本
+*l_data_name-TXT50 = &amp;1-STEXT    .&quot;长文本
+
+
+l_data_ccode-FDLEV  = &amp;1-FDLEV    .&quot;层次
+l_data_ccode-BUSAB  = &amp;1-BUSAB    .&quot;会计职员
+l_data_ccode-DATLZ  = &amp;1-DATLZ    .&quot;上次计算日
+l_data_ccode-FSTAG  = &amp;1-FSTAG    .&quot;字段状态组
+l_data_ccode-HBKID  = &amp;1-HBKID    .&quot;开户银行
+l_data_ccode-HKTID  = &amp;1-HKTID    .&quot;帐户标识
+l_data_ccode-KDFSL  = &amp;1-KDFSL    .&quot;汇率差额码
+l_data_ccode-MITKZ  = &amp;1-MITKZ    .&quot;统驭科目
+l_data_ccode-MWSKZ  = &amp;1-MWSKZ    .&quot;税
+l_data_ccode-VZSKZ  = &amp;1-VZSKZ    .&quot;利息标志
+l_data_ccode-WAERS  = &amp;1-WAERS    .&quot;货币
+l_data_ccode-WMETH  = &amp;1-WMETH    .&quot;扩展帐户
+l_data_ccode-XGKON  = &amp;1-XGKON    .&quot;C
+l_data_ccode-XINTB  = &amp;1-XINTB    .&quot;XINTB
+l_data_ccode-XLOEB  = &amp;1-XLOEB    .&quot;XLOEB
+l_data_ccode-XOPVW  = &amp;1-XOPVW    .&quot;未清项管理
+l_data_ccode-XSPEB  = &amp;1-XSPEB    .&quot;过帐冻结
+l_data_ccode-ZINDT  = &amp;1-ZINDT    .&quot;上次计算日
+l_data_ccode-ZINRT  = &amp;1-ZINRT    .&quot;利息计算率
+l_data_ccode-ZUAWA  = &amp;1-ZUAWA    .&quot;排序
+l_data_ccode-ALTKT  = &amp;1-ALTKT    .&quot;备选科目
+l_data_ccode-XMITK  = &amp;1-XMITK    .&quot;Re.act rdy
+l_data_ccode-RECID  = &amp;1-RECID    .&quot;回收
+l_data_ccode-FIPOS  = &amp;1-FIPOS    .&quot;承诺项目
+l_data_ccode-XMWNO  = &amp;1-XMWNO    .&quot;含/不含税
+l_data_ccode-XSALH  = &amp;1-XSALH    .&quot;本位币余额
+l_data_ccode-BEWGP  = &amp;1-BEWGP    .&quot;评估组
+l_data_ccode-INFKY  = &amp;1-INFKY    .&quot;通胀键值码
+l_data_ccode-TOGRU  = &amp;1-TOGRU    .&quot;容差组
+l_data_ccode-XLGCLR = &amp;1-XLGCLR   .&quot;分类帐组特定的清帐
+l_data_ccode-XNKON  = &amp;1-XNKON .&quot;补充
+l_data_ccode-XKRES  = &amp;1-XKRES .&quot;XKRES
+
+
+END-OF-DEFINITION.
+
+IF t_ska1[] is NOT INITIAL or t_skb1[] is NOT INITIAL.
+  RE_TYPE = &apos;S&apos;.
+ELSE.
+  RE_TYPE = &apos;E&apos;.
+  EXIT.
+ENDIF.
+
+LOOP AT t_ska1 ASSIGNING &lt;fs_data1&gt;.
+  CLEAR:ACCOUNT_COA,ACCOUNT_NAMES.
+
+  IF &lt;fs_data1&gt;-TXT20 is INITIAL.
+    SELECT SINGLE txt20 INTO &lt;fs_data1&gt;-TXT20 FROM skat
+      WHERE SPRAS = &apos;1&apos;
+      AND KTOPL = &lt;fs_data1&gt;-KTOPL
+    AND SAKNR = &lt;fs_data1&gt;-SAKNR.
+  ELSEIF &lt;fs_data1&gt;-TXT50 is INITIAL.
+    SELECT SINGLE txt50 INTO &lt;fs_data1&gt;-TXT50 FROM skat
+      WHERE SPRAS = &apos;1&apos;
+      AND KTOPL = &lt;fs_data1&gt;-KTOPL
+    AND SAKNR = &lt;fs_data1&gt;-SAKNR.
+  ENDIF.
+
+  add_ska1_data &lt;fs_data1&gt;.
+
+  SELECT SINGLE * FROM SKA1 INTO WA_SKA1
+    WHERE KTOPL = &lt;fs_data1&gt;-KTOPL
+    AND SAKNR = &lt;fs_data1&gt;-SAKNR.&quot;检查会计科目是否存在
+  IF sy-subrc eq 0.&quot;存在则执行修改操作
+    IF lt_GLACCT_NAME is NOT INITIAL.
+      lt_GLACCT_NAME-action = &apos;U&apos;.
+    endif.
+    ACCOUNT_COA-ACTION = &apos;U&apos;.
+  else.&quot;不存在执行新增操作
+    lt_GLACCT_NAME-action = &apos;I&apos;.
+    ACCOUNT_COA-ACTION = &apos;I&apos;.
+  ENDIF.
+
+    APPEND lt_GLACCT_NAME.
+    ACCOUNT_NAMES = lt_GLACCT_NAME[].
+
+
+  ACCOUNT_COA-data = l_data_coa.
+  ACCOUNT_COA-KEYY = l_coa_key.
+
+  CALL FUNCTION &apos;GL_ACCT_MASTER_SAVE_RFC&apos;
+   CHANGING
+     ACCOUNT_COA              = ACCOUNT_COA
+     ACCOUNT_NAMES            = ACCOUNT_NAMES
+     ACCOUNT_KEYWORDS         = ACCOUNT_KEYWORDS
+*     ACCOUNT_CCODES           = ACCOUNT_CCODES
+     RETURN                   = RETURN[]
+   EXCEPTIONS
+     LOGON_ERROR              = 1
+     ERROR                    = 2
+     OTHERS                   = 3
+            .
+  IF sy-subrc &lt;&gt; 0.
+* Implement suitable error handling here
+  ENDIF.
+
+   add_return RETURN &lt;fs_data1&gt;.
+
+ENDLOOP.
+
+
+LOOP AT t_skb1 ASSIGNING &lt;fs_data2&gt;.
+  CLEAR:ACCOUNT_CCODES,ACCOUNT_NAMES.
+  add_skb1_data &lt;fs_data2&gt;.
+
+  SELECT SINGLE * FROM SKB1 INTO WA_SKB1
+    WHERE BUKRS = &lt;fs_data2&gt;-BUKRS
+    AND SAKNR = &lt;fs_data2&gt;-SAKNR.&quot;检查会计科目是否存在
+
+  IF sy-subrc eq 0.&quot;存在则执行修改操作
+    lt_acct_ccodes-ACTION = &apos;U&apos;.
+  else.&quot;不存在执行新增操作
+    lt_acct_ccodes-ACTION = &apos;I&apos;.
+  ENDIF.
+
+  lt_acct_ccodes-KEYY = l_ccode_key.
+  lt_acct_ccodes-DATA = l_data_ccode.
+  APPEND lt_acct_ccodes.
+
+  ACCOUNT_CCODES = lt_acct_ccodes[].
+
+    CALL FUNCTION &apos;GL_ACCT_MASTER_SAVE_RFC&apos;
+      CHANGING
+*           ACCOUNT_COA              = ACCOUNT_COA
+*           ACCOUNT_NAMES            = ACCOUNT_NAMES
+*           ACCOUNT_KEYWORDS         = ACCOUNT_KEYWORDS
+           ACCOUNT_CCODES           = ACCOUNT_CCODES
+           RETURN                   = RETURN[]
+         EXCEPTIONS
+           LOGON_ERROR              = 1
+           ERROR                    = 2
+           OTHERS                   = 3
+            .
+  IF sy-subrc &lt;&gt; 0.
+* Implement suitable error handling here
+  ENDIF.
+  add_return RETURN &lt;fs_data2&gt;.
+
+ENDLOOP.
+
+
+*}   INSERT</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_KNTB_SAVEDATA" REMOTE="R" STEXT="客户主数据创建与修改">
+    <exporting PARAMETER="RE_TYPE" TYP="CHAR1"/>
+    <tables PARAMETER="T_KNTB" DBSTRUCT="ZMDM_KNABV" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 001"/>
+    <documentation PARAMETER="T_KNTB" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 002"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 003"/>
+    <fm_source_new>*{   INSERT         CP0K900347                                        1
+
+
+  data:l_return type TABLE OF BAPIRET2 WITH HEADER LINE,&quot;返回信息
+       WA_RETURN TYPE BAPIRETURN1.
+  data:wa_kna1 type kna1,
+        wa_knb1 type knb1,
+        wa_knvv type knvv.
+       &quot;
+
+  FIELD-SYMBOLS:&lt;fs_data&gt; like T_KNTB.
+*****************字段赋值 10.11.2015 18:09:41**************************************
+  DEFINE mapping_data.
+    MOVE-CORRESPONDING &amp;1 TO wa_kna1.
+    MOVE-CORRESPONDING &amp;1 TO wa_knb1.
+    MOVE-CORRESPONDING &amp;1 TO wa_knvv.
+  END-OF-DEFINITION.
+
+  DEFINE add_return.
+            LOOP AT &amp;1 WHERE TYPE eq &apos;E&apos;.
+            ENDLOOP.
+            IF sy-subrc ne 0.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+                  EXPORTING
+                    WAIT = &apos;X&apos;
+                         .
+               &amp;2-RETYP = &apos;S&apos;.&quot;处理成功
+             ELSE.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+               &amp;2-RETYP = &apos;E&apos;.&quot;处理失败
+               LOOP AT &amp;1.
+                t_return = &amp;1.
+                append t_return .
+                CLEAR t_return.
+             ENDLOOP.
+            ENDIF.
+  END-OF-DEFINITION.
+
+*****************测试使用 10.11.2015 18:00:47**************************************
+    SELECT * INTO WA_kna1 FROM kna1
+        WHERE kunnr = &apos;0001010755&apos; .
+
+      SELECT SINGLE * INTO wa_knb1 FROM knb1
+        WHERE kunnr = wa_kna1-kunnr.
+
+      SELECT SINGLE * INTO wa_knvv FROM knvv
+        WHERE kunnr = wa_kna1-kunnr.
+
+      MOVE-CORRESPONDING WA_kna1 TO T_KNTB.
+      MOVE-CORRESPONDING WA_knb1 TO T_KNTB.
+      MOVE-CORRESPONDING WA_knvv TO T_KNTB.
+
+
+    ENDSELECT.
+
+    APPEND T_KNTB.
+
+*****************测试使用 10.11.2015 18:00:56**************************************
+
+    IF T_KNTB[] is NOT INITIAL.
+      RE_TYPE = &apos;S&apos;.&quot;接收成功
+
+      LOOP AT T_KNTB ASSIGNING &lt;fs_data&gt;.
+
+
+            mapping_data &lt;fs_data&gt; .
+
+              CALL FUNCTION &apos;SD_CUSTOMER_MAINTAIN_ALL&apos;
+               EXPORTING
+                 I_KNA1                              = wa_kna1
+                 I_KNB1                              = wa_knb1
+                 I_KNVV                              = wa_knvv
+                 I_MAINTAIN_ADDRESS_BY_KNA1          = &apos;X&apos;
+                 PI_POSTFLAG                         = &apos;X&apos;
+               EXCEPTIONS
+                 CLIENT_ERROR                        = 1
+                 KNA1_INCOMPLETE                     = 2
+                 KNB1_INCOMPLETE                     = 3
+                 KNB5_INCOMPLETE                     = 4
+                 KNVV_INCOMPLETE                     = 5
+                 KUNNR_NOT_UNIQUE                    = 6
+                 SALES_AREA_NOT_UNIQUE               = 7
+                 SALES_AREA_NOT_VALID                = 8
+                 INSERT_UPDATE_CONFLICT              = 9
+                 NUMBER_ASSIGNMENT_ERROR             = 10
+                 NUMBER_NOT_IN_RANGE                 = 11
+                 NUMBER_RANGE_NOT_EXTERN             = 12
+                 NUMBER_RANGE_NOT_INTERN             = 13
+                 ACCOUNT_GROUP_NOT_VALID             = 14
+                 PARNR_INVALID                       = 15
+                 BANK_ADDRESS_INVALID                = 16
+                 TAX_DATA_NOT_VALID                  = 17
+                 NO_AUTHORITY                        = 18
+                 COMPANY_CODE_NOT_UNIQUE             = 19
+                 DUNNING_DATA_NOT_VALID              = 20
+                 KNB1_REFERENCE_INVALID              = 21
+                 CAM_ERROR                           = 22
+                 OTHERS                              = 23
+                        .
+              IF sy-subrc &lt;&gt; 0.
+* Implement suitable error handling here
+              ENDIF.
+
+
+  PERFORM RETURNSUBRC_1(SAPLV02D)
+             USING    SY-SUBRC
+                      wa_kna1-KUNNR
+             CHANGING wa_kna1-KUNNR
+                      WA_RETURN.
+
+            IF WA_RETURN IS NOT INITIAL.
+                REFRESH l_return.
+                MOVE-CORRESPONDING WA_RETURN TO l_return.
+                APPEND l_return.
+            ENDIF.
+
+
+            add_return l_return &lt;fs_data&gt;.&quot;结束消息返回
+
+      ENDLOOP.
+
+    else.
+      RE_TYPE = &apos;E&apos;.&quot;接收失败
+    ENDIF.
+
+
+
+
+*}   INSERT
+*{   INSERT         CP0K900347                                        1
+
+*}   INSERT</fm_source_new>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_VENDOR_SAVEDATA" REMOTE="R" STEXT="供应商主数据创建与修改">
+    <exporting PARAMETER="RE_TYPE" TYP="CHAR1"/>
+    <tables PARAMETER="T_VENDOR" DBSTRUCT="ZVENDOR" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 001"/>
+    <documentation PARAMETER="T_VENDOR" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 002"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 003"/>
+    <fm_source>*{   INSERT         CP0K900347                                        1
+
+
+  data:wa_lfa1 type lfa1,
+        wa_lfb1 type lfb1,
+        wa_lfm1 type lfm1,
+        wa_ylfa1 type lfa1,
+        wa_ylfb1 type lfb1,
+        wa_ylfm1 type lfm1,
+        wa_adrc type adrc.
+  data:
+        T_XKNVK	type TABLE OF	FKNVK WITH HEADER LINE,
+        T_XLFAS	type TABLE OF	FLFAS WITH HEADER LINE,
+        T_XLFB5	type TABLE OF FLFB5 WITH HEADER LINE,
+        T_XLFBK	type TABLE OF FLFBK WITH HEADER LINE,
+        T_XLFZA	type TABLE OF FLFZA WITH HEADER LINE,
+        T_YLFAS	type TABLE OF FLFAS WITH HEADER LINE,
+        T_YLFB5	type TABLE OF FLFB5 WITH HEADER LINE,
+        T_YLFBK	type TABLE OF FLFBK WITH HEADER LINE,
+        T_YLFZA	type TABLE OF FLFZA WITH HEADER LINE.
+
+  DATA:l_return type TABLE OF BAPIRET2  WITH HEADER LINE.
+
+
+  FIELD-SYMBOLS:&lt;fs_data&gt; like T_VENDOR.
+  DEFINE mapping_data.
+    IF &amp;1-LAND1 is INITIAL.
+      &amp;1-LAND1 = &apos;CN&apos;.
+    ENDIF.
+
+    MOVE-CORRESPONDING &amp;1 TO wa_ylfa1.
+    wa_ylfa1-CONFS = &amp;1-CONFSA.
+    wa_ylfa1-LOEVM = &amp;1-LOEVMA.
+    wa_ylfa1-NODEL = &amp;1-NODELA.
+    wa_ylfa1-SPERR = &amp;1-SPERRA.
+
+    IF &amp;1-bukrs is NOT INITIAL.
+      MOVE-CORRESPONDING &amp;1 TO wa_ylfb1.
+      wa_ylfb1-CONFS = &amp;1-CONFSB.
+      wa_ylfb1-LOEVM = &amp;1-LOEVMB.
+      wa_ylfb1-NODEL = &amp;1-NODELB.
+      wa_ylfb1-SPERR = &amp;1-SPERRB.
+    ENDIF.
+
+
+  END-OF-DEFINITION.
+
+  DEFINE add_return.
+    LOOP AT &amp;1 WHERE TYPE eq &apos;E&apos;.
+            ENDLOOP.
+            IF sy-subrc ne 0.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+                  EXPORTING
+                    WAIT = &apos;X&apos;
+                         .
+               &amp;2-RETYP = &apos;S&apos;.&quot;处理成功
+             ELSE.
+               CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+               &amp;2-RETYP = &apos;E&apos;.&quot;处理失败
+               LOOP AT &amp;1.
+                t_return = &amp;1.
+                append t_return .
+                CLEAR t_return.
+             ENDLOOP.
+            ENDIF.
+  END-OF-DEFINITION.
+
+
+    IF T_VENDOR[] is NOT INITIAL.
+      RE_TYPE = &apos;S&apos;.&quot;接收成功
+
+      LOOP AT T_VENDOR ASSIGNING &lt;fs_data&gt;.
+        REFRESH l_return.
+
+
+        SELECT SINGLE * FROM lfa1 into wa_lfa1
+          WHERE LIFNR = &lt;fs_data&gt;-LIFNR.&quot;查询数据在SAP中是否存在
+        IF sy-subrc eq 0.&quot;在SAP中存在：修改操作
+          SELECT SINGLE * FROM lfb1 into wa_lfb1
+          WHERE LIFNR = &lt;fs_data&gt;-LIFNR
+            and bukrs = &lt;fs_data&gt;-bukrs.
+
+            CALL FUNCTION &apos;CONVERSION_EXIT_ALPHA_INPUT&apos;
+              EXPORTING
+                input         = &lt;fs_data&gt;-ADRNR
+             IMPORTING
+               OUTPUT        = &lt;fs_data&gt;-ADRNR
+                      .
+
+
+            SELECT SINGLE * INTO wa_adrc FROM adrc
+              WHERE ADDRNUMBER = &lt;fs_data&gt;-ADRNR.
+
+            IF sy-subrc eq 0.
+                mapping_data &lt;fs_data&gt;.
+
+                CALL FUNCTION &apos;VENDOR_UPDATE&apos;
+                  EXPORTING
+                    i_lfa1        = wa_ylfa1
+                    i_lfb1        = wa_ylfb1
+                    i_lfm1        = wa_ylfm1
+                    i_ylfa1       = wa_ylfa1
+                    i_ylfb1       = wa_ylfb1
+                    i_ylfm1       = wa_ylfm1
+                  TABLES
+                    t_xlfas       = t_xlfas
+                    t_xlfb5       = t_xlfb5
+                    t_xlfbk       = t_xlfbk
+                    t_xlfza       = t_xlfza
+                    t_ylfas       = t_ylfas
+                    t_ylfb5       = t_ylfb5
+                    t_ylfbk       = t_ylfbk
+                    t_ylfza       = t_ylfza
+*                   T_XKNVK       =
+*                   T_YKNVK       =
+                          .
+              ELSE.
+                l_return-type = &apos;E&apos;.
+                l_return-message = &apos;地址编码字段ADRNR值在ADRC表中不存在&apos;.
+                append l_return.
+            ENDIF.
+
+
+            add_return l_return &lt;fs_data&gt;.&quot;结束消息返回
+
+        else.&quot;在SAP中不存在：新增操作
+          SELECT SINGLE * INTO wa_adrc FROM adrc
+              WHERE ADDRNUMBER = &lt;fs_data&gt;-ADRNR.
+
+            IF sy-subrc eq 0.
+
+          mapping_data &lt;fs_data&gt; .
+
+          CALL FUNCTION &apos;VENDOR_INSERT&apos;
+              EXPORTING
+                i_lfa1        = wa_ylfa1
+                i_lfb1        = wa_ylfb1
+                i_lfm1        = wa_ylfm1
+              TABLES
+                t_xlfas       = t_xlfas
+                t_xlfb5       = t_xlfb5
+                t_xlfbk       = t_xlfbk
+                t_xlfza       = t_xlfza
+*               T_XKNVK       =
+                      .
+              ELSE.
+                l_return-type = &apos;E&apos;.
+                l_return-message = &apos;地址编码字段ADRNR值在ADRC表中不存在&apos;.
+                append l_return.
+            ENDIF.
+
+          add_return l_return &lt;fs_data&gt;.&quot;结束消息返回
+
+        ENDIF.
+
+      ENDLOOP.
+
+    else.
+      RE_TYPE = &apos;E&apos;.&quot;接收失败
+    ENDIF.
+
+
+
+
+*}   INSERT</fm_source>
+   </functionmodule>
+   <functionmodule NAME="ZFMM_MDM_MATERIAL_SAVEDATA_NEW" REMOTE="R" STEXT="物料主数据创建与修改">
+    <importing PARAMETER="HEADDATA" TYP="BAPIMATHEAD"/>
+    <importing PARAMETER="S_MATERIAL" OPTIONAL="X" TYP="ZSMATERIAL"/>
+    <exporting PARAMETER="RE_TYPE" TYP="CHAR1"/>
+    <exporting PARAMETER="RETURN" DBFIELD="BAPIRET2"/>
+    <tables PARAMETER="T_BANK" DBSTRUCT="ZMDM_BNKA" OPTIONAL="X"/>
+    <tables PARAMETER="T_RETURN" DBSTRUCT="BAPIRET2" OPTIONAL="X"/>
+    <documentation PARAMETER="HEADDATA" KIND="P" STEXT="带有控制信息的表头段" INDEX=" 001"/>
+    <documentation PARAMETER="S_MATERIAL" KIND="P" STEXT="物料主数据（基本视图结构）" INDEX=" 002"/>
+    <documentation PARAMETER="RE_TYPE" KIND="P" STEXT="消息类型: S 成功,E 错误,W 警告,I 信息,A 中断" INDEX=" 003"/>
+    <documentation PARAMETER="RETURN" KIND="P" STEXT="返回参数" INDEX=" 004"/>
+    <documentation PARAMETER="T_BANK" KIND="P" STEXT="mdm-sap接口结构" INDEX=" 005"/>
+    <documentation PARAMETER="T_RETURN" KIND="P" STEXT="返回参数" INDEX=" 006"/>
+    <fm_source_new>*{   INSERT         CP0K900347                                        1
+
+*****************变量定义-start 12.11.2015 17:53:38**************************************
+data:CLIENTDATA  LIKE  BAPI_MARA                           ,
+CLIENTDATAX LIKE  BAPI_MARAX                          ,
+PLANTDATA LIKE  BAPI_MARC                             ,
+PLANTDATAX  LIKE  BAPI_MARCX                          ,
+FORECASTPARAMETERS  LIKE  BAPI_MPOP                   ,
+FORECASTPARAMETERSX LIKE  BAPI_MPOPX                  ,
+PLANNINGDATA  LIKE  BAPI_MPGD                         ,
+PLANNINGDATAX LIKE  BAPI_MPGDX                        ,
+STORAGELOCATIONDATA LIKE  BAPI_MARD                   ,
+STORAGELOCATIONDATAX  LIKE  BAPI_MARDX                ,
+VALUATIONDATA LIKE  BAPI_MBEW                         ,
+VALUATIONDATAX  LIKE  BAPI_MBEWX                      ,
+WAREHOUSENUMBERDATA LIKE  BAPI_MLGN                   ,
+WAREHOUSENUMBERDATAX  LIKE  BAPI_MLGNX                ,
+SALESDATA LIKE  BAPI_MVKE                             ,
+SALESDATAX  LIKE  BAPI_MVKEX                          ,
+STORAGETYPEDATA LIKE  BAPI_MLGT                       ,
+STORAGETYPEDATAX  LIKE  BAPI_MLGTX                    ,
+FLAG_ONLINE LIKE  BAPIE1GLOBAL_DATA-TESTRUN           ,
+FLAG_CAD_CALL LIKE  BAPIE1GLOBAL_DATA-TESTRUN         ,
+NO_DEQUEUE  LIKE  BAPIE1GLOBAL_DATA-TESTRUN           ,
+NO_ROLLBACK_WORK  LIKE  BAPIE1GLOBAL_DATA-TESTRUN     ,
+JBSJTEXT  TYPE  CHAR512                               ,
+CGDDTEXT  TYPE  CHAR512                               ,
+JYTEXT  TYPE  CHAR512                                 ,
+XSTEXT  LIKE  ZFMM_S_XSTEXT                           ,
+BAPI_TE_MARA  LIKE  BAPI_TE_MARA                      ,
+BAPI_TE_MARAX LIKE  BAPI_TE_MARAX                     ,
+ZBASE_UOM TYPE  CHAR3                                 ,
+BAPI_TE_MARC  LIKE  BAPI_TE_MARC                      ,
+BAPI_TE_MARCX LIKE  BAPI_TE_MARCX                     ,
+MATERIALDESCRIPTION type table of   BAPI_MAKT WITH HEADER LINE,
+UNITSOFMEASURE  type table of   BAPI_MARM            with header line,
+UNITSOFMEASUREX type table of   BAPI_MARMX           with header line,
+INTERNATIONALARTNOS type table of   BAPI_MEAN        with header line,
+MATERIALLONGTEXT  type table of   BAPI_MLTX          with header line,
+TAXCLASSIFICATIONS  type table of   BAPI_MLAN        with header line,
+RETURNMESSAGES  type table of   BAPI_MATRETURN2      with header line,
+PRTDATA type table of   BAPI_MFHM                    with header line,
+PRTDATAX  type table of   BAPI_MFHMX                 with header line,
+EXTENSIONIN type table of   BAPIPAREX                with header line,
+EXTENSIONINX  type table of   BAPIPAREXX             with header line,
+NFMCHARGEWEIGHTS  type table of   /NFM/BAPITVGW      with header line,
+NFMCHARGEWEIGHTSX type table of   /NFM/BAPITVGWX     with header line,
+NFMSTRUCTURALWEIGHTS  type table of   /NFM/BAPITKGW  with header line,
+NFMSTRUCTURALWEIGHTSX type table of   /NFM/BAPITKGWX with header line,
+T_NUM type table of   BAPI1003_ALLOC_VALUES_NUM      with header line,
+T_CHAR  type table of   BAPI1003_ALLOC_VALUES_CHAR   with header line,
+T_CURR  type table of   BAPI1003_ALLOC_VALUES_CURR   with header line,
+T_QMAT  type table of   BAPI1001004_QMAT             with header line,
+T_RETURN_QMAT type table of   BAPIRET2               with header line
+.
+*****************变量定义-end 12.11.2015 17:53:47**************************************
+
+  data:l_return type TABLE OF BAPIRET2 WITH HEADER LINE&quot;返回信息
+       .
+  FIELD-SYMBOLS:&lt;fs_material&gt; like S_MATERIAL.
+
+  DEFINE mapping_material.
+
+    BAPI_TE_MARA-MATERIAL = &amp;1-MATERIAL.
+    BAPI_TE_MARA-ZINDUSTRY =  &amp;1-ZINDUSTRY .
+    BAPI_TE_MARA-ZZDES     =  &amp;1-ZZDES     .
+    BAPI_TE_MARA-ZZMTB     =  &amp;1-ZZMTB     .
+    BAPI_TE_MARA-ZZMTB    =  &amp;1-ZZMTB     .
+    BAPI_TE_MARA-ZE_VARIETY = &amp;1-ZVARIETY  .
+    BAPI_TE_MARA-ZZHYDM   =  &amp;1-ZZHYDM    .
+    BAPI_TE_MARA-ZZSPE    =  &amp;1-ZZSPE     .
+    BAPI_TE_MARA-ZZFGN    =  &amp;1-ZZFGN     .
+    BAPI_TE_MARA-ZZGDN    =  &amp;1-ZZGDN     .
+    BAPI_TE_MARA-ZZCSN    =  &amp;1-ZZCSN     .
+    BAPI_TE_MARA-ZJWLMS      &amp;1-MAKTG     .
+    BAPI_TE_MARA-ZZZXBZ   =  &amp;1-ZZZXBZ    .
+    BAPI_TE_MARA-SATNR    =  &amp;1-SATNR     .
+    BAPI_TE_MARA-KZKFG    =  &amp;1-KZKFG     .
+
+*    BAPIMATHEAD-MATERIAL  =  &amp;1-MATNR     .
+*    BAPI_MAKT  MATL_DESC     &amp;1-MAKTX     .MATERIALDESCRIPTION
+*    BAPIMATHEAD-IND_SECTOR = &amp;1-MBRSH     .
+*    BAPIMATHEAD-MATL_TYPE  = &amp;1-MTART     .
+
+    CLIENTDATA-MATERIAL = &amp;1-MATERIAL.
+    CLIENTDATA-BASE_UOM  = &amp;1-MEINS     .
+    CLIENTDATA-MATL_GROUP =  &amp;1-MATKL     .
+    CLIENTDATA-OLD_MAT_NO =  &amp;1-BISMT     .
+    CLIENTDATA-EXTMATLGRP =  &amp;1-EXTWG     .
+    CLIENTDATA-DIVISION   =  &amp;1-SPART     .
+    CLIENTDATA-DSN_OFFICE =  &amp;1-LABOR     .
+    CLIENTDATA-PRODH_D    =  &amp;1-PRDHA     .
+    CLIENTDATA-PUR_STATUS =  &amp;1-MSTAE     .
+    CLIENTDATA-ITEM_CAT   =  &amp;1-MTPOS_MARA.
+    CLIENTDATA-CIFQGRP    =  &amp;1-QGRP      .
+    CLIENTDATA-NET_WEIGHT  = &amp;1-NTGEW     .
+    CLIENTDATA-UNIT_OF_WT  = &amp;1-GEWEI     .
+    CLIENTDATA-SIZE_DIM   =  &amp;1-GROES     .
+    CLIENTDATA-MANU_MAT   =  &amp;1-MFRPN     .
+    CLIENTDATA-MFR_NO     =  &amp;1-MFRNR     .
+
+
+    UNITSOFMEASURE-LENGTH    =   &amp;1-LAENG     .
+    UNITSOFMEASURE-WIDTH     =   &amp;1-BREIT     .
+    UNITSOFMEASURE-HEIGHT    =   &amp;1-HOEHE     .
+    UNITSOFMEASURE-UNIT_DIM  =   &amp;1-MEABM     .
+    UNITSOFMEASURE-GROSS_WT  =   &amp;1-BRGEW     .
+    UNITSOFMEASURE-VOLUME  =     &amp;1-VOLUM     .
+    UNITSOFMEASURE-VOLUMEUNIT  = &amp;1-VOLEH     .
+    APPEND UNITSOFMEASURE.
+    CLEAR UNITSOFMEASURE.
+
+  END-OF-DEFINITION.
+
+  DEFINE add_return.
+    LOOP AT &amp;1 WHERE TYPE eq &apos;E&apos;.
+    ENDLOOP.
+    IF sy-subrc ne 0.
+       CALL FUNCTION &apos;BAPI_TRANSACTION_COMMIT&apos;
+          EXPORTING
+            WAIT = &apos;X&apos;
+                 .
+       &amp;2-RETYP = &apos;S&apos;.&quot;处理成功
+     ELSE.
+       CALL FUNCTION &apos;BAPI_TRANSACTION_ROLLBACK&apos;.
+       &amp;2-RETYP = &apos;E&apos;.&quot;处理失败
+       LOOP AT &amp;1.
+        t_return = &amp;1.
+        append t_return .
+        CLEAR t_return.
+     ENDLOOP.
+    ENDIF.
+  END-OF-DEFINITION.
+
+
+  CALL FUNCTION &apos;ZFMM_MDM_MATERIAL_SAVEDATA&apos;
+    EXPORTING
+     headdata                    = headdata
+     CLIENTDATA                  = CLIENTDATA
+     CLIENTDATAX                 = CLIENTDATAX
+     PLANTDATA                   = PLANTDATA
+     PLANTDATAX                  = PLANTDATAX
+     FORECASTPARAMETERS          = FORECASTPARAMETERS
+     FORECASTPARAMETERSX         = FORECASTPARAMETERSX
+     PLANNINGDATA                = PLANNINGDATA
+     PLANNINGDATAX               = PLANNINGDATAX
+     STORAGELOCATIONDATA         = STORAGELOCATIONDATA
+     STORAGELOCATIONDATAX        = STORAGELOCATIONDATAX
+     VALUATIONDATA               = VALUATIONDATA
+     VALUATIONDATAX              = VALUATIONDATAX
+     WAREHOUSENUMBERDATA         = WAREHOUSENUMBERDATA
+     WAREHOUSENUMBERDATAX        = WAREHOUSENUMBERDATAX
+     SALESDATA                   = SALESDATA
+     SALESDATAX                  = SALESDATAX
+     STORAGETYPEDATA             = STORAGETYPEDATA
+     STORAGETYPEDATAX            = STORAGETYPEDATAX
+     FLAG_ONLINE                 = &apos; &apos;  &quot; FLAG_ONLINE
+     FLAG_CAD_CALL               = &apos; &apos;  &quot; FLAG_CAD_CALL
+     NO_DEQUEUE                  = &apos; &apos;  &quot; NO_DEQUEUE
+     NO_ROLLBACK_WORK            = &apos; &apos;  &quot; NO_ROLLBACK_WORK
+     JBSJTEXT                    = JBSJTEXT
+     CGDDTEXT                    = CGDDTEXT
+     JYTEXT                      = JYTEXT
+     XSTEXT                      = XSTEXT
+     BAPI_TE_MARA                = BAPI_TE_MARA
+     BAPI_TE_MARAX               = BAPI_TE_MARAX
+     ZBASE_UOM                   = ZBASE_UOM
+     BAPI_TE_MARC                = BAPI_TE_MARC
+     BAPI_TE_MARCX               = BAPI_TE_MARCX
+   IMPORTING
+     RETURN                      = RETURN
+   tables
+     MATERIALDESCRIPTION         =    MATERIALDESCRIPTION
+     UNITSOFMEASURE              =    UNITSOFMEASURE
+     UNITSOFMEASUREX             =    UNITSOFMEASUREX
+     INTERNATIONALARTNOS         =    INTERNATIONALARTNOS
+     MATERIALLONGTEXT            =    MATERIALLONGTEXT
+     TAXCLASSIFICATIONS          =    TAXCLASSIFICATIONS
+     RETURNMESSAGES              =    RETURNMESSAGES
+     PRTDATA                     =    PRTDATA
+     PRTDATAX                    =    PRTDATAX
+     EXTENSIONIN                 =    EXTENSIONIN
+     EXTENSIONINX                =    EXTENSIONINX
+     NFMCHARGEWEIGHTS            =    NFMCHARGEWEIGHTS
+     NFMCHARGEWEIGHTSX           =    NFMCHARGEWEIGHTSX
+     NFMSTRUCTURALWEIGHTS        =    NFMSTRUCTURALWEIGHTS
+     NFMSTRUCTURALWEIGHTSX       =    NFMSTRUCTURALWEIGHTSX
+      t_num                      =    t_num
+      t_char                     =    t_char
+      t_curr                     =    t_curr
+      t_return                   =    t_return
+      t_qmat                     =    t_qmat
+      t_return_qmat              =    t_return_qmat
+      .
+*            .
+
+
+
+
+*}   INSERT</fm_source_new>
+   </functionmodule>
+  </functionmodules>
+ </FUGR>
+</nugget>

@@ -1,0 +1,88 @@
+FUNCTION ZFMM_MDM_B507_T006A_NEW.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     VALUE(I_MSEHI) TYPE  MSEHI OPTIONAL
+*"  TABLES
+*"      T_T006A STRUCTURE  T006A
+*"----------------------------------------------------------------------
+
+CLEAR t_t006a[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t006a INTO TABLE t_t006a
+*\  WHERE spras = '1'.
+IF i_MSEHI IS NOT INITIAL.
+  SELECT * FROM t006a INTO TABLE t_t006a
+  WHERE spras = '1' and MSEHI = i_MSEHI.
+ELSE.
+  SELECT * FROM t006a INTO TABLE t_t006a
+  WHERE spras = '1'.
+ENDIF.
+
+*}   REPLACE
+
+*** 调用OUTB PROXY
+  data: proxy TYPE REF TO ZCO_SI_ECC_CUSTOMER_OUT."      1。类名称
+  DATA: FAULT TYPE REF TO CX_AI_SYSTEM_FAULT,
+        L_TEXT TYPE STRING.
+*****************返回结果start 23.11.2015 18:06:28**************************************
+  data: OUTPUT type ZMT_CUSTOMER_REQ_OUT,
+        T_OUTPUT type ZDT_CUSTOMER_REQ_OUT,           "    3.返回参数
+        tmp_out TYPE ZMT_GETPRODORD_RES_OUT,          "临时，不需要
+        KEY_TABL type TABLE OF ZDT_CUSTOMER_REQ_OUT_KEY_TAB WITH HEADER LINE ,  "主参数返回值
+        KEY_TAB type ZDT_CUSTOMER_REQ_OUT_KEY_T_TAB,"主参数返回值
+        lt_out type ZDT_CUSTOMER_REQ_OUT_T_RET_TAB,
+        wa_out_res type ZDT_CUSTOMER_REQ_OUT_T_RETURN .
+  data: t_return type TABLE OF BAPIRET2 WITH HEADER LINE.
+  DEFINE  add_res.
+    KEY_TABL-TAB_NAME = &1.
+    KEY_TABL-KEY_NAME = &2.
+    KEY_TABL-KEY_VALUE = &3.
+    KEY_TABL-RETYPE = &4.
+    APPEND KEY_TABL.
+    CLEAR KEY_TABL. gv sv a NL
+  END-OF-DEFINITION.
+
+  LOOP AT T_T025T.
+    add_res 'T_T025T' 'BKLAS' T_T025T-BKLAS 'S'.
+  ENDLOOP.
+
+  LOOP AT KEY_TABL.
+    APPEND KEY_TABL to KEY_TAB.
+  ENDLOOP.
+
+   LOOP AT T_RETURN.
+    MOVE-CORRESPONDING T_RETURN to wa_out_res.
+    APPEND wa_out_res to lt_out.
+    CLEAR wa_out_res.
+  ENDLOOP.
+
+  T_OUTPUT-KEY_TAB = KEY_TAB.
+  T_OUTPUT-T_RETURN = lt_out.
+  OUTPUT-MT_CUSTOMER_REQ_OUT = T_OUTPUT.
+*****************end 23.11.2015 18:06:35**************************************
+
+  TRY.
+      CREATE OBJECT PROXY ."notes:20151113
+      CALL METHOD PROXY->SI_ECC_CUSTOMER_OUT"new        2.方法名称
+        EXPORTING
+          OUTPUT = OUTPUT.    "4  .结果名称为  OUTPUT
+        .
+    CATCH CX_AI_SYSTEM_FAULT INTO FAULT.
+      L_TEXT = FAULT->GET_TEXT( ).
+  ENDTRY.
+
+ call function 'BAPI_TRANSACTION_COMMIT'
+  EXPORTING
+    WAIT          = 'X'
+           .
+  IF L_TEXT IS INITIAL.
+    MESSAGE 'Proxy execute successfull,信息传递成功' TYPE 'I'.
+  ELSE.
+    MESSAGE L_TEXT TYPE 'I'.
+  ENDIF.
+
+
+ENDFUNCTION.
+

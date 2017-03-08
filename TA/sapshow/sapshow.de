@@ -1,0 +1,105 @@
+; ****************************************
+; *                                      *
+; *       Copyright(c) SAP AG 1999       *
+; *          All rights reserved         *
+; *                                      *
+; ****************************************
+SAPShow_E00001	Fehler beim Öffnen der Datei '%s':\n%s
+SAPShow_E00002	Fehler beim Lesen der Datei '%s':\n%s
+SAPShow_E00003	Fehler beim Schreiben der Datei '%s':\n%s
+SAPShow_E00004	Fehler beim Sichern der Datei '%s':\n%s
+SAPShow_E00005	Datei '%s' existiert nicht!
+SAPShow_E00011	Automatisierungsfehler (E_STG_COPY) '%s':\n%s
+SAPShow_E00012	Fehler beim Anlegen von '%s':\n%s
+SAPShow_E00013	Automatisierungsfehler (E_STG_COMMIT) %s:\n%s
+SAPShow_E00014	Automatisierungsfehler (E_STG_OPEN) '%s':\n%s
+SAPShow_E00015	Automatisierungsfehler (E_STG_READ) '%s':\n%s
+SAPShow_E00016	Automatisierungsfehler (E_STG_WRITE) '%s':\n%s
+SAPShow_E00017	Automatisierungsfehler (E_STG_STAT) %s:\n%s
+SAPShow_E00023	Präsentation ist abgelaufen!
+SAPShow_E00024	Sie leben in der Vergangenheit!\nBitte prüfen Sie Ihre Systemzeit.
+SAPShow_E00025	Sicherheitsfehler: Falscher Checksum
+SAPShow_E00026	Fehler beim Lesen der Diskettenserialnummer
+SAPShow_E00027	Lizenzschlüsselfehler
+SAPShow_E00033	Automatisierungsfehler (OLE_ADVISE) %s:\n%s
+SAPShow_E00034	Automatisierungsfehler (OLE_CLIENT) %s:\n%s
+SAPShow_E00035	Automatisierungsfehler (OLE_COPY) %s:\n%s
+SAPShow_E00036	Automatisierungsfehler (OLE_CREATE) %s:\n%s
+SAPShow_E00037	Automatisierungsfehler (OLE_LOAD) %s:\n%s
+SAPShow_E00038	Automatisierungsfehler (OLE_QUERY) %s:\n%s
+SAPShow_E00039	Automatisierungsfehler (OLE_SAVE) %s:\n%s
+SAPShow_E00040	Automatisierungsfehler (OLE_RUN) %s:\n%s
+SAPShow_E00041	Automatisierungsfehler (OLE_VERB) %s:\n%s
+SAPShow_E00042	Automatisierungsfehler (OLE_DRAW) %s:\n%s
+SAPShow_E00047	Fehler in KXF-Datei: Abschnitt '%s' fehlt in '%s'
+SAPShow_E00048	Fehler in KXF-Date: Schlüssel fehlt in Abschnitt '%s'
+SAPShow_E00049	KXF Formatierungsfehler %s %s
+SAPShow_E00050	KXF Beschreibungsfehler: %s::%s
+SAPShow_E00056	Externes Hilfeprogramm kann nicht gefunden werden!\nZusätzliche Pfadinformation: %s
+SAPShow_E00057	Registratureintrag für externe Hilfeviewer (SHH) fehlt
+SAPShow_E00058	Fehler beim Starten der externen Hilfeviewer: %s
+SAPShow_E00059	Ungültige URL: %s
+SAPShow_E00060	"SAPDOCCD.INI" fehlt!
+SAPShow_E00064	Fehler beim ausführen von %s:\n%s
+SAPShow_E00065	Kein Speicherplatz!\n(Datei: %s, Zeile:%s)
+SAPShow_E00066	Automatisierungsfehler
+SAPShow_E00067	Verknüpfung fehlt: %s
+SAPShow_M32774	&Vollbild
+SAPShow_M32775	&Hinweise
+SAPShow_M32784	&Spielen
+SAPShow_M32787	&Autolauf
+SAPShow_M57601	&Öffnen...\tStrg+Ö,
+SAPShow_M57607	&Drucken...\tCtrl+D
+SAPShow_M57608	D&rucklayout...
+SAPShow_M57609	Druck&ansicht
+SAPShow_M57616	Neueste Datei
+SAPShow_M57664	&Über SAPShow...
+SAPShow_M57665	B&eenden
+SAPShow_M59392	&Standard
+SAPShow_M59393	&Statusleiste
+SAPShow_MFile	&Datei
+SAPShow_MHelp	&Hilfe
+SAPShow_MToolbars	&Symbolleisten
+SAPShow_MView	&Ansicht
+SAPShow_R32771	Voriges Topic\nVoriges
+SAPShow_R32772	Nächstes Topic\nNächstes
+SAPShow_R32774	Vollbild\nVollbild
+SAPShow_R32775	Anzeigen/Ausblenden Hinweisfenster\nHinweise
+SAPShow_R32778	Voriges in Historie\nHistorie Voriges
+SAPShow_R32779	Nächste in Historie\nHistorie Nächste
+SAPShow_R32782	Abspielen\nAbspielen
+SAPShow_R32783	Stopp\nStopp
+SAPShow_R32784	Symbolleiste anzeigen oder ausblenden\nSymbolleiste anzeigen oder ausblenden
+SAPShow_R32786	Autolauf\nAutolauf
+SAPShow_R32787	Automatisches Abspielen starten und beenden\nAutomatisches Abspielen
+SAPShow_R57600	Neues Dokument anlegen\nNeu
+SAPShow_R57601	Bestehendes Dokument öffnen\nÖffnen
+SAPShow_R57602	Aktives Dokument schliessen\nSchliessen
+SAPShow_R57603	Aktives Dokument sichern\nSichern
+SAPShow_R57604	Aktives Dokument unter einem neuen Namen sichern\nSpeichern unter
+SAPShow_R57606	Drucker und Druckeroptionen ändern\nDruckereinrichtung
+SAPShow_R57607	Aktives Dokument drucken\nDrucken
+SAPShow_R57608	Volle Seiten anzeigen\nDruckervorschau
+SAPShow_R57616	Dieses Dokument öffnen
+SAPShow_R57617	Dieses Dokument öffnen
+SAPShow_R57618	Dieses Dokument öffnen
+SAPShow_R57619	Dieses Dokument öffnen
+SAPShow_R57620	Dieses Dokument öffnen
+SAPShow_R57621	Dieses Dokument öffnen
+SAPShow_R57622	Dieses Dokument öffnen
+SAPShow_R57623	Dieses Dokument öffnen
+SAPShow_R57624	Dieses Dokument öffnen
+SAPShow_R57625	Dieses Dokument öffnen
+SAPShow_R57626	Dieses Dokument öffnen
+SAPShow_R57627	Dieses Dokument öffnen
+SAPShow_R57628	Dieses Dokument öffnen
+SAPShow_R57629	Dieses Dokument öffnen
+SAPShow_R57630	Dieses Dokument öffnen
+SAPShow_R57631	Dieses Dokument öffnen
+SAPShow_R57345	Fertig
+SAPShow_R57664	Programminformation, Versionsnummer und Copyright anzeigen\nInfo
+SAPShow_R57665	Programm beenden\nBeenden
+SAPShow_R59392	Symbolleiste anzeigen oder ausblenden\nSymbolleiste anzeigen oder ausblenden
+SAPShow_R59393	Statusleiste anzeigen oder ausblenden\nStatusleiste anzeigen oder ausblenden
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                              

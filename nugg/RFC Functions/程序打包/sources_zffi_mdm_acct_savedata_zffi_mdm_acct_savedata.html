@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-1" />
+<title>ZFFI_MDM_ACCT_SAVEDATA</title>
+<style type="text/css">
+.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }
+  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }
+  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }
+  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }
+</style>
+<style type="text/css">
+  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }
+  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }
+  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }
+  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }
+  .outerTable{
+   background-color:#E0E7ED;
+   width:100%;
+   border-top-width: thin;
+   border-right-width: thin;
+   border-right-width: thin;
+   border-left-width: thin;
+   border-top-style: solid;
+   border-right-style: solid;
+   border-bottom-style: solid;
+   border-left-style: solid;
+  }
+  .innerTable{
+   background-color:#F2F4F7;
+   width:100%;
+   border-top-width: thin;
+   border-right-width: thin;
+   border-bottom-width: thin;
+   border-left-width: thin;
+   border-top-style: solid;
+   border-right-style: solid;
+   border-bottom-style: solid;
+   border-left-style: solid;
+  }
+</style>
+</head>
+<body>
+<table class="outerTable">
+  <tr class="normalBoldLarge">
+     <td><h2>Code listing for function ZFFI_MDM_ACCT_SAVEDATA</h2>
+<h3> Description: »á¼Æ¿ÆÄ¿´´½¨</h3></td>
+   </tr>
+  <tr>
+     <td>
+     <table class="innerTable">
+       <tr>
+          <td>
+   <div class="code">
+FUNCTION ZFFI_MDM_ACCT_SAVEDATA.<br />
+   </div>
+   <div class="codeComment">
+*"----------------------------------------------------------------------<br />
+*"*"Local interface:<br />
+*"  EXPORTING<br />
+*"     VALUE(RE_TYPE) TYPE  CHAR1<br />
+*"  TABLES<br />
+*"      T_SKA1 STRUCTURE  ZMDM_SKA1 OPTIONAL<br />
+*"      T_SKB1 STRUCTURE  ZMDM_SKB1 OPTIONAL<br />
+*"      T_RETURN STRUCTURE  BAPIRET2 OPTIONAL<br />
+*"----------------------------------------------------------------------<br />
+*{   INSERT         CP0K900347                                        1<br />
+
+<div class="codeComment">*       <a href ="global-zffi_mdm_acct_savedata.html">Global data declarations</a></div><br />
+   </div>
+   <div class="code">
+<br />
+   </div>
+   <div class="codeComment">
+*    ACTIVITY_MODIFY: VALUE '2',<br />
+*    ACTIVITY_CREATE: VALUE '3',<br />
+   </div>
+   <div class="code">
+DATA:l_activity(1),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_acct_no&nbsp;type&nbsp;saknr,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_ct_acct&nbsp;type&nbsp;ktopl,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_data_coa&nbsp;type&nbsp;glaccount_coa_data,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_data_name&nbsp;type&nbsp;glaccount_name_data,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_compy_code&nbsp;type&nbsp;bukrs,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_data_ccode&nbsp;type&nbsp;glaccount_ccode_data.<br />
+<br />
+DATA:ACCOUNT_COA  TYPE  GLACCOUNT_COA,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_NAMES&nbsp;TYPE&nbsp;&nbsp;GLACCOUNT_NAME_TABLE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_KEYWORDS&nbsp;&nbsp;TYPE&nbsp;&nbsp;GLACCOUNT_KEYWORD_TABLE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_CCODES&nbsp;&nbsp;TYPE&nbsp;&nbsp;GLACCOUNT_CCODE_TABLE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;BAPIRET2&nbsp;WITH&nbsp;HEADER&nbsp;LINE.<br />
+data:l_coa_key type GLACCOUNT_COA_KEY,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_ccode_key&nbsp;type&nbsp;GLACCOUNT_CCODE_KEY.<br />
+<br />
+&nbsp;&nbsp;DATA:l_ACCT_NAME_key&nbsp;type&nbsp;GLACCOUNT_NAME_KEY.<br />
+&nbsp;&nbsp;data:lt_GLACCT_NAME&nbsp;type&nbsp;TABLE&nbsp;OF&nbsp;GLACCOUNT_NAME&nbsp;WITH&nbsp;HEADER&nbsp;LINE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt_acct_NAME_DATA&nbsp;type&nbsp;GLACCOUNT_NAME_DATA.<br />
+<br />
+&nbsp;&nbsp;data:lt_acct_ccodes&nbsp;type&nbsp;TABLE&nbsp;OF&nbsp;GLACCOUNT_CCODE&nbsp;WITH&nbsp;HEADER&nbsp;LINE.<br />
+<br />
+&nbsp;&nbsp;DATA:WA_SKA1&nbsp;TYPE&nbsp;SKA1,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WA_SKB1&nbsp;TYPE&nbsp;SKB1.<br />
+<br />
+FIELD-SYMBOLS:&lt;fs_data1&gt; like t_ska1,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fs_data2&gt;&nbsp;like&nbsp;t_skb1.<br />
+&nbsp;&nbsp;DEFINE&nbsp;add_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;&1&nbsp;WHERE&nbsp;TYPE&nbsp;eq&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;ne&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_COMMIT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAIT&nbsp;=&nbsp;'X'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&2-RETYP&nbsp;=&nbsp;'S'."´¦Àí³É¹¦<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&2-RETYP&nbsp;=&nbsp;'E'."´¦ÀíÊ§°Ü<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;&1.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_return&nbsp;=&nbsp;&1.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_return-MESSAGE&nbsp;=&nbsp;'¿ÆÄ¿'&nbsp;&&&nbsp;&2-SAKNR&nbsp;&&&nbsp;'³ö´í:'&nbsp;&&&nbsp;t_return-MESSAGE&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;append&nbsp;t_return&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;t_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;END-OF-DEFINITION.<br />
+<br />
+<br />
+DEFINE add_ska1_data.<br />
+<br />
+&nbsp;&nbsp;l_coa_key-KTOPL&nbsp;=&nbsp;&1-KTOPL."ÕÊÄ¿±í<br />
+&nbsp;&nbsp;l_coa_key-SAKNR&nbsp;=&nbsp;&1-SAKNR."×ÜÕË¿ÆÄ¿±àºÅ<br />
+<br />
+<br />
+&nbsp;&nbsp;l_ACCT_NAME_key-KTOPL&nbsp;=&nbsp;&1-KTOPL."ÕÊÄ¿±í<br />
+&nbsp;&nbsp;l_ACCT_NAME_key-SAKNR&nbsp;=&nbsp;&1-SAKNR."×ÜÕË¿ÆÄ¿±àºÅ<br />
+&nbsp;&nbsp;l_ACCT_NAME_key-SPRAS&nbsp;=&nbsp;'1'."Ä¬ÈÏÎªÖÐÎÄÃèÊö<br />
+&nbsp;&nbsp;lt_acct_NAME_DATA-TXT20&nbsp;=&nbsp;&1-TXT20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."×ÜÕÊ¿ÆÄ¿Ãû³Æ<br />
+&nbsp;&nbsp;lt_acct_NAME_DATA-TXT50&nbsp;=&nbsp;&1-TXT50&nbsp;&nbsp;&nbsp;&nbsp;."³¤ÎÄ±¾<br />
+<br />
+&nbsp;&nbsp;lt_GLACCT_NAME-keyy&nbsp;=&nbsp;l_ACCT_NAME_key.<br />
+&nbsp;&nbsp;lt_GLACCT_NAME-data&nbsp;=&nbsp;lt_acct_NAME_DATA.<br />
+<br />
+&nbsp;&nbsp;l_data_coa-XBILK&nbsp;=&nbsp;&1-XBILK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."B/S¿ÆÄ¿<br />
+&nbsp;&nbsp;l_data_coa-BILKT&nbsp;=&nbsp;&1-BILKT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."¼¯ÍÅ¿ÆÄ¿<br />
+   </div>
+   <div class="codeComment">
+*  &1-ERDAT     ."ÈÕÆÚ<br />
+*  &1-ERNAM     ."´´½¨Õß<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;l_data_coa-GVTYP&nbsp;=&nbsp;&1-GVTYP&nbsp;&nbsp;&nbsp;&nbsp;."AT<br />
+&nbsp;&nbsp;l_data_coa-KTOKS&nbsp;=&nbsp;&1-KTOKS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."×é<br />
+&nbsp;&nbsp;l_data_coa-MUSTR&nbsp;=&nbsp;&1-MUSTR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."Ñù±¾¿ÆÄ¿<br />
+&nbsp;&nbsp;l_data_coa-VBUND&nbsp;=&nbsp;&1-VBUND&nbsp;&nbsp;&nbsp;&nbsp;."Tr.prt<br />
+&nbsp;&nbsp;l_data_coa-XLOEV&nbsp;=&nbsp;&1-XLOEV&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."XLOEV<br />
+&nbsp;&nbsp;l_data_coa-XSPEA&nbsp;=&nbsp;&1-XSPEA&nbsp;&nbsp;&nbsp;&nbsp;."¶³½á´´½¨<br />
+&nbsp;&nbsp;l_data_coa-XSPEB&nbsp;=&nbsp;&1-XSPEB&nbsp;&nbsp;&nbsp;&nbsp;."¹ýÕÊ¶³½á<br />
+&nbsp;&nbsp;l_data_coa-XSPEP&nbsp;=&nbsp;&1-XSPEP&nbsp;&nbsp;&nbsp;&nbsp;."¶³½á¼Æ»®<br />
+&nbsp;&nbsp;l_data_coa-FUNC_AREA&nbsp;=&nbsp;&1-FUNC_AREA&nbsp;."¹¦ÄÜ·¶Î§<br />
+&nbsp;&nbsp;l_data_name-TXT20&nbsp;=&nbsp;&1-TXT20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."×ÜÕÊ¿ÆÄ¿Ãû³Æ<br />
+&nbsp;&nbsp;l_data_name-TXT50&nbsp;=&nbsp;&1-TXT50&nbsp;&nbsp;&nbsp;&nbsp;."³¤ÎÄ±¾<br />
+   </div>
+   <div class="codeComment">
+*  MCOD1     ."MCOD1<br />
+   </div>
+   <div class="code">
+END-OF-DEFINITION.<br />
+DEFINE add_skb1_data.<br />
+&nbsp;&nbsp;l_ccode_key-SAKNR&nbsp;=&nbsp;&1-SAKNR&nbsp;&nbsp;&nbsp;&nbsp;."×ÜÕË¿ÆÄ¿±àºÅ<br />
+&nbsp;&nbsp;l_ccode_key-BUKRS&nbsp;=&nbsp;&1-BUKRS&nbsp;&nbsp;&nbsp;&nbsp;."¹«Ë¾´úÂë<br />
+<br />
+&nbsp;&nbsp;l_acct_no&nbsp;=&nbsp;&1-SAKNR&nbsp;&nbsp;&nbsp;&nbsp;."×ÜÕË¿ÆÄ¿±àºÅ<br />
+&nbsp;&nbsp;l_compy_code&nbsp;=&nbsp;&1-BUKRS&nbsp;&nbsp;&nbsp;&nbsp;."¹«Ë¾´úÂë<br />
+&nbsp;&nbsp;l_data_ccode-BEGRU&nbsp;=&nbsp;&1-BEGRU&nbsp;&nbsp;&nbsp;&nbsp;."È¨ÏÞ×é<br />
+<br />
+   </div>
+   <div class="codeComment">
+*ERDAT    ."ÈÕÆÚ<br />
+*ERNAM    ."´´½¨Õß<br />
+*FDGRV    ."¼Æ»®×é<br />
+*FIPLS    ."FBI<br />
+   </div>
+   <div class="code">
+<br />
+   </div>
+   <div class="codeComment">
+*STEXT    ."×ÜÕÊ¿ÆÄ¿¸½¼ÓÎÄ±¾<br />
+*l_data_name-TXT50 = &1-STEXT    ."³¤ÎÄ±¾<br />
+   </div>
+   <div class="code">
+<br />
+<br />
+l_data_ccode-FDLEV  = &1-FDLEV    ."²ã´Î<br />
+l_data_ccode-BUSAB  = &1-BUSAB    ."»á¼ÆÖ°Ô±<br />
+l_data_ccode-DATLZ  = &1-DATLZ    ."ÉÏ´Î¼ÆËãÈÕ<br />
+l_data_ccode-FSTAG  = &1-FSTAG    ."×Ö¶Î×´Ì¬×é<br />
+l_data_ccode-HBKID  = &1-HBKID    ."¿ª»§ÒøÐÐ<br />
+l_data_ccode-HKTID  = &1-HKTID    ."ÕÊ»§±êÊ¶<br />
+l_data_ccode-KDFSL  = &1-KDFSL    ."»ãÂÊ²î¶îÂë<br />
+l_data_ccode-MITKZ  = &1-MITKZ    ."Í³Ô¦¿ÆÄ¿<br />
+l_data_ccode-MWSKZ  = &1-MWSKZ    ."Ë°<br />
+l_data_ccode-VZSKZ  = &1-VZSKZ    ."ÀûÏ¢±êÖ¾<br />
+l_data_ccode-WAERS  = &1-WAERS    ."»õ±Ò<br />
+l_data_ccode-WMETH  = &1-WMETH    ."À©Õ¹ÕÊ»§<br />
+l_data_ccode-XGKON  = &1-XGKON    ."C<br />
+l_data_ccode-XINTB  = &1-XINTB    ."XINTB<br />
+l_data_ccode-XLOEB  = &1-XLOEB    ."XLOEB<br />
+l_data_ccode-XOPVW  = &1-XOPVW    ."Î´ÇåÏî¹ÜÀí<br />
+l_data_ccode-XSPEB  = &1-XSPEB    ."¹ýÕÊ¶³½á<br />
+l_data_ccode-ZINDT  = &1-ZINDT    ."ÉÏ´Î¼ÆËãÈÕ<br />
+l_data_ccode-ZINRT  = &1-ZINRT    ."ÀûÏ¢¼ÆËãÂÊ<br />
+l_data_ccode-ZUAWA  = &1-ZUAWA    ."ÅÅÐò<br />
+l_data_ccode-ALTKT  = &1-ALTKT    ."±¸Ñ¡¿ÆÄ¿<br />
+l_data_ccode-XMITK  = &1-XMITK    ."Re.act rdy<br />
+l_data_ccode-RECID  = &1-RECID    ."»ØÊÕ<br />
+l_data_ccode-FIPOS  = &1-FIPOS    ."³ÐÅµÏîÄ¿<br />
+l_data_ccode-XMWNO  = &1-XMWNO    ."º¬/²»º¬Ë°<br />
+l_data_ccode-XSALH  = &1-XSALH    ."±¾Î»±ÒÓà¶î<br />
+l_data_ccode-BEWGP  = &1-BEWGP    ."ÆÀ¹À×é<br />
+l_data_ccode-INFKY  = &1-INFKY    ."Í¨ÕÍ¼üÖµÂë<br />
+l_data_ccode-TOGRU  = &1-TOGRU    ."ÈÝ²î×é<br />
+l_data_ccode-XLGCLR = &1-XLGCLR   ."·ÖÀàÕÊ×éÌØ¶¨µÄÇåÕÊ<br />
+l_data_ccode-XNKON  = &1-XNKON ."²¹³ä<br />
+l_data_ccode-XKRES  = &1-XKRES ."XKRES<br />
+<br />
+<br />
+END-OF-DEFINITION.<br />
+<br />
+IF t_ska1[] is NOT INITIAL or t_skb1[] is NOT INITIAL.<br />
+&nbsp;&nbsp;RE_TYPE&nbsp;=&nbsp;'S'.<br />
+ELSE.<br />
+&nbsp;&nbsp;RE_TYPE&nbsp;=&nbsp;'E'.<br />
+&nbsp;&nbsp;EXIT.<br />
+ENDIF.<br />
+<br />
+LOOP AT t_ska1 ASSIGNING &lt;fs_data1&gt;.<br />
+&nbsp;&nbsp;CLEAR:ACCOUNT_COA,ACCOUNT_NAMES.<br />
+<br />
+&nbsp;&nbsp;IF&nbsp;&lt;fs_data1&gt;-TXT20&nbsp;is&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;SELECT&nbsp;SINGLE&nbsp;txt20&nbsp;INTO&nbsp;&lt;fs_data1&gt;-TXT20&nbsp;FROM&nbsp;skat<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WHERE&nbsp;SPRAS&nbsp;=&nbsp;'1'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AND&nbsp;KTOPL&nbsp;=&nbsp;&lt;fs_data1&gt;-KTOPL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;AND&nbsp;SAKNR&nbsp;=&nbsp;&lt;fs_data1&gt;-SAKNR.<br />
+&nbsp;&nbsp;ELSEIF&nbsp;&lt;fs_data1&gt;-TXT50&nbsp;is&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;SELECT&nbsp;SINGLE&nbsp;txt50&nbsp;INTO&nbsp;&lt;fs_data1&gt;-TXT50&nbsp;FROM&nbsp;skat<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WHERE&nbsp;SPRAS&nbsp;=&nbsp;'1'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AND&nbsp;KTOPL&nbsp;=&nbsp;&lt;fs_data1&gt;-KTOPL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;AND&nbsp;SAKNR&nbsp;=&nbsp;&lt;fs_data1&gt;-SAKNR.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;add_ska1_data&nbsp;&lt;fs_data1&gt;.<br />
+<br />
+&nbsp;&nbsp;SELECT&nbsp;SINGLE&nbsp;*&nbsp;FROM&nbsp;SKA1&nbsp;INTO&nbsp;WA_SKA1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;WHERE&nbsp;KTOPL&nbsp;=&nbsp;&lt;fs_data1&gt;-KTOPL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;AND&nbsp;SAKNR&nbsp;=&nbsp;&lt;fs_data1&gt;-SAKNR."¼ì²é»á¼Æ¿ÆÄ¿ÊÇ·ñ´æÔÚ<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;eq&nbsp;0."´æÔÚÔòÖ´ÐÐÐÞ¸Ä²Ù×÷<br />
+&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;lt_GLACCT_NAME&nbsp;is&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt_GLACCT_NAME-action&nbsp;=&nbsp;'U'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;endif.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_COA-ACTION&nbsp;=&nbsp;'U'.<br />
+&nbsp;&nbsp;else."²»´æÔÚÖ´ÐÐÐÂÔö²Ù×÷<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_GLACCT_NAME-action&nbsp;=&nbsp;'I'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_COA-ACTION&nbsp;=&nbsp;'I'.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lt_GLACCT_NAME.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_NAMES&nbsp;=&nbsp;lt_GLACCT_NAME[].<br />
+<br />
+<br />
+&nbsp;&nbsp;ACCOUNT_COA-data&nbsp;=&nbsp;l_data_coa.<br />
+&nbsp;&nbsp;ACCOUNT_COA-KEYY&nbsp;=&nbsp;l_coa_key.<br />
+<br />
+&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'GL_ACCT_MASTER_SAVE_RFC'<br />
+&nbsp;&nbsp;&nbsp;CHANGING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_COA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ACCOUNT_COA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_NAMES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ACCOUNT_NAMES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_KEYWORDS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ACCOUNT_KEYWORDS<br />
+   </div>
+   <div class="codeComment">
+*     ACCOUNT_CCODES           = ACCOUNT_CCODES<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;RETURN[]<br />
+&nbsp;&nbsp;&nbsp;EXCEPTIONS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGON_ERROR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ERROR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;2<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OTHERS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;3<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+   </div>
+   <div class="codeComment">
+* Implement suitable error handling here<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;&nbsp;add_return&nbsp;RETURN&nbsp;&lt;fs_data1&gt;.<br />
+<br />
+ENDLOOP.<br />
+<br />
+<br />
+LOOP AT t_skb1 ASSIGNING &lt;fs_data2&gt;.<br />
+&nbsp;&nbsp;CLEAR:ACCOUNT_CCODES,ACCOUNT_NAMES.<br />
+&nbsp;&nbsp;add_skb1_data&nbsp;&lt;fs_data2&gt;.<br />
+<br />
+&nbsp;&nbsp;SELECT&nbsp;SINGLE&nbsp;*&nbsp;FROM&nbsp;SKB1&nbsp;INTO&nbsp;WA_SKB1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;WHERE&nbsp;BUKRS&nbsp;=&nbsp;&lt;fs_data2&gt;-BUKRS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;AND&nbsp;SAKNR&nbsp;=&nbsp;&lt;fs_data2&gt;-SAKNR."¼ì²é»á¼Æ¿ÆÄ¿ÊÇ·ñ´æÔÚ<br />
+<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;eq&nbsp;0."´æÔÚÔòÖ´ÐÐÐÞ¸Ä²Ù×÷<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_acct_ccodes-ACTION&nbsp;=&nbsp;'U'.<br />
+&nbsp;&nbsp;else."²»´æÔÚÖ´ÐÐÐÂÔö²Ù×÷<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_acct_ccodes-ACTION&nbsp;=&nbsp;'I'.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;lt_acct_ccodes-KEYY&nbsp;=&nbsp;l_ccode_key.<br />
+&nbsp;&nbsp;lt_acct_ccodes-DATA&nbsp;=&nbsp;l_data_ccode.<br />
+&nbsp;&nbsp;APPEND&nbsp;lt_acct_ccodes.<br />
+<br />
+&nbsp;&nbsp;ACCOUNT_CCODES&nbsp;=&nbsp;lt_acct_ccodes[].<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'GL_ACCT_MASTER_SAVE_RFC'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CHANGING<br />
+   </div>
+   <div class="codeComment">
+*           ACCOUNT_COA              = ACCOUNT_COA<br />
+*           ACCOUNT_NAMES            = ACCOUNT_NAMES<br />
+*           ACCOUNT_KEYWORDS         = ACCOUNT_KEYWORDS<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ACCOUNT_CCODES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;ACCOUNT_CCODES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;RETURN[]<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXCEPTIONS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOGON_ERROR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ERROR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;2<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OTHERS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;3<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+   </div>
+   <div class="codeComment">
+* Implement suitable error handling here<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;add_return&nbsp;RETURN&nbsp;&lt;fs_data2&gt;.<br />
+<br />
+ENDLOOP.<br />
+<br />
+<br />
+   </div>
+   <div class="codeComment">
+*}   INSERT<br />
+   </div>
+   <div class="code">
+ENDFUNCTION.<br />
+            </div>
+          </td>
+        </tr>
+      </table>
+      </td>
+      </tr>
+   <tr>
+<td class="footer">Extracted by Mass Download version 1.4.0 - E.G.Mellodew. 1998-2015. Sap Release 702</td>
+   </tr>
+</table>
+</body>
+</html>

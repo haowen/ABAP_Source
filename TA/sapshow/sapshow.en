@@ -1,0 +1,104 @@
+; ****************************************
+; *                                      *
+; *       Copyright(c) SAP AG 1999       *
+; *          All rights reserved         *
+; *                                      *
+; ****************************************
+SAPShow_E00001	Error opening file '%s':\n%s
+SAPShow_E00002	Error reading file '%s':\n%s
+SAPShow_E00003	Error writing file '%s':\n%s
+SAPShow_E00004	Error saving file '%s':\n%s
+SAPShow_E00005	File '%s' does not exist!
+SAPShow_E00011	Automation Error (E_STG_COPY) '%s':\n%s
+SAPShow_E00012	Error creating '%s':\n%s
+SAPShow_E00013	Automation Error (E_STG_COMMIT) %s:\n%s
+SAPShow_E00014	Automation Error (E_STG_OPEN) '%s':\n%s
+SAPShow_E00015	Automation Error (E_STG_READ) '%s':\n%s
+SAPShow_E00016	Automation Error (E_STG_WRITE) '%s':\n%s
+SAPShow_E00017	Automation Error (E_STG_STAT) %s:\n%s
+SAPShow_E00023	Presentation has expired!
+SAPShow_E00024	You are living in the past!\nPlease check your system time.
+SAPShow_E00025	Security Error: wrong checksum
+SAPShow_E00026	Error reading disk serial number
+SAPShow_E00027	License key error
+SAPShow_E00033	Automation Error (OLE_ADVISE) %s:\n%s
+SAPShow_E00034	Automation Error (OLE_CLIENT) %s:\n%s
+SAPShow_E00035	Automation Error (OLE_COPY) %s:\n%s
+SAPShow_E00036	Automation Error (OLE_CREATE) %s:\n%s
+SAPShow_E00037	Automation Error (OLE_LOAD) %s:\n%s
+SAPShow_E00038	Automation Error (OLE_QUERY) %s:\n%s
+SAPShow_E00039	Automation Error (OLE_SAVE) %s:\n%s
+SAPShow_E00040	Automation Error (OLE_RUN) %s:\n%s
+SAPShow_E00041	Automation Error (OLE_VERB) %s:\n%s
+SAPShow_E00042	Automation Error (OLE_DRAW) %s:\n%s
+SAPShow_E00047	Error in KXF file: Section '%s' is missing in '%s'
+SAPShow_E00048	Error in KXF file: Key '%s' is missing in section '%s'
+SAPShow_E00049	KXF Format Error %s %s
+SAPShow_E00050	KXF Description Error: %s::%s
+SAPShow_E00056	Can't find external help viewer!\nAdditional path information: %s
+SAPShow_E00057	Missing registry entry for external help viewer (SHH)
+SAPShow_E00058	Error starting external help viewer: %s
+SAPShow_E00059	Malformed URL: %s
+SAPShow_E00060	"SAPDOCCD.INI" is missing!
+SAPShow_E00064	Error executing %s:\n%s
+SAPShow_E00065	Out of memory!\n(File: %s, Line:%s)
+SAPShow_E00066	Automation Error
+SAPShow_E00067	Missing Link: %s
+SAPShow_M32774	&Full Screen
+SAPShow_M32775	&Notes
+SAPShow_M32784	&Play
+SAPShow_M32787	&Auto run
+SAPShow_M57600	&Open...\tCtrl+O,
+SAPShow_M57607	&Print...\tCtrl+P
+SAPShow_M57608	P&rint Setup...
+SAPShow_M57609	Print Pre&view
+SAPShow_M57616	Recent File
+SAPShow_M57664	&About SAPShow...
+SAPShow_M57665	E&xit
+SAPShow_M59392	&Standard
+SAPShow_M59393	&Status Bar
+SAPShow_MFile	&File
+SAPShow_MHelp	&Help
+SAPShow_MToolbars	&Toolbars
+SAPShow_MView	&View
+SAPShow_R32771	Previous Topic\nPrevious
+SAPShow_R32772	Next Topic\nNext
+SAPShow_R32774	Full Screen\nFull screen
+SAPShow_R32775	Show or Hide Notes Window\nNotes
+SAPShow_R32778	Previous in history\nHistory Previous
+SAPShow_R32779	Next in History\nHistory Next
+SAPShow_R32782	Play\nPlay
+SAPShow_R32783	Stop\nStop
+SAPShow_R32784	Show or hide the toolbar\nToggle ToolBar
+SAPShow_R32786	Auto run\nAuto run
+SAPShow_R32787	Start and stop auto run mode\nAuto run
+SAPShow_R57600	Create a new document\nNew
+SAPShow_R57601	Open an existing document\nOpen
+SAPShow_R57602	Close the active document\nClose
+SAPShow_R57603	Save the active document\nSave
+SAPShow_R57604	Save the active document with a new name\nSave As
+SAPShow_R57606	Change the printer and printing options\nPrint Setup
+SAPShow_R57607	Print the active document\nPrint
+SAPShow_R57608	Display full pages\nPrint Preview
+SAPShow_R57616	Open this document
+SAPShow_R57617	Open this document
+SAPShow_R57618	Open this document
+SAPShow_R57619	Open this document
+SAPShow_R57620	Open this document
+SAPShow_R57621	Open this document
+SAPShow_R57622	Open this document
+SAPShow_R57623	Open this document
+SAPShow_R57624	Open this document
+SAPShow_R57625	Open this document
+SAPShow_R57626	Open this document
+SAPShow_R57627	Open this document
+SAPShow_R57628	Open this document
+SAPShow_R57629	Open this document
+SAPShow_R57630	Open this document
+SAPShow_R57631	Open this document
+SAPShow_R57664	Display program information, version number and copyright\nAbout
+SAPShow_R57665	Quit the application; prompts to save documents\nExit
+SAPShow_R59392	Show or hide the toolbar\nToggle ToolBar
+SAPShow_R59393	Show or hide the status bar\nToggle StatusBar
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               

@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<CLAS CLSNAME="ZSAPLINK_BI_ODSO" VERSION="0" LANGU="E" DESCRIPT="SAPlink - BI  - ODS Object" UUID="453D1C44C9EA1411E10000000A03649A" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="912551" CREATEDON="20061025" CHANGEDBY="912551" CHANGEDON="20061025" CHGDANYON="00000000" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="640" CLSBCCAT="00" REFCLSNAME="ZSAPLINK">
+ <publicSection>class ZSAPLINK_BI_ODSO definition
+  public
+  inheriting from ZSAPLINK
+  final
+  create public .
+
+*&quot;* public components of class ZSAPLINK_BI_ODSO
+*&quot;* do not include other source files here!!!
+public section.
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+ <protectedSection>*&quot;* protected components of class ZSAPLINK_BI_ODSO
+*&quot;* do not include other source files here!!!
+protected section.
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+ <privateSection>*&quot;* private components of class ZSAPLINK_BI_ODSO
+*&quot;* do not include other source files here!!!
+private section.</privateSection>
+ <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+ <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature</localTypes>
+ <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" LANGU="E" DESCRIPT="Check if object exists" EXPOSURE="2" STATE="1" EDITORDER="9 " DISPID="0 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDABSTRCT="X" R3RELEASE="640" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+method CHECKEXISTS.
+
+*      Plugin created by:
+*      Claudio Ciardelli
+*      claudio.ciardelli@gmail.com
+
+  DATA: l_name TYPE ddobjname.
+
+  l_name = objname.
+
+* Check if cube exists
+  CALL METHOD cl_rsd_dta=&gt;check_name_for_new_dta
+    EXPORTING
+      i_infoprov        = l_name
+      i_tlogo           = rs_c_tlogo-ods_object
+*        I_BWAPPL          =
+    EXCEPTIONS
+      name_invalid      = 1
+      name_already_used = 2
+      OTHERS            = 3.
+
+  IF sy-subrc &lt;&gt; 0.
+*    MESSAGE ID   sy-msgid TYPE &apos;I&apos; NUMBER sy-msgno
+*            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+    exists = &apos;X&apos;.
+    EXIT.
+  ENDIF.
+
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" LANGU="E" DESCRIPT="Creates an IF_IXML_DOCUMENT from the OBJNAME Attribute" EXPOSURE="2" STATE="1" EDITORDER="5 " DISPID="0 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDABSTRCT="X" MTDNEWEXC="X" R3RELEASE="640" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <exception CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" SCONAME="ZCX_SAPLINK" VERSION="0" LANGU="E" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD CREATEIXMLDOCFROMOBJECT.
+
+*      Plugin created by:
+*      Claudio Ciardelli
+*      claudio.ciardelli@gmail.com
+
+*xml nodes
+  DATA rootnode   TYPE REF TO if_ixml_element.
+  DATA rc         TYPE sysubrc.
+  DATA l_odsoname TYPE ddobjname.
+  l_odsoname = objname.
+
+  TYPE-POOLS rsdg.
+
+  DATA: l_s_details        TYPE BAPI6116.
+  DATA: l_s_return         TYPE BAPIRET2.
+
+  DATA: l_t_infoobjects  TYPE TABLE OF BAPI6116IO.
+  DATA: l_t_navigationattributes
+                         TYPE TABLE OF BAPI6116NA.
+  DATA: l_t_indexes      TYPE TABLE OF BAPI6116IN.
+  DATA: l_t_indexesinfoobjects
+                         TYPE TABLE OF BAPI6116II.
+
+  DATA: l_s_infoobjects  TYPE BAPI6116IO.
+  DATA: l_s_navigationattributes
+                         TYPE BAPI6116NA.
+  DATA: l_s_indexes      TYPE BAPI6116IN.
+  DATA: l_s_indexesinfoobjects
+                         TYPE BAPI6116II.
+
+
+  DATA: infoobjects_node  TYPE REF TO if_ixml_element.
+  DATA: navigationattributes_node
+                         TYPE REF TO if_ixml_element.
+  DATA: indexes_node     TYPE REF TO if_ixml_element.
+  DATA: indexesinfoobjects_node
+                         TYPE REF TO if_ixml_element.
+
+
+* get ods object
+  CALL FUNCTION &apos;BAPI_ODSO_GETDETAIL&apos;
+   EXPORTING
+    OBJVERS                    = RS_C_OBJVERS-ACTIVE
+    ODSOBJECT                  = l_odsoname
+   IMPORTING
+    DETAILS                    = l_s_details
+    RETURN                     = l_s_return
+   TABLES
+    INFOOBJECTS                = l_t_infoobjects
+    NAVIGATIONATTRIBUTES       = l_t_navigationattributes
+    INDEXES                    = l_t_indexes
+    INDEXESINFOOBJECTS         = l_t_indexesinfoobjects
+            .
+
+* Create parent node
+  DATA _objtype TYPE string.
+  _objtype = getobjecttype( ).
+  rootnode = xmldoc-&gt;create_element( _objtype ).
+
+
+  setattributesfromstructure( node = rootnode structure = l_s_details ).
+
+* infoobjects
+  LOOP AT l_t_infoobjects INTO l_s_infoobjects.
+    infoobjects_node = xmldoc-&gt;create_element( &apos;infoobject&apos; ).
+    setattributesfromstructure(
+        node = infoobjects_node structure = l_s_infoobjects ).
+    rc = rootnode-&gt;append_child( infoobjects_node ).
+  ENDLOOP.
+
+* navigationattributes
+  LOOP AT l_t_navigationattributes INTO l_s_navigationattributes.
+    navigationattributes_node = xmldoc-&gt;create_element(
+        &apos;navigationattibute&apos; ).
+    setattributesfromstructure(
+        node = navigationattributes_node
+        structure = l_s_navigationattributes ).
+    rc = rootnode-&gt;append_child( navigationattributes_node ).
+  ENDLOOP.
+
+* indexes
+  LOOP AT l_t_indexes INTO l_s_indexes.
+    indexes_node = xmldoc-&gt;create_element(
+        &apos;index&apos; ).
+    setattributesfromstructure(
+        node = indexes_node
+        structure = l_s_indexes ).
+    rc = rootnode-&gt;append_child( indexes_node ).
+  ENDLOOP.
+
+* indexesinfoobjects
+  LOOP AT l_t_indexesinfoobjects INTO l_s_indexesinfoobjects.
+    indexesinfoobjects_node = xmldoc-&gt;create_element(
+        &apos;indexinfoobject&apos; ).
+    setattributesfromstructure(
+        node = indexesinfoobjects_node
+        structure = l_s_indexesinfoobjects ).
+    rc = rootnode-&gt;append_child( indexesinfoobjects_node ).
+  ENDLOOP.
+
+*\--------------------------------------------------------------------/
+  rc = xmldoc-&gt;append_child( rootnode ).
+  ixmldocument = xmldoc.
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" LANGU="E" DESCRIPT="Creates Object on System from IXMLDocument passed in" EXPOSURE="2" STATE="1" EDITORDER="4 " DISPID="0 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDABSTRCT="X" MTDNEWEXC="X" R3RELEASE="640" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <exception CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" SCONAME="ZCX_SAPLINK" VERSION="0" LANGU="E" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD createobjectfromixmldoc.
+
+*      Plugin created by:
+*      Claudio Ciardelli
+*      claudio.ciardelli@gmail.com
+
+  TYPE-POOLS rsdg.
+
+
+*xml nodes
+  DATA rootnode    TYPE REF TO if_ixml_element.
+  DATA node        TYPE REF TO if_ixml_element.
+  DATA filter      TYPE REF TO if_ixml_node_filter.
+  DATA iterator    TYPE REF TO if_ixml_node_iterator.
+  DATA l_subrc     TYPE sysubrc.
+  DATA checkexists TYPE flag.
+  DATA l_objtype   TYPE string.
+
+
+
+  DATA: l_s_details        TYPE BAPI6116.
+  DATA: l_t_return         TYPE TABLE OF BAPIRET2.
+  DATA: l_s_return         TYPE BAPIRET2.
+  DATA: l_t_infoobjects  TYPE TABLE OF BAPI6116IO.
+  DATA: l_t_navigationattributes
+                         TYPE TABLE OF BAPI6116NA.
+  DATA: l_t_indexes      TYPE TABLE OF BAPI6116IN.
+  DATA: l_t_indexesinfoobjects
+                         TYPE TABLE OF BAPI6116II.
+
+  DATA: l_s_infoobjects  TYPE BAPI6116IO.
+  DATA: l_s_navigationattributes
+                         TYPE BAPI6116NA.
+  DATA: l_s_indexes      TYPE BAPI6116IN.
+  DATA: l_s_indexesinfoobjects
+                         TYPE BAPI6116II.
+
+
+  DATA: infoobjects_node  TYPE REF TO if_ixml_element.
+  DATA: navigationattributes_node
+                         TYPE REF TO if_ixml_element.
+  DATA: indexes_node     TYPE REF TO if_ixml_element.
+  DATA: indexesinfoobjects_node
+                         TYPE REF TO if_ixml_element.
+
+  DATA: l_objectExists   TYPE flag.
+  DATA: l_createODS      TYPE flag.
+
+
+* Get object type
+  l_objtype = getobjecttype( ).
+
+* Check if object exists
+  checkexists = checkexists( ).
+  IF checkexists IS NOT INITIAL.
+    IF overwrite IS INITIAL.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING textid = zcx_saplink=&gt;existing.
+    ELSE.
+*     delete object for new install
+      deleteobject( ).
+    ENDIF.
+  ENDIF.
+
+
+  xmldoc = ixmldocument.
+  rootnode = xmldoc-&gt;find_from_name( l_objtype ).
+
+  CALL METHOD getstructurefromattributes
+    EXPORTING
+      node      = rootnode
+    CHANGING
+      structure = l_s_details.
+
+  objname = l_s_details-odsobject.
+
+
+* retrieve Tabl details
+
+* infoobjects
+  FREE: filter, iterator, node.
+  filter = xmldoc-&gt;create_filter_name( &apos;infoobject&apos; ).
+  iterator = xmldoc-&gt;create_iterator_filtered( filter ).
+  node ?= iterator-&gt;get_next( ).
+  WHILE node IS NOT INITIAL.
+    CLEAR infoobjects_node.
+    CALL METHOD getstructurefromattributes
+      EXPORTING
+        node      = node
+      CHANGING
+        structure = l_s_infoobjects.
+    APPEND l_s_infoobjects TO l_t_infoobjects.
+    node ?= iterator-&gt;get_next( ).
+  ENDWHILE.
+
+* navigationattributes
+  FREE: filter, iterator, node.
+  filter = xmldoc-&gt;create_filter_name( &apos;navigationattribute&apos; ).
+  iterator = xmldoc-&gt;create_iterator_filtered( filter ).
+  node ?= iterator-&gt;get_next( ).
+  WHILE node IS NOT INITIAL.
+    CLEAR navigationattributes_node.
+    CALL METHOD getstructurefromattributes
+      EXPORTING
+        node      = node
+      CHANGING
+        structure = l_s_navigationattributes.
+    APPEND l_s_navigationattributes TO l_t_navigationattributes.
+    node ?= iterator-&gt;get_next( ).
+  ENDWHILE.
+
+* indexes
+  FREE: filter, iterator, node.
+  filter = xmldoc-&gt;create_filter_name( &apos;index&apos; ).
+  iterator = xmldoc-&gt;create_iterator_filtered( filter ).
+  node ?= iterator-&gt;get_next( ).
+  WHILE node IS NOT INITIAL.
+    CLEAR indexes_node.
+    CALL METHOD getstructurefromattributes
+      EXPORTING
+        node      = node
+      CHANGING
+        structure = l_s_indexes.
+    APPEND l_s_indexes TO l_t_indexes.
+    node ?= iterator-&gt;get_next( ).
+  ENDWHILE.
+
+* indexesinfoobjects
+  FREE: filter, iterator, node.
+  filter = xmldoc-&gt;create_filter_name( &apos;indexinfoobject&apos; ).
+  iterator = xmldoc-&gt;create_iterator_filtered( filter ).
+  node ?= iterator-&gt;get_next( ).
+  WHILE node IS NOT INITIAL.
+    CLEAR indexesinfoobjects_node.
+    CALL METHOD getstructurefromattributes
+      EXPORTING
+        node      = node
+      CHANGING
+        structure = l_s_indexesinfoobjects.
+    APPEND l_s_indexesinfoobjects TO l_t_indexesinfoobjects.
+    node ?= iterator-&gt;get_next( ).
+  ENDWHILE.
+
+  l_objectExists = me-&gt;checkexists( ).
+
+* Actually create object
+
+  if overwrite = &apos;X&apos;.
+    if l_objectExists = &apos;X&apos;.
+      l_createODS = &apos;&apos;.
+    else.
+* Create object
+      l_createODS = &apos;X&apos;.
+    endif.
+  else.
+* Create object
+    l_createODS = &apos;X&apos;.
+  endif.
+
+
+  if l_createODS = &apos;X&apos;.
+    CALL FUNCTION &apos;BAPI_ODSO_CREATE&apos;
+      EXPORTING
+        DETAILS                    = l_s_details
+* IMPORTING
+*   ODSOBJECT                  =
+      TABLES
+       INFOOBJECTS                = l_t_infoobjects
+       NAVIGATIONATTRIBUTES       = l_t_navigationattributes
+       INDEXES                    = l_t_indexes
+       INDEXESINFOOBJECTS         = l_t_indexesinfoobjects
+       RETURN                     = l_t_return
+              .
+  else.
+    CALL FUNCTION &apos;BAPI_ODSO_CHANGE&apos;
+      EXPORTING
+        ODSOBJECT            = l_s_details-odsobject
+        DETAILS              = l_s_details
+      TABLES
+        INFOOBJECTS          = l_t_infoobjects
+        NAVIGATIONATTRIBUTES = l_t_navigationattributes
+        INDEXES              = l_t_indexes
+        INDEXESINFOOBJECTS   = l_t_indexesinfoobjects
+        RETURN               = l_t_return.
+  endif.
+
+  read table l_t_return index 1 into l_s_return.
+  CASE l_s_return-type.
+    WHEN &apos;E&apos; OR &apos;W&apos;.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING textid = zcx_saplink=&gt;system_error.
+
+    loop at l_t_return into l_s_return.
+    MESSAGE ID l_s_return-id TYPE l_s_return-type NUMBER
+       l_s_return-number
+       WITH l_s_return-message_v1 l_s_return-message_v2
+            l_s_return-message_v3 l_s_return-message_v4.
+    endloop.
+  ENDCASE.
+
+  name = objname.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" LANGU="E" DESCRIPT="Delete object" EXPOSURE="1" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDABSTRCT="X" MTDNEWEXC="X" R3RELEASE="640" BCMTDCAT="00" BCMTDSYN="0">
+  <exception CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" SCONAME="ZCX_SAPLINK" VERSION="0" LANGU="E" DESCRIPT="SAPlink exception class" MTDTYPE="0" EDITORDER="1 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+METHOD DELETEOBJECT.
+
+*      Plugin created by:
+*      Claudio Ciardelli
+*      claudio.ciardelli@gmail.com
+GET TIME.
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" LANGU="E" DESCRIPT="Get object type of plugin" EXPOSURE="1" STATE="1" EDITORDER="8 " DISPID="0 " AUTHOR="912551" CREATEDON="20061016" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" MTDABSTRCT="X" R3RELEASE="640" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter VERSION="0" CMPTYPE="0" MTDTYPE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" PARDECLTYP="0" PARPASSTYP="0" TYPTYPE="0"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+method GETOBJECTTYPE.
+
+*      Plugin created by:
+*      Claudio Ciardelli
+*      claudio.ciardelli@gmail.com
+
+  objecttype = &apos;ODSO&apos;.  &quot;ODS Objects (Only tested under BW3.5)
+
+endmethod.</source>
+ </method>
+</CLAS>

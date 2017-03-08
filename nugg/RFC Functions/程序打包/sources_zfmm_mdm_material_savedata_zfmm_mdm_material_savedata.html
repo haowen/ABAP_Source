@@ -1,0 +1,654 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-1" />
+<title>ZFMM_MDM_MATERIAL_SAVEDATA</title>
+<style type="text/css">
+.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }
+  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }
+  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }
+  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }
+</style>
+<style type="text/css">
+  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }
+  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }
+  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }
+  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }
+  .outerTable{
+   background-color:#E0E7ED;
+   width:100%;
+   border-top-width: thin;
+   border-right-width: thin;
+   border-right-width: thin;
+   border-left-width: thin;
+   border-top-style: solid;
+   border-right-style: solid;
+   border-bottom-style: solid;
+   border-left-style: solid;
+  }
+  .innerTable{
+   background-color:#F2F4F7;
+   width:100%;
+   border-top-width: thin;
+   border-right-width: thin;
+   border-bottom-width: thin;
+   border-left-width: thin;
+   border-top-style: solid;
+   border-right-style: solid;
+   border-bottom-style: solid;
+   border-left-style: solid;
+  }
+</style>
+</head>
+<body>
+<table class="outerTable">
+  <tr class="normalBoldLarge">
+     <td><h2>Code listing for function ZFMM_MDM_MATERIAL_SAVEDATA</h2>
+<h3> Description: MDMÎïÁÏµ¼Èë½Ó¿Ú</h3></td>
+   </tr>
+  <tr>
+     <td>
+     <table class="innerTable">
+       <tr>
+          <td>
+   <div class="code">
+FUNCTION ZFMM_MDM_MATERIAL_SAVEDATA.<br />
+   </div>
+   <div class="codeComment">
+*"----------------------------------------------------------------------<br />
+*"*"Local interface:<br />
+*"  IMPORTING<br />
+*"     VALUE(HEADDATA) LIKE  BAPIMATHEAD STRUCTURE  BAPIMATHEAD<br />
+*"     VALUE(CLIENTDATA) LIKE  BAPI_MARA STRUCTURE  BAPI_MARA OPTIONAL<br />
+*"     VALUE(CLIENTDATAX) LIKE  BAPI_MARAX STRUCTURE  BAPI_MARAX<br />
+*"       OPTIONAL<br />
+*"     VALUE(PLANTDATA) LIKE  BAPI_MARC STRUCTURE  BAPI_MARC OPTIONAL<br />
+*"     VALUE(PLANTDATAX) LIKE  BAPI_MARCX STRUCTURE  BAPI_MARCX<br />
+*"       OPTIONAL<br />
+*"     VALUE(FORECASTPARAMETERS) LIKE  BAPI_MPOP STRUCTURE  BAPI_MPOP<br />
+*"       OPTIONAL<br />
+*"     VALUE(FORECASTPARAMETERSX) LIKE  BAPI_MPOPX STRUCTURE<br />
+*"        BAPI_MPOPX OPTIONAL<br />
+*"     VALUE(PLANNINGDATA) LIKE  BAPI_MPGD STRUCTURE  BAPI_MPGD<br />
+*"       OPTIONAL<br />
+*"     VALUE(PLANNINGDATAX) LIKE  BAPI_MPGDX STRUCTURE  BAPI_MPGDX<br />
+*"       OPTIONAL<br />
+*"     VALUE(STORAGELOCATIONDATA) LIKE  BAPI_MARD STRUCTURE  BAPI_MARD<br />
+*"       OPTIONAL<br />
+*"     VALUE(STORAGELOCATIONDATAX) LIKE  BAPI_MARDX STRUCTURE<br />
+*"        BAPI_MARDX OPTIONAL<br />
+*"     VALUE(VALUATIONDATA) LIKE  BAPI_MBEW STRUCTURE  BAPI_MBEW<br />
+*"       OPTIONAL<br />
+*"     VALUE(VALUATIONDATAX) LIKE  BAPI_MBEWX STRUCTURE  BAPI_MBEWX<br />
+*"       OPTIONAL<br />
+*"     VALUE(WAREHOUSENUMBERDATA) LIKE  BAPI_MLGN STRUCTURE  BAPI_MLGN<br />
+*"       OPTIONAL<br />
+*"     VALUE(WAREHOUSENUMBERDATAX) LIKE  BAPI_MLGNX STRUCTURE<br />
+*"        BAPI_MLGNX OPTIONAL<br />
+*"     VALUE(SALESDATA) LIKE  BAPI_MVKE STRUCTURE  BAPI_MVKE OPTIONAL<br />
+*"     VALUE(SALESDATAX) LIKE  BAPI_MVKEX STRUCTURE  BAPI_MVKEX<br />
+*"       OPTIONAL<br />
+*"     VALUE(STORAGETYPEDATA) LIKE  BAPI_MLGT STRUCTURE  BAPI_MLGT<br />
+*"       OPTIONAL<br />
+*"     VALUE(STORAGETYPEDATAX) LIKE  BAPI_MLGTX STRUCTURE  BAPI_MLGTX<br />
+*"       OPTIONAL<br />
+*"     VALUE(FLAG_ONLINE) LIKE  BAPIE1GLOBAL_DATA-TESTRUN DEFAULT SPACE<br />
+*"     VALUE(FLAG_CAD_CALL) LIKE  BAPIE1GLOBAL_DATA-TESTRUN DEFAULT<br />
+*"       SPACE<br />
+*"     VALUE(NO_DEQUEUE) LIKE  BAPIE1GLOBAL_DATA-TESTRUN DEFAULT SPACE<br />
+*"     VALUE(NO_ROLLBACK_WORK) LIKE  BAPIE1GLOBAL_DATA-TESTRUN DEFAULT<br />
+*"       SPACE<br />
+*"     VALUE(JBSJTEXT) TYPE  CHAR512 OPTIONAL<br />
+*"     VALUE(CGDDTEXT) TYPE  CHAR512 OPTIONAL<br />
+*"     VALUE(JYTEXT) TYPE  CHAR512 OPTIONAL<br />
+*"     VALUE(XSTEXT) LIKE  ZFMM_S_XSTEXT STRUCTURE  ZFMM_S_XSTEXT<br />
+*"       OPTIONAL<br />
+*"     VALUE(BAPI_TE_MARA) LIKE  BAPI_TE_MARA STRUCTURE  BAPI_TE_MARA<br />
+*"       OPTIONAL<br />
+*"     VALUE(BAPI_TE_MARAX) LIKE  BAPI_TE_MARAX STRUCTURE<br />
+*"        BAPI_TE_MARAX OPTIONAL<br />
+*"     VALUE(ZBASE_UOM) TYPE  CHAR3 OPTIONAL<br />
+*"     VALUE(BAPI_TE_MARC) LIKE  BAPI_TE_MARC STRUCTURE  BAPI_TE_MARC<br />
+*"       OPTIONAL<br />
+*"     VALUE(BAPI_TE_MARCX) LIKE  BAPI_TE_MARCX STRUCTURE<br />
+*"        BAPI_TE_MARCX OPTIONAL<br />
+*"     VALUE(CLASSNUM1) TYPE  BAPI_CLASS_KEY-CLASSNUM OPTIONAL<br />
+*"     VALUE(CLASSNUM2) TYPE  BAPI_CLASS_KEY-CLASSNUM OPTIONAL<br />
+*"  EXPORTING<br />
+*"     VALUE(RETURN) LIKE  BAPIRET2 STRUCTURE  BAPIRET2<br />
+*"  TABLES<br />
+*"      MATERIALDESCRIPTION STRUCTURE  BAPI_MAKT OPTIONAL<br />
+*"      UNITSOFMEASURE STRUCTURE  BAPI_MARM OPTIONAL<br />
+*"      UNITSOFMEASUREX STRUCTURE  BAPI_MARMX OPTIONAL<br />
+*"      INTERNATIONALARTNOS STRUCTURE  BAPI_MEAN OPTIONAL<br />
+*"      MATERIALLONGTEXT STRUCTURE  BAPI_MLTX OPTIONAL<br />
+*"      TAXCLASSIFICATIONS STRUCTURE  BAPI_MLAN OPTIONAL<br />
+*"      RETURNMESSAGES STRUCTURE  BAPI_MATRETURN2 OPTIONAL<br />
+*"      PRTDATA STRUCTURE  BAPI_MFHM OPTIONAL<br />
+*"      PRTDATAX STRUCTURE  BAPI_MFHMX OPTIONAL<br />
+*"      EXTENSIONIN STRUCTURE  BAPIPAREX OPTIONAL<br />
+*"      EXTENSIONINX STRUCTURE  BAPIPAREXX OPTIONAL<br />
+*"      NFMCHARGEWEIGHTS STRUCTURE  /NFM/BAPITVGW OPTIONAL<br />
+*"      NFMCHARGEWEIGHTSX STRUCTURE  /NFM/BAPITVGWX OPTIONAL<br />
+*"      NFMSTRUCTURALWEIGHTS STRUCTURE  /NFM/BAPITKGW OPTIONAL<br />
+*"      NFMSTRUCTURALWEIGHTSX STRUCTURE  /NFM/BAPITKGWX OPTIONAL<br />
+*"      T_NUM STRUCTURE  BAPI1003_ALLOC_VALUES_NUM<br />
+*"      T_CHAR STRUCTURE  BAPI1003_ALLOC_VALUES_CHAR<br />
+*"      T_CURR STRUCTURE  BAPI1003_ALLOC_VALUES_CURR<br />
+*"      T_RETURN STRUCTURE  BAPIRET2<br />
+*"      T_QMAT STRUCTURE  BAPI1001004_QMAT<br />
+*"      T_RETURN_QMAT STRUCTURE  BAPIRET2<br />
+*"      T_NUM1 STRUCTURE  BAPI1003_ALLOC_VALUES_NUM OPTIONAL<br />
+*"      T_NUM2 STRUCTURE  BAPI1003_ALLOC_VALUES_NUM OPTIONAL<br />
+*"----------------------------------------------------------------------<br />
+
+<div class="codeComment">*       <a href ="global-zfmm_mdm_material_savedata.html">Global data declarations</a></div><br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;DATA:&nbsp;l_value(960),<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_exten&nbsp;TYPE&nbsp;bapiparex,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_extenx&nbsp;TYPE&nbsp;bapiparexx.<br />
+&nbsp;&nbsp;IF&nbsp;bapi_te_mara&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;l_value.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_value&nbsp;=&nbsp;bapi_te_mara.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-structure&nbsp;=&nbsp;'BAPI_TE_MARA'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart1&nbsp;=&nbsp;l_value(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart2&nbsp;=&nbsp;l_value+240(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart3&nbsp;=&nbsp;l_value+480(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart4&nbsp;=&nbsp;l_value+720(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_exten&nbsp;TO&nbsp;extensionin[].<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;l_value.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;bapi_te_marax-material&nbsp;=&nbsp;bapi_te_mara-material.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_value&nbsp;=&nbsp;bapi_te_marax.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_extenx-structure&nbsp;=&nbsp;'BAPI_TE_MARAX'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_extenx-valuepart1&nbsp;=&nbsp;l_value(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_extenx-valuepart2&nbsp;=&nbsp;l_value+240(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_extenx-valuepart3&nbsp;=&nbsp;l_value+480(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_extenx-valuepart4&nbsp;=&nbsp;l_value+720(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_extenx&nbsp;TO&nbsp;extensioninx[].<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;IF&nbsp;bapi_te_marc&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;l_value.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_value&nbsp;=&nbsp;bapi_te_marc.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-structure&nbsp;=&nbsp;'BAPI_TE_MARC'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart1&nbsp;=&nbsp;l_value(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart2&nbsp;=&nbsp;l_value+240(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart3&nbsp;=&nbsp;l_value+480(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart4&nbsp;=&nbsp;l_value+720(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_exten&nbsp;TO&nbsp;extensionin[].<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;l_value.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_value&nbsp;=&nbsp;bapi_te_marcx.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-structure&nbsp;=&nbsp;'BAPI_TE_MARCX'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart1&nbsp;=&nbsp;l_value(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart2&nbsp;=&nbsp;l_value+240(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart3&nbsp;=&nbsp;l_value+480(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_exten-valuepart4&nbsp;=&nbsp;l_value+720(240).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_exten&nbsp;TO&nbsp;extensioninx[].<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;IF&nbsp;zbase_uom&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;clientdata-base_uom&nbsp;=&nbsp;zbase_uom.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;clientdatax-base_uom&nbsp;=&nbsp;'X'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;unitsofmeasure.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unitsofmeasure-alt_unit&nbsp;=&nbsp;zbase_uom.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MODIFY&nbsp;unitsofmeasure.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;unitsofmeasurex.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unitsofmeasurex-alt_unit&nbsp;=&nbsp;zbase_uom.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MODIFY&nbsp;unitsofmeasurex.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;DATA:&nbsp;w_return_mat&nbsp;TYPE&nbsp;bapi_matreturn2,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;w_return&nbsp;TYPE&nbsp;bapiret2.<br />
+<br />
+&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_MATERIAL_SAVEDATA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;headdata&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;headdata<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLIENTDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLIENTDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLIENTDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLIENTDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PLANTDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;PLANTDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PLANTDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;PLANTDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FORECASTPARAMETERS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;FORECASTPARAMETERS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FORECASTPARAMETERSX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;FORECASTPARAMETERSX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PLANNINGDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;PLANNINGDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PLANNINGDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;PLANNINGDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STORAGELOCATIONDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;STORAGELOCATIONDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STORAGELOCATIONDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;STORAGELOCATIONDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VALUATIONDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;VALUATIONDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VALUATIONDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;VALUATIONDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAREHOUSENUMBERDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;WAREHOUSENUMBERDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAREHOUSENUMBERDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;WAREHOUSENUMBERDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SALESDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;SALESDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SALESDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;SALESDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STORAGETYPEDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;STORAGETYPEDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;STORAGETYPEDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;STORAGETYPEDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLAG_ONLINE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;FLAG_ONLINE<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;FLAG_CAD_CALL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;FLAG_CAD_CALL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NO_DEQUEUE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;NO_DEQUEUE<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NO_ROLLBACK_WORK&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;NO_ROLLBACK_WORK<br />
+&nbsp;&nbsp;&nbsp;&nbsp;IMPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;RETURN<br />
+&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MATERIALDESCRIPTION&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;MATERIALDESCRIPTION<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UNITSOFMEASURE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;UNITSOFMEASURE<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UNITSOFMEASUREX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;UNITSOFMEASUREX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INTERNATIONALARTNOS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;INTERNATIONALARTNOS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MATERIALLONGTEXT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;MATERIALLONGTEXT<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TAXCLASSIFICATIONS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;TAXCLASSIFICATIONS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURNMESSAGES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;RETURNMESSAGES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PRTDATA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;PRTDATA<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PRTDATAX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;PRTDATAX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXTENSIONIN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;EXTENSIONIN<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXTENSIONINX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;EXTENSIONINX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NFMCHARGEWEIGHTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;NFMCHARGEWEIGHTS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NFMCHARGEWEIGHTSX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;NFMCHARGEWEIGHTSX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NFMSTRUCTURALWEIGHTS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;NFMSTRUCTURALWEIGHTS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NFMSTRUCTURALWEIGHTSX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;NFMSTRUCTURALWEIGHTSX<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;DATA:&nbsp;l_key&nbsp;TYPE&nbsp;bapi1003_key-object,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_classnum&nbsp;TYPE&nbsp;bapi1003_key-classnum.<br />
+&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;returnmessages[]&nbsp;INTO&nbsp;w_return_mat&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'E'.<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;returnmessages[]&nbsp;INTO&nbsp;w_return_mat&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'A'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_COMMIT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'X'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATA:&nbsp;w_return_qmat&nbsp;TYPE&nbsp;bapiret2.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_MATINSPCTRL_SAVEREPLICA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_return_qmat[]<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inspectionctrl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_qmat[]<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;t_return_qmat[]&nbsp;INTO&nbsp;w_return_qmat&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;t_return_qmat[]&nbsp;INTO&nbsp;w_return_qmat&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'A'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_COMMIT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'X'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_key&nbsp;=&nbsp;headdata-material.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CONCATENATE&nbsp;'MDMC'&nbsp;bapi_te_mara-zindustry&nbsp;INTO&nbsp;l_classnum.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATA:&nbsp;t_num_tmp&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;bapi1003_alloc_values_num,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_char_tmp&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;bapi1003_alloc_values_char,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_curr_tmp&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;bapi1003_alloc_values_curr.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;t_num[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;OR&nbsp;t_char[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;OR&nbsp;t_curr[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;t_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_OBJCL_GETDETAIL'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objectkey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_key<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objecttable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'MARA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_classnum<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classtype&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'001'<br />
+   </div>
+   <div class="codeComment">
+*           KEYDATE                = SY-DATUM<br />
+*           UNVALUATED_CHARS       = ' '<br />
+*           LANGUAGE               = SY-LANGU<br />
+*         IMPORTING<br />
+*           STATUS                 =<br />
+*           STANDARDCLASS          =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluesnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_num_tmp<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvalueschar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_char_tmp<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluescurr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_curr_tmp<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;t_return&nbsp;INTO&nbsp;w_return&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'S'&nbsp;id&nbsp;=&nbsp;'CL'&nbsp;number&nbsp;=&nbsp;'731'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;=&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;t_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_OBJCL_CHANGE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objectkey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_key<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objecttable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'MARA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_classnum<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classtype&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'001'<br />
+   </div>
+   <div class="codeComment">
+*             STATUS                   = '1'<br />
+*             STANDARDCLASS            =<br />
+*             CHANGENUMBER             =<br />
+*             KEYDATE                  = SY-DATUM<br />
+*             NO_DEFAULT_VALUES        = ' '<br />
+*           IMPORTING<br />
+*             CLASSIF_STATUS           =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluesnumnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_num<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluescharnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluescurrnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_OBJCL_CREATE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objectkeynew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_key<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objecttablenew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'MARA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classnumnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_classnum<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classtypenew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'001'<br />
+   </div>
+   <div class="codeComment">
+*             STATUS                  = '1'<br />
+*             STANDARDCLASS           =<br />
+*             CHANGENUMBER            =<br />
+*             KEYDATE                 = SY-DATUM<br />
+*             NO_DEFAULT_VALUES       = ' '<br />
+*           IMPORTING<br />
+*             CLASSIF_STATUS          =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALLOCVALUESNUM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_num<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALLOCVALUESCHAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALLOCVALUESCURR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;t_return&nbsp;INTO&nbsp;w_return&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;=&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;t_return&nbsp;INTO&nbsp;w_return&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'A'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;=&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_COMMIT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAIT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'X'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;DATA:&nbsp;l_name&nbsp;TYPE&nbsp;tdobname.<br />
+&nbsp;&nbsp;IF&nbsp;headdata-material&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_name&nbsp;=&nbsp;headdata-material.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;jbsjtext&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PERFORM&nbsp;f_save_text&nbsp;USING&nbsp;jbsjtext&nbsp;'MATERIAL'&nbsp;l_name&nbsp;'GRUN'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;cgddtext&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PERFORM&nbsp;f_save_text&nbsp;USING&nbsp;cgddtext&nbsp;'MATERIAL'&nbsp;l_name&nbsp;'BEST'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;jytext&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PERFORM&nbsp;f_save_text&nbsp;USING&nbsp;jytext&nbsp;'MATERIAL'&nbsp;l_name&nbsp;'PRUE'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;IF&nbsp;xstext-matnr&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;AND&nbsp;xstext-vkorg&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;AND&nbsp;xstext-vtweg&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;AND&nbsp;xstext-text&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;l_name.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CONCATENATE&nbsp;xstext-matnr&nbsp;xstext-vkorg&nbsp;xstext-vtweg&nbsp;INTO&nbsp;l_name.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;PERFORM&nbsp;f_save_text&nbsp;USING&nbsp;xstext-text&nbsp;'MVKE'&nbsp;l_name&nbsp;'0001'.<br />
+&nbsp;&nbsp;ENDIF.<br />
+   </div>
+   <div class="codeComment">
+*{   INSERT         CP0K900358                                        1<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;IF&nbsp;classnum1&nbsp;is&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;PERFORM&nbsp;F_SAVE_CLASS&nbsp;TABLES&nbsp;RETURNMESSAGES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T_NUM1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USING&nbsp;HEADDATA-MATERIAL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLASSNUM1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'023'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;IF&nbsp;classnum2&nbsp;is&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;PERFORM&nbsp;F_SAVE_CLASS&nbsp;TABLES&nbsp;RETURNMESSAGES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;T_NUM2<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USING&nbsp;HEADDATA-MATERIAL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLASSNUM1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'300'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;ENDIF.<br />
+   </div>
+   <div class="codeComment">
+*}   INSERT<br />
+   </div>
+   <div class="code">
+<br />
+ENDFUNCTION.<br />
+   </div>
+   <div class="codeComment">
+*{   INSERT         CP0K900358                                        1<br />
+*Ôö¼ÓÎïÁÏÀà 023£ºCLASSNUM1  300£ºCLASSNUM2<br />
+   </div>
+   <div class="code">
+FORM F_SAVE_CLASS TABLES RE_TABLE STRUCTURE BAPIRET2<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_num&nbsp;STRUCTURE&nbsp;bapi1003_alloc_values_num<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_char&nbsp;STRUCTURE&nbsp;bapi1003_alloc_values_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_curr&nbsp;STRUCTURE&nbsp;bapi1003_alloc_values_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USING&nbsp;MATNR&nbsp;TYPE&nbsp;MATNR<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLASSNUM&nbsp;TYPE&nbsp;&nbsp;BAPI1003_KEY-CLASSNUM<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLASSTYPE&nbsp;TYPE&nbsp;&nbsp;BAPI1003_KEY-CLASSTYPE<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;DATA:RETURN_MESSAGES&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;BAPIRET2&nbsp;WITH&nbsp;HEADER&nbsp;LINE,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OBJECTKEYNEW&nbsp;LIKE&nbsp;&nbsp;BAPI1003_KEY-OBJECT,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLASSNUMNEW&nbsp;LIKE&nbsp;&nbsp;BAPI1003_KEY-CLASSNUM,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLASSTYPENEW&nbsp;LIKE&nbsp;&nbsp;BAPI1003_KEY-CLASSTYPE.<br />
+<br />
+&nbsp;&nbsp;OBJECTKEYNEW&nbsp;=&nbsp;MATNR.<br />
+&nbsp;&nbsp;CLASSNUMNEW&nbsp;=&nbsp;CLASSNUM.<br />
+&nbsp;&nbsp;CLASSTYPENEW&nbsp;=&nbsp;CLASSTYPE.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DATA:&nbsp;t_num_tmp&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;bapi1003_alloc_values_num,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_char_tmp&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;bapi1003_alloc_values_char,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_curr_tmp&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;bapi1003_alloc_values_curr.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;t_num[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;OR&nbsp;t_char[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;OR&nbsp;t_curr[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;return_messages[].<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_OBJCL_GETDETAIL'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objectkey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;OBJECTKEYNEW<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objecttable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'MARA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLASSNUMNEW<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classtype&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLASSTYPENEW<br />
+   </div>
+   <div class="codeComment">
+*           KEYDATE                = SY-DATUM<br />
+*           UNVALUATED_CHARS       = ' '<br />
+*           LANGUAGE               = SY-LANGU<br />
+*         IMPORTING<br />
+*           STATUS                 =<br />
+*           STANDARDCLASS          =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluesnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_num_tmp<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvalueschar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_char_tmp<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluescurr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_curr_tmp<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;return_messages<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;READ&nbsp;TABLE&nbsp;return_messages&nbsp;WITH&nbsp;KEY&nbsp;type&nbsp;=&nbsp;'S'&nbsp;id&nbsp;=&nbsp;'CL'&nbsp;number&nbsp;=&nbsp;'731'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;=&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;return_messages[].<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_OBJCL_CHANGE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objectkey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;OBJECTKEYNEW<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objecttable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'MARA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLASSNUMNEW<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classtype&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLASSTYPENEW<br />
+   </div>
+   <div class="codeComment">
+*             STATUS                   = '1'<br />
+*             STANDARDCLASS            =<br />
+*             CHANGENUMBER             =<br />
+*             KEYDATE                  = SY-DATUM<br />
+*             NO_DEFAULT_VALUES        = ' '<br />
+*           IMPORTING<br />
+*             CLASSIF_STATUS           =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluesnumnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_num<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluescharnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allocvaluescurrnew&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RETURN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;return_messages<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_OBJCL_CREATE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objectkey&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;OBJECTKEYNEW<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objecttable&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'MARA'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classnum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLASSNUMNEW<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classtype&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;CLASSTYPENEW<br />
+   </div>
+   <div class="codeComment">
+*             STATUS                  = '1'<br />
+*             STANDARDCLASS           =<br />
+*             CHANGENUMBER            =<br />
+*             KEYDATE                 = SY-DATUM<br />
+*             NO_DEFAULT_VALUES       = ' '<br />
+*           IMPORTING<br />
+*             CLASSIF_STATUS          =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TABLES<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALLOCVALUESNUM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_num<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALLOCVALUESCHAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_char<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALLOCVALUESCURR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;t_curr<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;return_messages<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+<br />
+<br />
+&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;RETURN_MESSAGES&nbsp;WHERE&nbsp;TYPE&nbsp;EQ&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;MOVE-CORRESPONDING&nbsp;RETURN_MESSAGES&nbsp;to&nbsp;RE_TABLE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;append&nbsp;RE_TABLE.<br />
+&nbsp;&nbsp;ENDLOOP.<br />
+<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;NE&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_COMMIT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wait&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;'X'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;ENDIF.<br />
+ENDFORM.<br />
+<br />
+   </div>
+   <div class="codeComment">
+*}   INSERT<br />
+   </div>
+   <div class="code">
+<br />
+FORM f_save_text USING txt object name id.<br />
+&nbsp;&nbsp;DATA:&nbsp;lt_line&nbsp;TYPE&nbsp;TABLE&nbsp;OF&nbsp;tline,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_line&nbsp;TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tline,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_header&nbsp;TYPE&nbsp;thead.<br />
+&nbsp;&nbsp;CLEAR:&nbsp;lt_line,&nbsp;lw_header.<br />
+&nbsp;&nbsp;DATA:&nbsp;l_len&nbsp;TYPE&nbsp;i,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_pos&nbsp;TYPE&nbsp;i.<br />
+&nbsp;&nbsp;CLEAR:&nbsp;l_len,&nbsp;l_pos.<br />
+&nbsp;&nbsp;l_pos&nbsp;=&nbsp;0.<br />
+&nbsp;&nbsp;l_len&nbsp;=&nbsp;strlen(&nbsp;txt&nbsp;).<br />
+&nbsp;&nbsp;IF&nbsp;l_len&nbsp;&lt;=&nbsp;132.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;lw_line.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lw_line-tdline&nbsp;=&nbsp;txt.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_line&nbsp;TO&nbsp;lt_line.<br />
+&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;WHILE&nbsp;l_len&nbsp;&gt;&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;l_pos&nbsp;=&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;lw_line.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_line-tdline&nbsp;=&nbsp;txt+0(132).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_line&nbsp;TO&nbsp;lt_line.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_len&nbsp;=&nbsp;l_len&nbsp;-&nbsp;132.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_pos&nbsp;=&nbsp;l_pos&nbsp;+&nbsp;132.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;lw_line.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_line-tdformat&nbsp;=&nbsp;'/'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;l_len&nbsp;&lt;=&nbsp;132.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_line-tdline&nbsp;=&nbsp;txt+l_pos(l_len).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lw_line-tdline&nbsp;=&nbsp;txt+l_pos(132).<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lw_line&nbsp;TO&nbsp;lt_line.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_len&nbsp;=&nbsp;l_len&nbsp;-&nbsp;132.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_pos&nbsp;=&nbsp;l_pos&nbsp;+&nbsp;132.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ENDWHILE.<br />
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;lw_header-tdobject&nbsp;=&nbsp;object.<br />
+&nbsp;&nbsp;lw_header-tdname&nbsp;=&nbsp;name.<br />
+&nbsp;&nbsp;lw_header-tdid&nbsp;=&nbsp;id.<br />
+&nbsp;&nbsp;lw_header-tdspras&nbsp;=&nbsp;sy-langu.<br />
+<br />
+&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'SAVE_TEXT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+   </div>
+   <div class="codeComment">
+*     CLIENT                = SY-MANDT<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;header&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;lw_header<br />
+   </div>
+   <div class="codeComment">
+*     INSERT                = ' '<br />
+*     SAVEMODE_DIRECT       = ' '<br />
+*     OWNER_SPECIFIED       = ' '<br />
+*     LOCAL_CAT             = ' '<br />
+*   IMPORTING<br />
+*     FUNCTION              =<br />
+*     NEWHEADER             =<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;tables<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lines&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;lt_line<br />
+&nbsp;&nbsp;&nbsp;&nbsp;EXCEPTIONS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LANGUAGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;2<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;3<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OBJECT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;4<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OTHERS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;5<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;&lt;&gt;&nbsp;0.<br />
+   </div>
+   <div class="codeComment">
+* Implement suitable error handling here<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;ENDIF.<br />
+<br />
+ENDFORM.<br />
+            </div>
+          </td>
+        </tr>
+      </table>
+      </td>
+      </tr>
+   <tr>
+<td class="footer">Extracted by Mass Download version 1.4.0 - E.G.Mellodew. 1998-2015. Sap Release 702</td>
+   </tr>
+</table>
+</body>
+</html>

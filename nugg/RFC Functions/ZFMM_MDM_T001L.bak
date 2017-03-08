@@ -1,0 +1,21 @@
+FUNCTION ZFMM_MDM_T001L_NEW.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     VALUE(I_WERKS) TYPE  WERKS_D OPTIONAL
+*"  TABLES
+*"      T_T001L STRUCTURE  ZFMM_S_T001L
+*"----------------------------------------------------------------------
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT werks lgort lgobe FROM t001l INTO TABLE t_t001l.
+IF I_WERKS IS NOT INITIAL.
+  SELECT werks lgort lgobe FROM t001l INTO TABLE t_t001l
+    WHERE WERKS = I_WERKS.
+ELSE.
+    SELECT werks lgort lgobe FROM t001l INTO TABLE t_t001l.
+ENDIF.
+*}   REPLACE
+
+ENDFUNCTION.
+

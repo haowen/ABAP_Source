@@ -1,0 +1,24 @@
+FUNCTION ZFMM_MDM_B517_T438X.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     VALUE(I_WERKS) TYPE  WERKS_D OPTIONAL
+*"     VALUE(I_DISGR) TYPE  DISGR OPTIONAL
+*"  TABLES
+*"      T_T438X STRUCTURE  T438X
+*"----------------------------------------------------------------------
+
+CLEAR t_t438x[].
+
+*{   REPLACE        CP0K900366                                        1
+*\SELECT * FROM t438x INTO TABLE t_t438x WHERE spras = '1'.
+IF I_WERKS is NOT INITIAL and I_DISGR is NOT INITIAL.
+  SELECT * FROM t438x INTO TABLE t_t438x WHERE spras = '1'
+    and WERKS = I_WERKS and DISGR = I_DISGR.
+else.
+  SELECT * FROM t438x INTO TABLE t_t438x WHERE spras = '1'.
+ENDIF.
+*}   REPLACE
+
+ENDFUNCTION.
+

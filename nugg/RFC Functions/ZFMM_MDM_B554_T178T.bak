@@ -1,0 +1,43 @@
+FUNCTION ZFMM_MDM_B554_T178T_NEW.
+*"----------------------------------------------------------------------
+*"*"Local interface:
+*"  IMPORTING
+*"     VALUE(I_KONDM) TYPE  KONDM OPTIONAL
+*"  TABLES
+*"      T_T178T STRUCTURE  ZFMM_S_T178T
+*"----------------------------------------------------------------------
+
+  CLEAR t_t178t[].
+
+  DATA: l_string TYPE string,
+        l_ascii TYPE xstring,
+        l_convert TYPE REF TO cl_rpe_convert.
+
+  IF l_convert IS INITIAL.
+    CREATE OBJECT l_convert.
+  ENDIF.
+
+*{   REPLACE        CP0K900366                                        1
+*\  SELECT * FROM t178t	INTO CORRESPONDING FIELDS OF TABLE t_t178t WHERE spras = '1'.
+IF i_KONDM IS NOT INITIAL.
+  SELECT * FROM t178t	INTO CORRESPONDING FIELDS OF TABLE t_t178t WHERE spras = '1'
+    AND kondm = I_KONDM.
+ELSE.
+  SELECT * FROM t178t	INTO CORRESPONDING FIELDS OF TABLE t_t178t WHERE spras = '1'.
+ENDIF.
+*}   REPLACE
+
+  LOOP AT t_t178t.
+    CLEAR: l_string, l_ascii.
+    l_string = t_t178t-kondm.
+    CALL METHOD l_convert->string_to_xstring
+      EXPORTING
+        input  = l_string
+      IMPORTING
+        output = l_ascii.
+    t_t178t-kondm_ascii = l_ascii.
+    MODIFY t_t178t.
+  ENDLOOP.
+
+ENDFUNCTION.
+

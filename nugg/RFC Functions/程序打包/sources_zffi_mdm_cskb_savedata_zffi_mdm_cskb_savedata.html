@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-1" />
+<title>ZFFI_MDM_CSKB_SAVEDATA</title>
+<style type="text/css">
+.code{ font-family:"Courier New", Courier, monospace; color:#000; font-size:14px; background-color:#F2F4F7 }
+  .codeComment {font-family:"Courier New", Courier, monospace; color:#0000F0; font-size:14px; background-color:#F2F4F7 }
+  .normalBold{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; font-weight:800 }
+  .normalBoldLarge{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }
+</style>
+<style type="text/css">
+  .normal{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px }
+  .footer{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:12px; text-align: center }
+  h2{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:16px; font-weight:800 }
+  h3{ font-family:Arial, Helvetica, sans-serif; color:#000; font-size:14px; font-weight:800 }
+  .outerTable{
+   background-color:#E0E7ED;
+   width:100%;
+   border-top-width: thin;
+   border-right-width: thin;
+   border-right-width: thin;
+   border-left-width: thin;
+   border-top-style: solid;
+   border-right-style: solid;
+   border-bottom-style: solid;
+   border-left-style: solid;
+  }
+  .innerTable{
+   background-color:#F2F4F7;
+   width:100%;
+   border-top-width: thin;
+   border-right-width: thin;
+   border-bottom-width: thin;
+   border-left-width: thin;
+   border-top-style: solid;
+   border-right-style: solid;
+   border-bottom-style: solid;
+   border-left-style: solid;
+  }
+</style>
+</head>
+<body>
+<table class="outerTable">
+  <tr class="normalBoldLarge">
+     <td><h2>Code listing for function ZFFI_MDM_CSKB_SAVEDATA</h2>
+<h3> Description: ³É±¾ÒªËØ´´½¨</h3></td>
+   </tr>
+  <tr>
+     <td>
+     <table class="innerTable">
+       <tr>
+          <td>
+   <div class="code">
+FUNCTION ZFFI_MDM_CSKB_SAVEDATA.<br />
+   </div>
+   <div class="codeComment">
+*"----------------------------------------------------------------------<br />
+*"*"Local interface:<br />
+*"  IMPORTING<br />
+*"     VALUE(L_KOKRS) TYPE  KOKRS OPTIONAL<br />
+*"  EXPORTING<br />
+*"     VALUE(RE_TYPE) TYPE  CHAR1<br />
+*"  TABLES<br />
+*"      T_CSKB1 STRUCTURE  ZMDM_CSKB OPTIONAL<br />
+*"      T_CSKB2 STRUCTURE  ZMDM_CSKB1 OPTIONAL<br />
+*"      T_RETURN STRUCTURE  BAPIRET2 OPTIONAL<br />
+*"----------------------------------------------------------------------<br />
+
+<div class="codeComment">*       <a href ="global-zffi_mdm_cskb_savedata.html">Global data declarations</a></div><br />
+   </div>
+   <div class="code">
+<br />
+<br />
+   </div>
+   <div class="codeComment">
+*{   INSERT         CP0K900347                                        1<br />
+   </div>
+   <div class="code">
+"ÐÂÔöÒÔÏµÍ³±ê×¼º¯Êý£ºBAPI_COSTELEM_CREATEMULTIPLE½øÐÐ´´½¨<br />
+"ÐÞ¸ÄÒÔÏµÍ³±ê×¼º¯Êý£ºBAPI_COSTELEM_CHANGEMULTIPLE½øÐÐÐÞ¸Ä<br />
+<br />
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;data:l_coarea&nbsp;type&nbsp;KOKRS,"¿ØÖÆ·¶Î§<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_costel&nbsp;type&nbsp;CO_KAINT,"³É±¾ÒªËØ·ÖÀà&nbsp;(³õ¼¶:&nbsp;1&nbsp;&nbsp;/´Î¼¶:&nbsp;&nbsp;2)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist&nbsp;type&nbsp;TABLE&nbsp;OF&nbsp;BAPI1030_CEINPUTLIST&nbsp;WITH&nbsp;HEADER&nbsp;LINE.<br />
+<br />
+&nbsp;&nbsp;data:l_return&nbsp;type&nbsp;table&nbsp;of&nbsp;BAPIRET2&nbsp;WITH&nbsp;HEADER&nbsp;LINE,"·µ»ØÐÅÏ¢<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_banks&nbsp;type&nbsp;bnka-banks,"¹ú¼Ò´úÂë<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_BANKL&nbsp;type&nbsp;bnka-bankl,"ÒøÐÐ´úÂë<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_subrc&nbsp;like&nbsp;sy-subrc.<br />
+&nbsp;&nbsp;data:wa_cskb&nbsp;type&nbsp;cskb,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wa_cska&nbsp;type&nbsp;cska.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"<br />
+<br />
+&nbsp;&nbsp;FIELD-SYMBOLS:&lt;fs_data1&gt;&nbsp;like&nbsp;T_CSKB1,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fs_data2&gt;&nbsp;like&nbsp;T_CSKB2.<br />
+<br />
+&nbsp;IF&nbsp;T_CSKB1[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;"³É±¾ÒªËØ»ù±¾ÊÓÍ¼<br />
+&nbsp;&nbsp;&nbsp;or&nbsp;T_CSKB2[]&nbsp;IS&nbsp;NOT&nbsp;INITIAL&nbsp;."³É±¾ÒªËØÒµÎñÊÓÍ¼<br />
+<br />
+&nbsp;&nbsp;DEFINE&nbsp;mapping_data1.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_coarea&nbsp;=&nbsp;L_KOKRS."¿ØÖÆ·¶Î§<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_costel&nbsp;=&nbsp;'1'.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-COST_ELEM&nbsp;=&nbsp;&1-KSTAR."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;³É±¾ÒªËØ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-NAME&nbsp;=&nbsp;&1-NAME&nbsp;&nbsp;&nbsp;."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ãû³Æ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-DESCRIPT&nbsp;=&nbsp;&1-DESCRIPTION."&nbsp;&nbsp;ÃèÊö<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-FUNC_AREA&nbsp;=&nbsp;&1-FUNC_AREA&nbsp;&nbsp;&nbsp;&nbsp;."¹¦ÄÜ·¶Î§<br />
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lt_costlist.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;lt_costlist.<br />
+&nbsp;&nbsp;END-OF-DEFINITION.<br />
+&nbsp;&nbsp;DEFINE&nbsp;mapping_data2.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_coarea&nbsp;=&nbsp;&1-KOKRS."¿ØÖÆ·¶Î§<br />
+&nbsp;&nbsp;&nbsp;&nbsp;l_costel&nbsp;=&nbsp;'2'.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-COST_ELEM&nbsp;=&nbsp;&1-KSTAR."&nbsp;³É±¾ÒªËØ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-VALID_TO&nbsp;=&nbsp;&1-DATAB."&nbsp;ÆðÊ¼ÈÕÆÚ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-VALID_FROM&nbsp;=&nbsp;&1-DATBI."&nbsp;½ØÖÁÈÕÆÚ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-CELEM_CATEGORY&nbsp;=&nbsp;&1-KATYP."&nbsp;³É±¾ÒªËØÀà±ð<br />
+   </div>
+   <div class="codeComment">
+*    lt_costlist-COST_ELEM = &1-USNAM." ÊäÈëÕß<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-CELEM_ATTRIBUTE&nbsp;=&nbsp;&1-EIGEN."&nbsp;ÊôÐÔ×é<br />
+   </div>
+   <div class="codeComment">
+*    lt_costlist-COST_ELEM = &1-PLAZU." ¼Æ»®´æÈ¡<br />
+*    lt_costlist-COST_ELEM = &1-PLAOR." PL<br />
+*    lt_costlist-COST_ELEM = &1-PLAUS." PU<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-DEFAULT_COSTCENTER&nbsp;=&nbsp;&1-KOSTL."&nbsp;³É±¾ÖÐÐÄ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-DEFAULT_ORDER&nbsp;=&nbsp;&1-AUFNR."&nbsp;¶©µ¥ºÅ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-RECORD_QUANTITY&nbsp;=&nbsp;&1-MGEFL."&nbsp;ÊýÁ¿<br />
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-UNIT_OF_MEASURE&nbsp;=&nbsp;&1-MSEHI."&nbsp;MU<br />
+   </div>
+   <div class="codeComment">
+*    lt_costlist-COST_ELEM = &1-DEAKT." DA<br />
+*    lt_costlist-COST_ELEM = &1-LOEVM." DF<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;lt_costlist-JV_REC_IND&nbsp;=&nbsp;&1-RECID."&nbsp;»ØÊÕ<br />
+   </div>
+   <div class="codeComment">
+*    lt_costlist- = &1-ERSDA." ´´½¨ÈÕÆÚ<br />
+   </div>
+   <div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;lt_costlist.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;lt_costlist.<br />
+&nbsp;&nbsp;END-OF-DEFINITION.<br />
+&nbsp;&nbsp;DEFINE&nbsp;add_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;&1&nbsp;WHERE&nbsp;TYPE&nbsp;eq&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;ne&nbsp;0.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_COMMIT'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WAIT&nbsp;=&nbsp;'X'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&2-RETYP&nbsp;=&nbsp;'S'."´¦Àí³É¹¦<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_TRANSACTION_ROLLBACK'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&2-RETYP&nbsp;=&nbsp;'E'."´¦ÀíÊ§°Ü<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;&1.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_return&nbsp;=&nbsp;&1.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t_return-MESSAGE&nbsp;=&nbsp;'³É±¾ÒªËØ£º'&nbsp;&&&nbsp;&2-KSTAR&nbsp;&&&nbsp;'±¨´í£º'&nbsp;&&&nbsp;t_return-message.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;append&nbsp;t_return&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLEAR&nbsp;t_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;END-OF-DEFINITION.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;T_CSKB1&nbsp;ASSIGNING&nbsp;&lt;fs_data1&gt;."³õ¼¶³É±¾ÒªËØ£º³É±¾ÒªËØ»ù´¡ÊÓÍ¼<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REFRESH&nbsp;lt_costlist.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SELECT&nbsp;SINGLE&nbsp;*&nbsp;FROM&nbsp;cska&nbsp;INTO&nbsp;wa_cska<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WHERE&nbsp;KTOPL&nbsp;=&nbsp;&lt;fs_data1&gt;-KTOPL<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;KSTAR&nbsp;=&nbsp;&lt;fs_data1&gt;-KSTAR."¼ì²éÊÇ·ñ´æÔÚ<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;eq&nbsp;0."´æÔÚÖ´ÐÐÐÞ¸Ä²Ù×÷<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;L_KOKRS&nbsp;is&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mapping_data1&nbsp;&lt;fs_data1&gt;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_COSTELEM_CHANGEMULTIPLE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coarea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_coarea<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tables<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;costelementlist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;lt_costlist<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add_return&nbsp;l_return&nbsp;&lt;fs_data1&gt;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_return-type&nbsp;=&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_return-message&nbsp;=&nbsp;'Çë¼ì²éÊäÈë²ÎÊýL_KOKRS:¿ØÖÆ·¶Î§ÊÇ·ñÓÐÖµ'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;APPEND&nbsp;l_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add_return&nbsp;l_return&nbsp;&lt;fs_data1&gt;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else."²»´æÔÚÖ´ÐÐÐÂÔö²Ù×÷<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;L_KOKRS&nbsp;is&nbsp;NOT&nbsp;INITIAL.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mapping_data1&nbsp;&lt;fs_data1&gt;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_COSTELEM_CREATEMULTIPLE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coarea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_coarea<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COSTELEMCLASS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_costel<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tables<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;costelementlist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;lt_costlist<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add_return&nbsp;l_return&nbsp;&lt;fs_data1&gt;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_return-type&nbsp;=&nbsp;'E'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_return-message&nbsp;=&nbsp;'Çë¼ì²éÊäÈë²ÎÊýL_KOKRS:¿ØÖÆ·¶Î§ÊÇ·ñÓÐÖµ'.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;append&nbsp;l_return.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add_return&nbsp;l_return&nbsp;&lt;fs_data1&gt;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+<br />
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOOP&nbsp;AT&nbsp;T_CSKB2&nbsp;ASSIGNING&nbsp;&lt;fs_data2&gt;."´Î¼¶³É±¾ÒªËØ£º³É±¾ÒªËØÒµÎñÊÓÍ¼<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REFRESH&nbsp;lt_costlist.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SELECT&nbsp;SINGLE&nbsp;*&nbsp;FROM&nbsp;cskb&nbsp;INTO&nbsp;wa_cskb<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WHERE&nbsp;KOKRS&nbsp;=&nbsp;&lt;fs_data2&gt;-KOKRS<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;KSTAR&nbsp;=&nbsp;&lt;fs_data2&gt;-KSTAR<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;DATBI&nbsp;=&nbsp;&lt;fs_data2&gt;-DATBI<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;."¼ì²é³É±¾ÒªËØÊÇ·ñ´æÔÚ<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IF&nbsp;sy-subrc&nbsp;eq&nbsp;0."´æÔÚÖ´ÐÐÐÞ¸Ä²Ù×÷<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mapping_data2&nbsp;&lt;fs_data2&gt;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_COSTELEM_CHANGEMULTIPLE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coarea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_coarea<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tables<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;costelementlist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;lt_costlist<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add_return&nbsp;l_return&nbsp;&lt;fs_data2&gt;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ELSE."²»´æÔÚÖ´ÐÐÐÂÔö²Ù×÷<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mapping_data2&nbsp;&lt;fs_data2&gt;&nbsp;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CALL&nbsp;FUNCTION&nbsp;'BAPI_COSTELEM_CREATEMULTIPLE'<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXPORTING<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coarea&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_coarea<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COSTELEMCLASS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_costel<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tables<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;costelementlist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;lt_costlist<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;l_return<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;add_return&nbsp;l_return&nbsp;&lt;fs_data2&gt;.<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDIF.<br />
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ENDLOOP.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RE_TYPE&nbsp;=&nbsp;'S'&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+&nbsp;&nbsp;ELSE.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;RE_TYPE&nbsp;=&nbsp;'E'&nbsp;&nbsp;&nbsp;&nbsp;.<br />
+<br />
+ENDIF.<br />
+<br />
+   </div>
+   <div class="codeComment">
+*}   INSERT<br />
+   </div>
+   <div class="code">
+<br />
+<br />
+<br />
+ENDFUNCTION.<br />
+            </div>
+          </td>
+        </tr>
+      </table>
+      </td>
+      </tr>
+   <tr>
+<td class="footer">Extracted by Mass Download version 1.4.0 - E.G.Mellodew. 1998-2015. Sap Release 702</td>
+   </tr>
+</table>
+</body>
+</html>

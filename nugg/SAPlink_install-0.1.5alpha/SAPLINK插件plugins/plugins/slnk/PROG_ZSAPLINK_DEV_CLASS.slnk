@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<PROG NAME="ZSAPLINK_DEV_CLASS" VARCL="X" SUBC="1" CNAM="DEVELOPER" CDAT="20061226" UNAM="DEVELOPER" UDAT="20061226" VERN="000013" RMAND="000" RLOAD="E" FIXPT="X" SDATE="20061226" STIME="135451" IDATE="20061226" ITIME="135451" UCCHECK="X">
+ <textPool>
+  <language SPRAS="E">
+   <textElement ID="R" ENTRY="Program ZSAPLINK_TRANSPORTER" LENGTH="28 "/>
+  </language>
+ </textPool>
+ <source>*&amp;---------------------------------------------------------------------*
+*&amp; Report  ZSAPLINK_TRANSPORTER
+*&amp;
+*&amp;---------------------------------------------------------------------*
+*&amp;
+*&amp;
+*&amp;---------------------------------------------------------------------*
+
+REPORT  zsaplink_transporter.
+
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN COMMENT 1(20) c_devcl FOR FIELD s_devcl.
+PARAMETERS s_devcl TYPE tadir-devclass MODIF ID did OBLIGATORY.
+SELECTION-SCREEN END OF LINE.
+
+TYPE-POOLS: abap.
+
+DATA:
+  l_devclass TYPE string,
+  l_obj_name TYPE string,
+  l_object TYPE string,
+  lt_tadir TYPE TABLE OF tadir,
+  ls_tadir LIKE LINE OF lt_tadir,
+  lo_nugg TYPE REF TO zsaplink_nugget,
+  lo_xml_doc TYPE REF TO if_ixml_document,
+  l_xml_str TYPE string,
+  lo_ex_saplink TYPE REF TO zcx_saplink,
+  l_error TYPE string.
+
+l_devclass = s_devcl.
+
+* read out all objects from the development class
+SELECT * FROM tadir INTO TABLE lt_tadir WHERE devclass = l_devclass AND genflag = abap_false.
+
+* create an empty nugget
+lo_xml_doc = zsaplink_nugget=&gt;createemptyxml( nuggetname = l_devclass ).
+
+* create the nugget
+CREATE OBJECT lo_nugg EXPORTING ixmldocument = lo_xml_doc.
+
+* iterate over all objects in dev class
+LOOP AT lt_tadir INTO ls_tadir.
+
+  l_obj_name = ls_tadir-obj_name.
+  l_object = ls_tadir-object.
+
+  WRITE: / l_object, l_obj_name.
+
+  TRY.
+      lo_nugg-&gt;addobjecttonugget(
+        objname = l_obj_name
+        objtype = l_object ).
+      WRITE &apos;added.&apos;.
+
+    CATCH zcx_saplink INTO lo_ex_saplink.
+      l_error = lo_ex_saplink-&gt;get_text( ).
+      WRITE: &apos;error:&apos;, l_error.
+  ENDTRY.
+
+ENDLOOP.
+
+TRY.
+    lo_xml_doc = lo_nugg-&gt;createixmldocfromnugget( ).
+    l_xml_str = zsaplink=&gt;convertixmldoctostring( ixmldocument = lo_xml_doc ).
+
+* ===========================================================================
+
+    DATA temptable TYPE table_of_strings.
+    DATA encoding TYPE abap_encoding.
+    DATA applencoding TYPE cpcodepage.
+    DATA tempstring TYPE string.
+    DATA tempxstring TYPE xstring.
+    DATA xlen TYPE i.
+    DATA totalxlen TYPE i.
+
+    TYPES: xlin(65535) TYPE x.
+
+    DATA binlin TYPE xlin.
+    DATA temptable_bin TYPE TABLE OF xlin.
+
+    DATA: l_marker TYPE i,
+      l_offset TYPE i,
+      l_total_offset TYPE i.
+
+    APPEND l_xml_str TO temptable.
+
+    CALL FUNCTION &apos;SCP_GET_CODEPAGE_NUMBER&apos;
+      IMPORTING
+        appl_codepage = applencoding.
+
+    encoding = applencoding.
+
+
+*   build binary table with file content
+    LOOP AT temptable INTO tempstring.
+      CLEAR tempxstring.
+*     export tempString to data buffer tempXString.
+      CALL FUNCTION &apos;SCMS_STRING_TO_XSTRING&apos;
+        EXPORTING
+          text     = tempstring
+          encoding = encoding
+        IMPORTING
+          buffer   = tempxstring
+        EXCEPTIONS
+          failed   = 1
+          OTHERS   = 2.
+
+      l_marker = 0. l_offset = 65535. l_total_offset = 0.
+      xlen = XSTRLEN( tempxstring ).
+      totalxlen = totalxlen + xlen.
+
+      WHILE l_marker &lt; xlen.
+        l_total_offset = l_marker + l_offset.
+        IF l_total_offset &gt; xlen.
+          l_offset = xlen - l_marker.
+        ENDIF.
+
+        binlin = tempxstring+l_marker(l_offset).
+        APPEND binlin TO temptable_bin.
+        l_marker = l_marker + l_offset.
+      ENDWHILE.
+    ENDLOOP.
+
+    DATA retfilename TYPE string.
+    DATA retpath TYPE string.
+    DATA retfullpath TYPE string.
+    DATA retuseract TYPE i.
+
+    DATA:
+     deffilename TYPE string.
+
+    CONCATENATE &apos;NUGG_DEVCLASS_&apos; l_devclass  &apos;.nugg&apos; INTO deffilename.
+
+    cl_gui_frontend_services=&gt;file_save_dialog(
+            EXPORTING
+              default_file_name = deffilename
+            CHANGING
+              filename = retfilename
+              path = retpath
+              fullpath = retfullpath
+              user_action = retuseract ).
+
+    cl_gui_frontend_services=&gt;gui_download(
+      EXPORTING
+        filename     = retfullpath
+        filetype     = &apos;BIN&apos;
+        bin_filesize = totalxlen
+      CHANGING
+        data_tab     = temptable_bin ).
+
+* ===========================================================================
+
+
+
+  CATCH zcx_saplink .
+ENDTRY.
+
+INITIALIZATION.
+  c_devcl = &apos;Dev. Class to export as Nugget&apos;.</source>
+</PROG>

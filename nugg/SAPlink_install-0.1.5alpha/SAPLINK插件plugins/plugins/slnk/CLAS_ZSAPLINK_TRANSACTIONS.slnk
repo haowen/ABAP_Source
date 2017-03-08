@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<CLAS CLSNAME="ZSAPLINK_TRANSACTIONS" VERSION="1" LANGU="E" DESCRIPT="SAPlink - Transaction Plug in" UUID="45FE626534DA01350000000094AFDC1C" CATEGORY="00" EXPOSURE="2" STATE="1" RELEASE="0" AUTHOR="KQUADRI" CREATEDON="20070319" CHANGEDBY="KQUADRI" CHANGEDON="20070319" CHGDANYON="00000000" CLSFINAL="X" CLSCCINCL="X" FIXPT="X" UNICODE="X" R3RELEASE="700" CLSBCCAT="00" DURATION_TYPE="0 " RISK_LEVEL="0 " REFCLSNAME="ZSAPLINK">
+ <publicSection>class ZSAPLINK_TRANSACTIONS definition
+  public
+  inheriting from ZSAPLINK
+  final
+  create public .
+
+*&quot;* public components of class ZSAPLINK_TRANSACTIONS
+*&quot;* do not include other source files here!!!
+public section.
+
+  methods CHECKEXISTS
+    redefinition .
+  methods CREATEIXMLDOCFROMOBJECT
+    redefinition .
+  methods CREATEOBJECTFROMIXMLDOC
+    redefinition .</publicSection>
+ <protectedSection>*&quot;* protected components of class ZSAPLINK_TRANSACTIONS
+*&quot;* do not include other source files here!!!
+protected section.
+
+  constants C_HEX_TRA type CHAR2 value &apos;00&apos;. &quot;#EC NOTEXT
+  constants C_HEX_MEN type CHAR2 value &apos;01&apos;. &quot;#EC NOTEXT
+  constants C_HEX_PAR type CHAR2 value &apos;02&apos;. &quot;#EC NOTEXT
+  constants C_HEX_REP type CHAR2 value &apos;80&apos;. &quot;#EC NOTEXT
+  constants C_HEX_RPV type CHAR2 value &apos;10&apos;. &quot;#EC NOTEXT
+  constants C_HEX_OBJ type CHAR2 value &apos;08&apos;. &quot;#EC NOTEXT
+  constants C_HEX_CHK type CHAR2 value &apos;04&apos;. &quot;#EC NOTEXT
+  constants C_HEX_ENQ type CHAR2 value &apos;20&apos;. &quot;#EC NOTEXT
+  constants C_OO_PROGRAM type CHAR9 value &apos;\PROGRAM=&apos;. &quot;#EC NOTEXT
+  constants C_OO_CLASS type CHAR7 value &apos;\CLASS=&apos;. &quot;#EC NOTEXT
+  constants C_OO_METHOD type STRING value &apos;\METHOD=&apos;. &quot;#EC NOTEXT
+  constants C_OO_TCODE type STRING value &apos;OS_APPLICATION&apos;. &quot;#EC NOTEXT
+  constants C_OO_FRCLASS type STRING value &apos;CLASS&apos;. &quot;#EC NOTEXT
+  constants C_OO_FRMETHOD type STRING value &apos;METHOD&apos;. &quot;#EC NOTEXT
+  constants C_OO_FRUPDTASK type STRING value &apos;UPDATE_MODE&apos;. &quot;#EC NOTEXT
+  constants C_OO_SYNCHRON type STRING value &apos;S&apos;. &quot;#EC NOTEXT
+  constants C_OO_ASYNCHRON type STRING value &apos;U&apos;. &quot;#EC NOTEXT
+  constants C_OO_LOKAL type C value &apos;L&apos;. &quot;#EC NOTEXT
+  constants C_TRUE type C value &apos;X&apos;. &quot;#EC NOTEXT
+  constants C_FALSE type C value SPACE. &quot;#EC NOTEXT
+
+  class-methods SPLIT_PARAMETERS
+    exporting
+      !ET_RSPARAM type S_PARAM
+      !ES_RSSTCD type RSSTCD
+    changing
+      !IS_TSTCP type TSTCP
+      !ES_TSTC type TSTC .
+  class-methods SPLIT_PARAMETERS_COMP
+    importing
+      !IV_TYPE type ANY
+      !IV_PARAM type ANY
+    changing
+      !IC_VALUE type ANY .
+
+  methods DELETEOBJECT
+    redefinition .
+  methods GETOBJECTTYPE
+    redefinition .</protectedSection>
+ <privateSection>*&quot;* private components of class ZSAPLINK_TRANSACTIONS
+*&quot;* do not include other source files here!!!
+private section.</privateSection>
+ <localImplementation>*&quot;* local class implementation for public class
+*&quot;* use this source file for the implementation part of
+*&quot;* local helper classes</localImplementation>
+ <localTypes>*&quot;* use this source file for any type declarations (class
+*&quot;* definitions, interfaces or data types) you need for method
+*&quot;* implementation or private method&apos;s signature
+
+TYPE-POOLS: ststc.</localTypes>
+ <localMacros>*&quot;* use this source file for any macro definitions you need
+*&quot;* in the implementation part of the class</localMacros>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_FALSE" VERSION="1" LANGU="E" EXPOSURE="1" STATE="1" EDITORDER="20 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDON="00000000" ATTDECLTYP="2" ATTVALUE="SPACE" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_CHK" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="7 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;04&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_ENQ" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="8 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;20&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_MEN" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="2 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;01&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_OBJ" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="6 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;08&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_PAR" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="3 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;02&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_REP" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="4 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;80&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_RPV" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="5 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;10&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_HEX_TRA" VERSION="1" LANGU="E" DESCRIPT="Transaction type" EXPOSURE="1" STATE="1" EDITORDER="1 " AUTHOR="KQUADRI" CREATEDON="20070320" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;00&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR2" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_ASYNCHRON" VERSION="1" LANGU="E" EXPOSURE="1" STATE="1" EDITORDER="17 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;U&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_CLASS" VERSION="1" LANGU="E" DESCRIPT="Character field, length 7" EXPOSURE="1" STATE="1" EDITORDER="10 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;\CLASS=&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR7" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_FRCLASS" VERSION="1" LANGU="E" DESCRIPT="30 Characters" EXPOSURE="1" STATE="1" EDITORDER="13 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;CLASS&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_FRMETHOD" VERSION="1" LANGU="E" DESCRIPT="30 Characters" EXPOSURE="1" STATE="1" EDITORDER="14 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;METHOD&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_FRUPDTASK" VERSION="1" LANGU="E" DESCRIPT="30 Characters" EXPOSURE="1" STATE="1" EDITORDER="15 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;UPDATE_MODE&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_LOKAL" VERSION="1" LANGU="E" EXPOSURE="1" STATE="1" EDITORDER="18 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDON="00000000" ATTDECLTYP="2" ATTVALUE="&apos;L&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_METHOD" VERSION="1" LANGU="E" DESCRIPT="Character field, 8 characters long" EXPOSURE="1" STATE="1" EDITORDER="11 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;\METHOD=&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_PROGRAM" VERSION="1" LANGU="E" DESCRIPT="Character field of 9 digits" EXPOSURE="1" STATE="1" EDITORDER="9 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;\PROGRAM=&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="CHAR9" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_SYNCHRON" VERSION="1" LANGU="E" EXPOSURE="1" STATE="1" EDITORDER="16 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;S&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_OO_TCODE" VERSION="1" LANGU="E" DESCRIPT="Transaction Code" EXPOSURE="1" STATE="1" EDITORDER="12 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" ATTDECLTYP="2" ATTVALUE="&apos;OS_APPLICATION&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="STRING" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <attribute CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="C_TRUE" VERSION="1" LANGU="E" EXPOSURE="1" STATE="1" EDITORDER="19 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDON="00000000" ATTDECLTYP="2" ATTVALUE="&apos;X&apos;" ATTEXPVIRT="0" TYPTYPE="1" TYPE="C" SRCROW1="0 " SRCCOLUMN1="0 " SRCROW2="0 " SRCCOLUMN2="0 " R3RELEASE="700" TYPESRC_LENG="0 "/>
+ <inheritance CLSNAME="ZSAPLINK_TRANSACTIONS" REFCLSNAME="ZSAPLINK" VERSION="1" STATE="1" AUTHOR="KQUADRI" CREATEDON="20070319" CHANGEDBY="KQUADRI" CHANGEDON="20070319">
+  <redefinition CLSNAME="ZSAPLINK_TRANSACTIONS" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CHECKEXISTS"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSACTIONS" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEIXMLDOCFROMOBJECT"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSACTIONS" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="CREATEOBJECTFROMIXMLDOC"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSACTIONS" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="DELETEOBJECT"/>
+  <redefinition CLSNAME="ZSAPLINK_TRANSACTIONS" REFCLSNAME="ZSAPLINK" VERSION="1" MTDNAME="GETOBJECTTYPE"/>
+ </inheritance>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CHECKEXISTS" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>METHOD checkexists.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+  DATA: ls_tstc  TYPE tstc,
+        l_tcode  TYPE tstc-tcode.
+
+  CLEAR  exists.
+
+  l_tcode =  objname.
+
+* Check transaction code already exists.
+  SELECT SINGLE *
+    INTO ls_tstc
+    FROM tstc
+   WHERE tcode EQ l_tcode.
+
+  IF sy-subrc EQ 0.
+    exists = &apos;X&apos;.
+  ENDIF.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEIXMLDOCFROMOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>METHOD createixmldocfromobject.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+  DATA: l_tcode      TYPE tstc-tcode,
+        _objtype     TYPE string,
+        mtext        type string,
+        rc           TYPE sysubrc.
+
+* XML nodes
+  DATA:rootnode    TYPE REF TO if_ixml_element,
+       tstc_node   TYPE REF TO if_ixml_element,
+       tstct_node  TYPE REF TO if_ixml_element,
+       tstcc_node  TYPE REF TO if_ixml_element,
+       tstcp_node  TYPE REF TO if_ixml_element,
+       rsstcd_node TYPE REF TO if_ixml_element,
+       rsparam_node TYPE REF TO if_ixml_element.
+
+* Data Nodes
+  DATA:
+        lt_tstc    TYPE STANDARD TABLE OF tstc,
+        ls_tstc    TYPE                   tstc,
+        lt_tstcc   TYPE STANDARD TABLE OF tstcc,
+        ls_tstcc   TYPE                   tstcc,
+        ls_tstcp   TYPE                   tstcp,
+        ls_tstct   TYPE                   tstct.
+
+  l_tcode = objname.
+
+* Read transaction details
+  CALL FUNCTION &apos;RPY_TRANSACTION_READ&apos;
+   EXPORTING
+     transaction            = l_tcode
+*   PROGRAM                =
+*   DYNPRO                 =
+*   TRANSACTION_TYPE       = &apos; &apos;
+   TABLES
+      tcodes                 = lt_tstc
+      gui_attributes         = lt_tstcc
+   EXCEPTIONS
+     permission_error       = 1
+     cancelled              = 2
+     not_found              = 3
+     object_not_found       = 4
+     OTHERS                 = 5
+            .
+  IF sy-subrc &lt;&gt; 0.
+
+    CASE sy-subrc.
+
+      WHEN 1.
+        RAISE EXCEPTION TYPE zcx_saplink
+         EXPORTING textid = zcx_saplink=&gt;not_authorized.
+
+      WHEN 3 OR 4.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_found.
+
+      WHEN OTHERS.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+                INTO mtext
+                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING msg = mtext.
+
+    ENDCASE.
+  ENDIF.
+
+  CLEAR: ls_tstc,
+         ls_tstcc.
+  READ TABLE lt_tstc INTO ls_tstc WITH KEY tcode = l_tcode.
+  IF sy-subrc NE 0.
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING textid = zcx_saplink=&gt;not_found.
+  ENDIF.
+
+  READ TABLE lt_tstcc INTO ls_tstcc WITH KEY tcode = l_tcode.
+  IF sy-subrc NE 0.
+  ENDIF.
+
+* Get short text
+  SELECT SINGLE *
+    INTO ls_tstct
+    FROM tstct
+   WHERE sprsl = sy-langu
+     AND tcode = l_tcode.
+
+* Get parameters
+  SELECT SINGLE *
+  INTO ls_tstcp
+  FROM tstcp
+  WHERE tcode = l_tcode.
+
+  IF sy-subrc NE 0.
+*  Do nothing as not all transactions
+*  need have parameters
+  ENDIF.
+
+  DATA: ls_t_tstcp TYPE tstcp,
+        lt_rsparam TYPE s_param,
+        ls_rsparam TYPE rsparam,
+        ls_rsstcd  TYPE rsstcd.
+
+  ls_t_tstcp = ls_tstcp.
+
+* Split parameters
+  CALL METHOD zsaplink_transactions=&gt;split_parameters
+    IMPORTING
+      et_rsparam = lt_rsparam
+      es_rsstcd  = ls_rsstcd
+    CHANGING
+      is_tstcp   = ls_t_tstcp
+      es_tstc    = ls_tstc.
+
+  _objtype = getobjecttype( ).
+  rootnode = xmldoc-&gt;create_element( _objtype ).
+  setattributesfromstructure( node = rootnode structure = ls_tstc ).
+
+  tstct_node = xmldoc-&gt;create_element( &apos;tstct&apos; ).
+  setattributesfromstructure( node = tstct_node structure = ls_tstct ).
+  rc = rootnode-&gt;append_child( tstct_node ).
+
+  tstcc_node = xmldoc-&gt;create_element( &apos;tstcc&apos; ).
+  setattributesfromstructure( node = tstcc_node structure = ls_tstcc ).
+  rc = rootnode-&gt;append_child( tstcc_node ).
+
+  tstcp_node = xmldoc-&gt;create_element( &apos;tstcp&apos; ).
+  setattributesfromstructure( node = tstcp_node structure = ls_tstcp ).
+  rc = rootnode-&gt;append_child( tstcp_node ).
+
+  rsstcd_node = xmldoc-&gt;create_element( &apos;rsstcd&apos; ).
+  setattributesfromstructure( node = rsstcd_node structure = ls_rsstcd ).
+  rc = rootnode-&gt;append_child( rsstcd_node ).
+
+  LOOP AT lt_rsparam INTO ls_rsparam.
+    rsparam_node = xmldoc-&gt;create_element( &apos;rsparam&apos; ).
+    setattributesfromstructure( node = rsparam_node structure = ls_rsparam ).
+    rc = rootnode-&gt;append_child( rsparam_node ).
+  ENDLOOP.
+
+  rc = xmldoc-&gt;append_child( rootnode ).
+  ixmldocument = xmldoc.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="CREATEOBJECTFROMIXMLDOC" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>METHOD createobjectfromixmldoc.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+  DATA: l_tcode      TYPE tstc-tcode,
+        _objtype     TYPE string,
+        l_tran_type  TYPE rglif-docutype,
+        mtext        TYPE string,
+        rc           TYPE sysubrc,
+        l_easy_web_transaction TYPE c,
+        l_html_enabled  TYPE c.
+
+
+* XML nodes
+  DATA:rootnode    TYPE REF TO if_ixml_element,
+       tstc_node   TYPE REF TO if_ixml_element,
+       tstct_node  TYPE REF TO if_ixml_element,
+       tstcc_node  TYPE REF TO if_ixml_element,
+       tstcp_node  TYPE REF TO if_ixml_element,
+       rsstcd_node TYPE REF TO if_ixml_element,
+       rsparam_node TYPE REF TO if_ixml_element.
+
+
+  DATA : node        TYPE REF TO if_ixml_element,
+         filter      TYPE REF TO if_ixml_node_filter,
+         iterator    TYPE REF TO if_ixml_node_iterator.
+
+* Data Nodes
+  DATA:
+        ls_tstc    TYPE tstc,
+        ls_tstcc   TYPE tstcc,
+        ls_tstcp   TYPE tstcp,
+        ls_tstct   TYPE tstct,
+        lt_rsparam TYPE s_param,
+        ls_rsparam TYPE rsparam,
+        ls_rsstcd  TYPE rsstcd.
+
+  DATA  l_checkexists TYPE flag.
+
+  _objtype = getobjecttype( ).
+
+  xmldoc = ixmldocument.
+  rootnode = xmldoc-&gt;find_from_name( _objtype ).
+
+  CALL METHOD getstructurefromattributes
+    EXPORTING
+      node      = rootnode
+    CHANGING
+      structure = ls_tstc.
+
+  objname = ls_tstc-tcode.
+
+  l_checkexists = checkexists( ).
+  IF l_checkexists IS NOT INITIAL.
+    IF overwrite IS INITIAL.
+      RAISE EXCEPTION TYPE zcx_saplink
+        EXPORTING textid = zcx_saplink=&gt;existing.
+    ELSE.
+*     delete object for new install
+      deleteobject( ).
+    ENDIF.
+  ENDIF.
+
+  tstct_node = xmldoc-&gt;find_from_name( &apos;tstct&apos; ).
+  CALL METHOD getstructurefromattributes
+    EXPORTING
+      node      = tstct_node
+    CHANGING
+      structure = ls_tstct.
+
+
+  tstcc_node = xmldoc-&gt;find_from_name( &apos;tstcc&apos; ).
+  CALL METHOD getstructurefromattributes
+    EXPORTING
+      node      = tstcc_node
+    CHANGING
+      structure = ls_tstcc.
+
+  tstcp_node = xmldoc-&gt;find_from_name( &apos;tstcp&apos; ).
+  CALL METHOD getstructurefromattributes
+    EXPORTING
+      node      = tstcp_node
+    CHANGING
+      structure = ls_tstcp.
+
+  rsstcd_node = xmldoc-&gt;find_from_name( &apos;rsstcd&apos; ).
+  CALL METHOD getstructurefromattributes
+    EXPORTING
+      node      = rsstcd_node
+    CHANGING
+      structure = ls_rsstcd.
+
+
+  FREE: filter, iterator, rsparam_node.
+  filter = xmldoc-&gt;create_filter_name( &apos;rsparam&apos; ).
+  iterator = xmldoc-&gt;create_iterator_filtered( filter ).
+  rsparam_node ?= iterator-&gt;get_next( ).
+  WHILE rsparam_node IS NOT INITIAL.
+    CLEAR ls_rsparam.
+    CALL METHOD getstructurefromattributes
+      EXPORTING
+        node      = rsparam_node
+      CHANGING
+        structure = ls_rsparam.
+    APPEND ls_rsparam TO lt_rsparam.
+    rsparam_node ?= iterator-&gt;get_next( ).
+  ENDWHILE.
+
+  l_tcode = objname.
+
+  CASE ls_tstc-cinfo.
+
+    WHEN c_hex_tra.
+      l_tran_type = ststc_c_type_dialog.
+    WHEN c_hex_rep.
+      l_tran_type =  ststc_c_type_report.
+    WHEN c_hex_par.
+      IF  ls_rsstcd-s_vari EQ c_true.
+        l_tran_type = ststc_c_type_variant.
+      ELSE.
+        l_tran_type = ststc_c_type_parameters.
+      ENDIF.
+
+    WHEN c_hex_obj.
+      l_tran_type = ststc_c_type_object.
+    WHEN OTHERS.
+
+  ENDCASE.
+
+  CASE ls_tstcc-s_webgui.
+    WHEN &apos;1&apos;.
+      l_html_enabled = c_true.
+    WHEN &apos;2&apos;.
+      l_easy_web_transaction = c_true.
+    WHEN OTHERS.
+      CLEAR: l_easy_web_transaction,
+             l_html_enabled.
+  ENDCASE.
+
+  DATA: l_dnum TYPE d020s-dnum.
+  l_dnum = ls_tstc-dypno.
+  CALL FUNCTION &apos;RPY_TRANSACTION_INSERT&apos;
+    EXPORTING
+      transaction                         = l_tcode
+      program                             = ls_tstc-pgmna
+      dynpro                              = l_dnum
+      language                            = ls_tstct-sprsl
+*   WITH_DOCU                           = &apos; &apos;
+*   DOCUTYPE                            = &apos;T&apos;
+*   DEVELOPMENT_CLASS                   = &apos;$TMP&apos;
+*   TRANSPORT_NUMBER                    =
+    transaction_type                    =  l_tran_type
+      shorttext                           = ls_tstct-ttext
+   called_transaction                  = ls_rsstcd-call_tcode
+   called_transaction_skip             = ls_rsstcd-st_skip_1
+   variant                             = ls_rsstcd-variant
+   cl_independend                      = ls_rsstcd-s_ind_vari
+    easy_web_transaction                = l_easy_web_transaction
+*   PROFESSIONEL_USER_TRANSACTION       =
+    html_enabled                        =  l_html_enabled
+    java_enabled                        = ls_tstcc-s_platin
+    wingui_enabled                      = ls_tstcc-s_win32
+    servicefile                         = ls_tstcc-s_service
+*   GENFLAG                             = &apos; &apos;
+*   SUPPRESS_AUTHORITY_CHECK            = &apos; &apos;
+*   SUPPRESS_CORR_INSERT                = &apos; &apos;
+ TABLES
+*   DOCU_TABLE_USER                     =
+*   DOCU_TABLE_TECH                     =
+    param_values                        = lt_rsparam
+ EXCEPTIONS
+   cancelled                           = 1
+   already_exist                       = 2
+   permission_error                    = 3
+   name_not_allowed                    = 4
+   name_conflict                       = 5
+   illegal_type                        = 6
+   object_inconsistent                 = 7
+   db_access_error                     = 8
+   OTHERS                              = 9
+            .
+  IF sy-subrc &lt;&gt; 0.
+
+    CASE sy-subrc.
+      WHEN 2.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;existing.
+
+      WHEN 3.
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING textid = zcx_saplink=&gt;not_authorized.
+
+      WHEN OTHERS.
+        MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+                INTO mtext
+                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+
+        RAISE EXCEPTION TYPE zcx_saplink
+          EXPORTING msg = mtext.
+    ENDCASE.
+
+  ENDIF.
+  name = l_tcode.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="DELETEOBJECT" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>METHOD deleteobject.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+  DATA: l_tcode TYPE tstc-tcode,
+        mtext        TYPE string.
+
+  l_tcode = objname.
+  CALL FUNCTION &apos;RPY_TRANSACTION_DELETE&apos;
+    EXPORTING
+      transaction                    = l_tcode
+*   TRANSPORT_NUMBER               =
+*   SUPPRESS_AUTHORITY_CHECK       = &apos; &apos;
+*   SUPPRESS_CORR_INSERT           = &apos; &apos;
+   EXCEPTIONS
+     not_excecuted                  = 1
+     object_not_found               = 2
+     OTHERS                         = 3
+            .
+  IF sy-subrc &lt;&gt; 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+            INTO mtext
+            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+
+    RAISE EXCEPTION TYPE zcx_saplink
+      EXPORTING msg = mtext.
+  ENDIF.
+
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK" CMPNAME="GETOBJECTTYPE" VERSION="0" EXPOSURE="0" STATE="0" EDITORDER="0 " DISPID="0 " CREATEDON="00000000" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="0" BCMTDCAT="00" BCMTDSYN="0">
+  <source>method GETOBJECTTYPE.
+*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+  objecttype = &apos;TRAN&apos;.  &quot;Transactions
+endmethod.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS" VERSION="1" LANGU="E" DESCRIPT="Splits Transaction parameters" EXPOSURE="1" STATE="1" EDITORDER="1 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDON="00000000" MTDTYPE="0" MTDDECLTYP="1" R3RELEASE="700" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS" SCONAME="ET_RSPARAM" VERSION="1" LANGU="E" DESCRIPT="Parameter Assignment in Parameter Transactions" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="S_PARAM"/>
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS" SCONAME="ES_RSSTCD" VERSION="1" LANGU="E" DESCRIPT="Screen fields for transaction code maintenance" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" PARDECLTYP="1" PARPASSTYP="1" TYPTYPE="1" TYPE="RSSTCD"/>
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS" SCONAME="IS_TSTCP" VERSION="1" LANGU="E" DESCRIPT="Parameters for Transactions" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" PARDECLTYP="2" PARPASSTYP="1" TYPTYPE="1" TYPE="TSTCP"/>
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS" SCONAME="ES_TSTC" VERSION="1" LANGU="E" DESCRIPT="SAP Transaction Codes" CMPTYPE="1" MTDTYPE="0" EDITORDER="4 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDON="00000000" PARDECLTYP="2" PARPASSTYP="1" TYPTYPE="1" TYPE="TSTC"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+
+*      copied from SAP standard program LSEUKF01
+*      form Split_parameters to interpret the parameter
+*      details of the transaction
+
+METHOD split_parameters.
+
+  FIELD-SYMBOLS &lt;f&gt; TYPE ANY.
+  DATA: off TYPE i,
+        param_beg TYPE i,
+        l_length TYPE i.
+
+  DATA: ls_param TYPE rsparam.
+
+  REFRESH et_rsparam.
+  CLEAR ls_param.
+
+
+  IF is_tstcp-param(1) = &apos;\&apos;.             &quot; OO-Transaktion ohne FR
+
+    CALL METHOD zsaplink_transactions=&gt;split_parameters_comp
+      EXPORTING
+        iv_type  = c_oo_program
+        iv_param = is_tstcp-param
+      CHANGING
+        ic_value = es_tstc-pgmna.
+
+    CALL METHOD zsaplink_transactions=&gt;split_parameters_comp
+      EXPORTING
+        iv_type  = c_oo_class
+        iv_param = is_tstcp-param
+      CHANGING
+        ic_value = es_rsstcd-classname.
+
+    CALL METHOD zsaplink_transactions=&gt;split_parameters_comp
+      EXPORTING
+        iv_type  = c_oo_method
+        iv_param = is_tstcp-param
+      CHANGING
+        ic_value = es_rsstcd-method.
+
+    IF NOT es_tstc-pgmna IS INITIAL.
+      es_rsstcd-s_local = c_true.
+    ENDIF.
+    EXIT.
+  ELSEIF is_tstcp-param(1) = &apos;@&apos;.         &quot; Transaktionsvariante
+    es_rsstcd-s_vari = c_true.
+    IF is_tstcp-param(2) = &apos;@@&apos;.
+      es_rsstcd-s_ind_vari = c_true. off = 2.
+    ELSE.
+      CLEAR es_rsstcd-s_ind_vari. off = 1.
+    ENDIF.
+    IF is_tstcp-param CA &apos; &apos;. ENDIF.
+    sy-fdpos = sy-fdpos - off.
+    es_rsstcd-call_tcode = is_tstcp-param+off(sy-fdpos).
+    sy-fdpos = sy-fdpos + 1 + off.
+    es_rsstcd-variant = is_tstcp-param+sy-fdpos.
+  ELSEIF is_tstcp-param(1) = &apos;/&apos;.
+    es_rsstcd-st_tcode = c_true.
+    es_rsstcd-st_prog  = space.
+    IF is_tstcp-param+1(1) = &apos;*&apos;.
+      es_rsstcd-st_skip_1 = c_true.
+    ELSE.
+      CLEAR es_rsstcd-st_skip_1.
+    ENDIF.
+    IF is_tstcp-param CA &apos; &apos;. ENDIF.
+    param_beg = sy-fdpos + 1.
+    SUBTRACT 2 FROM sy-fdpos.
+    IF sy-fdpos GT 0.
+      es_rsstcd-call_tcode = is_tstcp-param+2(sy-fdpos).
+    ENDIF.
+*    select single * from tstc into *tstc
+*                    where tcode = rsstcd-call_tcode.
+*    if sy-subrc = 0.
+*      IF *tstc-cinfo O hex_rep.
+*        PERFORM fill_tfields_report USING *tstc-pgmna.
+*      ELSEIF *tstc-cinfo O hex_men OR *tstc-cinfo O hex_par.
+*      ELSE.
+*        PERFORM fill_tfields_dynpro USING *tstc-pgmna *tstc-dypno.
+*      ENDIF.
+*    ENDIF.
+    SHIFT is_tstcp-param BY param_beg PLACES.
+  ELSE.
+    es_rsstcd-st_tcode = space.
+    es_rsstcd-st_prog  = c_true.
+*    PERFORM fill_tfields_dynpro USING tstc-pgmna tstc-dypno.
+  ENDIF.
+
+  DO 254 TIMES.
+    IF is_tstcp-param = space. EXIT. ENDIF.
+    CLEAR ls_param.
+*    condense is_tstcp-param no-gaps.
+    IF is_tstcp-param CA &apos;=&apos;.
+      CHECK sy-fdpos NE 0.
+      ASSIGN is_tstcp-param(sy-fdpos) TO &lt;f&gt;.
+      ls_param-field = &lt;f&gt;.
+      IF ls_param-field(1) = space. SHIFT  ls_param-field. ENDIF.
+      sy-fdpos = sy-fdpos + 1.
+      SHIFT is_tstcp-param BY sy-fdpos PLACES.
+      IF is_tstcp-param CA &apos;;&apos;.
+        IF sy-fdpos NE 0.
+          ASSIGN is_tstcp-param(sy-fdpos) TO &lt;f&gt;.
+          ls_param-value = &lt;f&gt;.
+          IF ls_param-value(1) = space. SHIFT  ls_param-value. ENDIF.
+        ENDIF.
+        sy-fdpos = sy-fdpos + 1.
+        SHIFT is_tstcp-param BY sy-fdpos PLACES.
+        APPEND ls_param TO et_rsparam.
+      ELSE.       &quot; Da _____; möglich
+        l_length = STRLEN( is_tstcp-param ).
+        CHECK l_length &gt; 0.
+        ASSIGN is_tstcp-param(l_length) TO &lt;f&gt;.
+        ls_param-value = &lt;f&gt;.
+        IF ls_param-value(1) = space. SHIFT  ls_param-value. ENDIF.
+        ADD 1 TO l_length.
+        SHIFT is_tstcp-param BY l_length PLACES.
+        APPEND ls_param TO et_rsparam.
+      ENDIF.
+    ENDIF.
+  ENDDO.
+* oo-Transaktion mit Framework
+  IF es_rsstcd-call_tcode = c_oo_tcode.
+    es_rsstcd-s_trframe = c_true.
+    LOOP AT et_rsparam INTO ls_param.
+      CASE ls_param-field.
+        WHEN c_oo_frclass. es_rsstcd-classname = ls_param-value.
+        WHEN c_oo_frmethod. es_rsstcd-method   = ls_param-value.
+        WHEN c_oo_frupdtask.
+          IF ls_param-value = c_oo_synchron.
+            es_rsstcd-s_upddir  = c_true.
+            es_rsstcd-s_updtask = c_false.
+            es_rsstcd-s_updlok  = c_false.
+          ELSEIF ls_param-value = c_oo_asynchron.
+            es_rsstcd-s_upddir  = c_false.
+            es_rsstcd-s_updtask = c_true.
+            es_rsstcd-s_updlok  = c_false.
+          ELSE.
+            es_rsstcd-s_upddir  = c_false.
+            es_rsstcd-s_updtask = c_false.
+            es_rsstcd-s_updlok  = c_true.
+          ENDIF.
+      ENDCASE.
+    ENDLOOP.
+  ENDIF.
+
+ENDMETHOD.</source>
+ </method>
+ <method CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS_COMP" VERSION="1" LANGU="E" DESCRIPT="Splits Parameters by position" EXPOSURE="1" STATE="1" EDITORDER="2 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" MTDTYPE="0" MTDDECLTYP="1" R3RELEASE="700" BCMTDCAT="00" BCMTDSYN="0">
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS_COMP" SCONAME="IV_TYPE" VERSION="1" LANGU="E" DESCRIPT="Character 300" CMPTYPE="1" MTDTYPE="0" EDITORDER="1 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS_COMP" SCONAME="IV_PARAM" VERSION="1" LANGU="E" DESCRIPT="Character 300" CMPTYPE="1" MTDTYPE="0" EDITORDER="2 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" PARDECLTYP="0" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+  <parameter CLSNAME="ZSAPLINK_TRANSACTIONS" CMPNAME="SPLIT_PARAMETERS_COMP" SCONAME="IC_VALUE" VERSION="1" LANGU="E" DESCRIPT="contains 4 table elements of 250 Bytes" CMPTYPE="1" MTDTYPE="0" EDITORDER="3 " DISPID="0 " AUTHOR="KQUADRI" CREATEDON="20070321" CHANGEDBY="KQUADRI" CHANGEDON="20070321" PARDECLTYP="2" PARPASSTYP="1" TYPTYPE="1" TYPE="ANY"/>
+  <source>*/---------------------------------------------------------------------\
+*|   This file is part of SAPlink.                                     |
+*|                                                                     |
+*|   SAPlink is free software; you can redistribute it and/or modify   |
+*|   it under the terms of the GNU General Public License as published |
+*|   by the Free Software Foundation; either version 2 of the License, |
+*|   or (at your option) any later version.                            |
+*|                                                                     |
+*|   SAPlink is distributed in the hope that it will be useful,        |
+*|   but WITHOUT ANY WARRANTY; without even the implied warranty of    |
+*|   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     |
+*|   GNU General Public License for more details.                      |
+*|                                                                     |
+*|   You should have received a copy of the GNU General Public License |
+*|   along with SAPlink; if not, write to the                          |
+*|   Free Software Foundation, Inc.,                                   |
+*|   51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA          |
+*\---------------------------------------------------------------------/
+
+*      Plugin created by:
+*      Kareemullah Quadri
+*      quadri.ks@gmail.com
+
+METHOD split_parameters_comp.
+
+  DATA: off TYPE i.
+
+  IF iv_param CS iv_type.
+    off = sy-fdpos + STRLEN( iv_type ).
+    ic_value = iv_param+off.
+    IF ic_value CA &apos;\&apos;.
+      CLEAR ic_value+sy-fdpos.
+    ENDIF.
+  ENDIF.
+
+ENDMETHOD.</source>
+ </method>
+</CLAS>
