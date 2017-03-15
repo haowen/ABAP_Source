@@ -1,0 +1,4086 @@
+
+Code listing for: ZFIRPR030
+
+Description: 科目余额表
+
+REPORT zfirpr030 MESSAGE-ID zyr.
+
+*----------------------------------------------------------------------*
+* Declaration for Variables
+*----------------------------------------------------------------------*
+DATA: s_layout TYPE slis_layout_alv,
+      gt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+DATA: g_waers LIKE t001-waers, "本位币
+      g_waersd LIKE tcurt-ktext,
+      g_ktopl LIKE t001-ktopl,  "账目表
+      g_butxt LIKE t001-butxt.  "公司名称
+DATA: g_periv LIKE t001-periv.
+
+
+*----------------------------------------------------------------------*
+* Declaration for Types
+*----------------------------------------------------------------------*
+TYPES: BEGIN OF typ_result_all,
+  ktoks LIKE ska1-ktoks,    "科目组
+  saknr LIKE skb1-saknr,    "科目代码
+  saknrt LIKE skat-txt50,   "科目名称
+  bilkt LIKE ska1-bilkt,
+  zyjkm(4),                 "一级科目
+  ktoks_name LIKE t077z-txt30,
+  waers LIKE skb1-waers,    "币种
+  fx_qc(2),                 "方向(期初金额)：借/贷/平
+*  qcje_yb LIKE bsis-wrbtr,  "期初金额 - 原币
+*  qcje_bwb LIKE bsis-dmbtr, "期初金额 - 本位币
+*  bqjf_yb LIKE bsis-wrbtr,  "本期借方 - 原币
+*  bqjf_bwb LIKE bsis-dmbtr, "本期借方 - 本位币
+*  bqdf_yb LIKE bsis-wrbtr,  "本期贷方 - 原币
+*  bqdf_bwb LIKE bsis-dmbtr, "本期贷方 - 本位币
+*  bnjf_yb LIKE bsis-wrbtr,  "本年累计借方 - 原币
+*  bnjf_bwb LIKE bsis-dmbtr, "本年累计借方 - 本位币
+*  bndf_yb LIKE bsis-wrbtr,  "本年累计贷方 - 原币
+*  bndf_bwb LIKE bsis-dmbtr, "本年累计贷方 - 本位币
+  qcje_yb TYPE p LENGTH 16 DECIMALS 2,  "期初金额 - 原币
+  qcje_bwb TYPE p LENGTH 16 DECIMALS 2, "期初金额 - 本位币
+  bqjf_yb TYPE p LENGTH 16 DECIMALS 2,  "本期借方 - 原币
+  bqjf_bwb TYPE p LENGTH 16 DECIMALS 2, "本期借方 - 本位币
+  bqdf_yb TYPE p LENGTH 16 DECIMALS 2,  "本期贷方 - 原币
+  bqdf_bwb TYPE p LENGTH 16 DECIMALS 2, "本期贷方 - 本位币
+  bnjf_yb TYPE p LENGTH 16 DECIMALS 2,  "本年累计借方 - 原币
+  bnjf_bwb TYPE p LENGTH 16 DECIMALS 2, "本年累计借方 - 本位币
+  bndf_yb TYPE p LENGTH 16 DECIMALS 2,  "本年累计贷方 - 原币
+  bndf_bwb TYPE p LENGTH 16 DECIMALS 2, "本年累计贷方 - 本位币
+
+  fx_qm(2),                 "方向(期末金额)：借/贷/平
+*  qmje_yb LIKE bsis-wrbtr,  "期末金额 - 原币
+*  qmje_bwb LIKE bsis-dmbtr, "期末金额 - 本位币
+  qmje_yb TYPE p LENGTH 16 DECIMALS 2,  "期末金额 - 原币
+  qmje_bwb TYPE p LENGTH 16 DECIMALS 2, "期末金额 - 本位币
+  color(4),
+END OF typ_result_all.
+
+
+DATA: BEGIN OF gt_bsis OCCURS 0,
+  hkont LIKE bsis-hkont,
+  shkzg LIKE bsis-shkzg,
+  budat LIKE bsis-budat,
+  wrbtr TYPE p LENGTH 16 DECIMALS 2,  "  LIKE bsis-wrbtr,   "原币
+  dmbtr TYPE p LENGTH 16 DECIMALS 2,  "  LIKE bsis-dmbtr,   "本位币
+  bukrs LIKE bsis-bukrs,
+  belnr LIKE bsis-belnr,
+  gjahr LIKE bsis-gjahr,
+  buzei LIKE bsis-buzei,
+  blart LIKE bkpf-blart,
+  waers LIKE bkpf-waers,
+  xnegp LIKE bsis-xnegp,
+  segment like bsis-segment,
+END OF gt_bsis.
+
+DATA: BEGIN OF gt_bsis_index OCCURS 0,
+  bukrs LIKE bsis-bukrs,
+  gjahr LIKE bsis-gjahr,
+  belnr LIKE bsis-belnr,
+  buzei LIKE bsis-buzei,
+  budat LIKE bsis-budat,
+  blart LIKE bkpf-blart,
+  waers LIKE bkpf-waers,
+END OF gt_bsis_index.
+
+DATA: gt_bsis_bn_list LIKE gt_bsis OCCURS 0 WITH HEADER LINE.
+DATA: gt_bsis_by_list LIKE gt_bsis OCCURS 0 WITH HEADER LINE.
+
+
+DATA: BEGIN OF gt_faglflext OCCURS 0,
+  racct LIKE faglflext-racct,
+  tslvt LIKE faglflext-tslvt,
+  tsl01 LIKE faglflext-tsl01,
+  tsl02 LIKE faglflext-tsl02,
+  tsl03 LIKE faglflext-tsl03,
+  tsl04 LIKE faglflext-tsl04,
+  tsl05 LIKE faglflext-tsl05,
+  tsl06 LIKE faglflext-tsl06,
+  tsl07 LIKE faglflext-tsl07,
+  tsl08 LIKE faglflext-tsl08,
+  tsl09 LIKE faglflext-tsl09,
+  tsl10 LIKE faglflext-tsl10,
+  tsl11 LIKE faglflext-tsl11,
+  tsl12 LIKE faglflext-tsl12,
+  tsl13 LIKE faglflext-tsl13,
+  tsl14 LIKE faglflext-tsl14,
+  tsl15 LIKE faglflext-tsl15,
+  tsl16 LIKE faglflext-tsl16,
+  hslvt LIKE faglflext-hslvt,
+  hsl01 LIKE faglflext-hsl01,
+  hsl02 LIKE faglflext-hsl02,
+  hsl03 LIKE faglflext-hsl03,
+  hsl04 LIKE faglflext-hsl04,
+  hsl05 LIKE faglflext-hsl05,
+  hsl06 LIKE faglflext-hsl06,
+  hsl07 LIKE faglflext-hsl07,
+  hsl08 LIKE faglflext-hsl08,
+  hsl09 LIKE faglflext-hsl09,
+  hsl10 LIKE faglflext-hsl10,
+  hsl11 LIKE faglflext-hsl11,
+  hsl12 LIKE faglflext-hsl12,
+  hsl13 LIKE faglflext-hsl13,
+  hsl14 LIKE faglflext-hsl14,
+  hsl15 LIKE faglflext-hsl15,
+  hsl16 LIKE faglflext-hsl16,
+  zz01 LIKE faglflext-zz01,
+  prctr LIKE faglflext-prctr,
+  rcntr LIKE faglflext-rcntr,
+  segment LIKE faglflext-segment,
+END OF gt_faglflext.
+
+DATA: gt_faglflext_sel LIKE gt_faglflext OCCURS 0 WITH HEADER LINE.
+
+DATA: g_gjahr LIKE t009b-bdatj,
+      g_buper LIKE t009b-poper.
+
+DATA: BEGIN OF gt_result_xjllkm OCCURS 0, "子报表 - 现金流量科目
+  segment LIKE bseg-segment,
+  segname LIKE fagl_segmt-name,
+  zz01 LIKE ztfi006_2-zz01,       "收支项目类别
+  zz01d LIKE ztfi006_2-zz01d,     "收支项目类别描述
+  zz02 LIKE ztfi006_2-zz02,       "现金流量代码
+  zz02d LIKE ztfi006_2-zz02d,     "现金流量描述
+  fx_qc(2),                       "方向(期初)
+  qcye LIKE bsis-dmbtr,           "期初余额
+  bqjf LIKE bsis-dmbtr,           "本期借方
+  bqdf LIKE bsis-dmbtr,           "本期贷方
+  bnlj_jf LIKE bsis-dmbtr,        "本年累计借方
+  bnlj_df LIKE bsis-dmbtr,        "本年累计贷方
+  fx_qm(2),                       "方向(期末)
+  qmye LIKE bsis-dmbtr,           "期末余额
+  color(4),
+END OF gt_result_xjllkm.
+
+DATA: BEGIN OF gt_bseg OCCURS 0,
+  bukrs LIKE bsis-bukrs,
+  gjahr LIKE bsis-gjahr,
+  belnr LIKE bsis-belnr,
+  buzei LIKE bsis-buzei,
+  budat LIKE bsis-budat,
+  shkzg LIKE bseg-shkzg,
+  dmbtr LIKE bseg-dmbtr,
+  wrbtr LIKE bseg-wrbtr,
+
+  zz01 LIKE bseg-zz01,
+  zzmon(2),                  "月份
+  zzdate(2),                 "日
+
+  blart LIKE bkpf-blart,     "凭证类型
+  waers LIKE bkpf-waers,     "币种
+
+  zz01d LIKE ztfi006_2-zz01d,
+  prctr LIKE bseg-prctr,     "利润中心
+  prctr_name LIKE cepct-ktext,
+  kostl LIKE bseg-kostl,     "成本中心
+  kostl_name LIKE cskt-ktext,     "成本中心描述
+  aufnr LIKE bseg-aufnr,     "内部订单
+  kunnr LIKE bseg-kunnr,
+  lifnr LIKE bseg-lifnr,
+  kunnr_name LIKE kna1-name1,
+  lifnr_name LIKE lfa1-name1,
+  segment LIKE bseg-segment,  "部门
+  segname LIKE fagl_segmt-name,
+  anln1 LIKE bseg-anln1,     "固定资产编号
+  anlhtxt LIKE anlh-anlhtxt, "固定资产描述
+  matnr LIKE bseg-matnr,     "物料编码
+  maktx LIKE makt-maktx,     "物料描述
+  sgtxt LIKE bseg-sgtxt,     "摘要
+  ybjf LIKE bseg-wrbtr,      "原币借方
+  bbjf LIKE bseg-dmbtr,      "本币借方
+  ybdf LIKE bseg-wrbtr,      "原币贷方
+  bbdf LIKE bseg-dmbtr,      "本币贷方
+  fangx(2),                  "方向
+  zzyue LIKE bseg-dmbtr,     "余额
+  xnegp LIKE bsis-xnegp,
+  color(4),
+*待增加
+END OF gt_bseg.
+
+DATA: g_qcye LIKE bsis-dmbtr. "期初余额
+
+DATA: gt_bseg_display LIKE gt_bseg OCCURS 0 WITH HEADER LINE.
+
+
+
+DATA: BEGIN OF gt_result_ybzzkm OCCURS 0, "子报表 - 现金流量科目
+  segment LIKE bseg-segment,
+  segname LIKE fagl_segmt-name,
+  prctr LIKE faglflext-prctr,
+  prctr_name LIKE cepct-ktext,
+  fx_qc(2),                       "方向(期初)
+  qcye LIKE bsis-dmbtr,           "期初余额
+  bqjf LIKE bsis-dmbtr,           "本期借方
+  bqdf LIKE bsis-dmbtr,           "本期贷方
+  bnlj_jf LIKE bsis-dmbtr,        "本年累计借方
+  bnlj_df LIKE bsis-dmbtr,        "本年累计贷方
+  fx_qm(2),                       "方向(期末)
+  qmye LIKE bsis-dmbtr,           "期末余额
+  color(4),
+END OF gt_result_ybzzkm.
+
+
+
+DATA: BEGIN OF gt_result_fylkm OCCURS 0,
+  segment LIKE faglflext-segment,
+  segname LIKE fagl_segmt-name,
+  rcntr LIKE faglflext-rcntr,
+  rcntr_name LIKE cepct-ktext,
+  fx_qc(2),                       "方向(期初)
+  qcye LIKE bsis-dmbtr,           "期初余额
+  bqjf LIKE bsis-dmbtr,           "本期借方
+  bqdf LIKE bsis-dmbtr,           "本期贷方
+  bnlj_jf LIKE bsis-dmbtr,        "本年累计借方
+  bnlj_df LIKE bsis-dmbtr,        "本年累计贷方
+  fx_qm(2),                       "方向(期末)
+  qmye LIKE bsis-dmbtr,           "期末余额
+  color(4),
+END OF gt_result_fylkm.
+
+
+DATA: BEGIN OF gt_result_khlkm OCCURS 0,
+  segment LIKE bseg-segment,
+  segname LIKE fagl_segmt-name,
+  kunnr LIKE bseg-kunnr,
+  name1 LIKE kna1-name1,
+  fx_qc(2),                       "方向(期初)
+  qcye LIKE bsis-dmbtr,           "期初余额
+  bqjf LIKE bsis-dmbtr,           "本期借方
+  bqdf LIKE bsis-dmbtr,           "本期贷方
+  bnlj_jf LIKE bsis-dmbtr,        "本年累计借方
+  bnlj_df LIKE bsis-dmbtr,        "本年累计贷方
+  fx_qm(2),                       "方向(期末)
+  qmye LIKE bsis-dmbtr,           "期末余额
+  color(4),
+END OF gt_result_khlkm.
+
+
+DATA: BEGIN OF gt_result_gyslkm OCCURS 0,
+  segment LIKE bseg-segment,
+  segname LIKE fagl_segmt-name,
+  lifnr LIKE bseg-lifnr,
+  name1 LIKE kna1-name1,
+  fx_qc(2),                       "方向(期初)
+  qcye LIKE bsis-dmbtr,           "期初余额
+  bqjf LIKE bsis-dmbtr,           "本期借方
+  bqdf LIKE bsis-dmbtr,           "本期贷方
+  bnlj_jf LIKE bsis-dmbtr,        "本年累计借方
+  bnlj_df LIKE bsis-dmbtr,        "本年累计贷方
+  fx_qm(2),                       "方向(期末)
+  qmye LIKE bsis-dmbtr,           "期末余额
+  color(4),
+END OF gt_result_gyslkm.
+Extracted by Mass Download version 1.4.3 - E.G.Mellodew. 1998-2016. Sap Release 731
+*----------------------------------------------------------------------*
+* Declaration for Selection-screen
+*----------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETER: p_bukrs LIKE bkpf-bukrs OBLIGATORY.
+SELECT-OPTIONS: s_segmt FOR faglflext-segment. "F_FAGL_SEG
+SELECT-OPTIONS: s_prctr FOR faglflext-prctr.
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN COMMENT 1(31) text-002 FOR FIELD p_begda.
+PARAMETER: p_begda LIKE sy-datum OBLIGATORY.
+SELECTION-SCREEN COMMENT 52(5) text-003 FOR FIELD p_endda.
+PARAMETER: p_endda LIKE sy-datum OBLIGATORY.
+SELECTION-SCREEN END OF LINE.
+*PARAMETER: p_rldnr LIKE faglflext-rldnr OBLIGATORY DEFAULT '0L'.
+SELECTION-SCREEN SKIP.
+PARAMETER p_xsyb AS CHECKBOX DEFAULT ''.
+SELECTION-SCREEN END OF BLOCK b1.
+
+
+*----------------------------------------------------------------------*
+* AT SELECTION-SCREEN.
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN ON BLOCK b1.
+  PERFORM frm_data_check.
+  PERFORM frm_authority_check.
+
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DATA_CHECK
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_data_check .
+  DATA: l_gjahr_begda LIKE t009b-bdatj,
+        l_poper_begda LIKE t009b-poper,
+        l_gjahr_endda LIKE t009b-bdatj,
+        l_poper_endda LIKE t009b-poper.
+
+  SELECT SINGLE periv waers ktopl butxt FROM t001
+    INTO (g_periv,g_waers,g_ktopl,g_butxt) WHERE bukrs = p_bukrs.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '输入的公司代码不存在'.
+  ENDIF.
+  SELECT SINGLE ktext INTO g_waersd FROM tcurt WHERE spras = 1 AND waers = g_waers.
+  IF p_begda IS NOT INITIAL AND p_endda IS NOT INITIAL.
+    IF p_begda > p_endda.
+      MESSAGE e999 WITH '开始日期不能大于结束日期'.
+    ENDIF.
+    CALL FUNCTION 'DATE_TO_PERIOD_CONVERT'
+      EXPORTING
+        i_date         = p_begda
+        i_periv        = g_periv
+      IMPORTING
+        e_buper        = l_poper_begda
+        e_gjahr        = l_gjahr_begda
+      EXCEPTIONS
+        input_false    = 1
+        t009_notfound  = 2
+        t009b_notfound = 3
+        OTHERS         = 4.
+    IF sy-subrc <> 0.
+      MESSAGE e999 WITH '期间取数错误，日期：' p_begda.
+    ENDIF.
+
+    CALL FUNCTION 'DATE_TO_PERIOD_CONVERT'
+      EXPORTING
+        i_date         = p_endda
+        i_periv        = g_periv
+      IMPORTING
+        e_buper        = l_poper_endda
+        e_gjahr        = l_gjahr_endda
+      EXCEPTIONS
+        input_false    = 1
+        t009_notfound  = 2
+        t009b_notfound = 3
+        OTHERS         = 4.
+    IF sy-subrc <> 0.
+      MESSAGE e999 WITH '期间取数错误，日期：' p_endda.
+    ENDIF.
+
+    IF l_gjahr_begda <> l_gjahr_endda.
+      MESSAGE e999 WITH '开始日期和结束日期不在同一会计年度'.
+    ENDIF.
+
+    DATA: l_begda LIKE sy-datum,
+          l_endda LIKE sy-datum.
+
+    CALL FUNCTION 'FIRST_DAY_IN_PERIOD_GET'
+      EXPORTING
+        i_gjahr        = l_gjahr_begda
+        i_periv        = g_periv
+        i_poper        = l_poper_begda
+      IMPORTING
+        e_date         = l_begda
+      EXCEPTIONS
+        input_false    = 1
+        t009_notfound  = 2
+        t009b_notfound = 3
+        OTHERS         = 4.
+    IF sy-subrc = 0 AND l_begda = p_begda.
+      CALL FUNCTION 'LAST_DAY_IN_PERIOD_GET'
+        EXPORTING
+          i_gjahr        = l_gjahr_endda
+          i_periv        = g_periv
+          i_poper        = l_poper_endda
+        IMPORTING
+          e_date         = l_endda
+        EXCEPTIONS
+          input_false    = 1
+          t009_notfound  = 2
+          t009b_notfound = 3
+          OTHERS         = 4.
+      IF sy-subrc = 0 AND l_endda = p_endda.
+        MESSAGE e999 WITH '查询整月科目余额表请使用ZFIR030A'.
+      ENDIF.
+
+    ENDIF.
+
+  ENDIF.
+
+  IF p_bukrs <> '8010' AND p_bukrs <> '8020' AND s_segmt[] IS NOT INITIAL.
+    MESSAGE e999 WITH '非8010/8020公司不允许输入部门'.
+  ENDIF.
+
+
+
+
+ENDFORM. " FRM_DATA_CHECK
+*&---------------------------------------------------------------------*
+*&      Form  FRM_AUTHORITY_CHECK
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_authority_check .
+  AUTHORITY-CHECK OBJECT 'F_BKPF_BUK'
+           ID 'BUKRS' FIELD p_bukrs.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '输入的公司代码超出权限范围'.
+  ENDIF.
+
+*----------------------------------------------------------------------*
+* Declaration for Internal Tables
+*----------------------------------------------------------------------*
+DATA: gt_result_all TYPE typ_result_all OCCURS 0 WITH HEADER LINE.
+
+DATA: BEGIN OF gt_saknr OCCURS 0,
+  saknr LIKE skb1-saknr,
+  waers LIKE skb1-waers,
+  saknrt LIKE skat-txt50,   "科目名称
+  mitkz LIKE skb1-mitkz,
+  ktoks LIKE ska1-ktoks,    "科目组
+  ktoks_name LIKE t077z-txt30,
+END OF gt_saknr.
+
+
+*----------------------------------------------------------------------*
+* START-OF-SELECTION.
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+  PERFORM frm_get_data.
+
+*----------------------------------------------------------------------*
+* END-OF-SELECTION.
+*----------------------------------------------------------------------*
+END-OF-SELECTION.
+  IF gt_result_all[] IS NOT INITIAL.
+    PERFORM frm_display.
+  ENDIF.
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_get_data .
+*Step1:  取公司代码下所有科目
+  SELECT a~saknr a~waers b~txt50 AS saknrt a~mitkz
+    FROM skb1 AS a
+    LEFT JOIN skat AS b ON a~saknr = b~saknr AND b~spras = 1 AND b~ktopl = g_ktopl
+    INTO CORRESPONDING FIELDS OF TABLE gt_saknr
+    WHERE a~bukrs = p_bukrs.
+  IF sy-subrc <> 0.
+    MESSAGE i999 WITH '没有符合条件的科目' DISPLAY LIKE 'E'.
+    STOP.
+  ENDIF.
+
+  DATA: l_ktopl LIKE t001-ktopl.
+  SELECT SINGLE ktopl INTO l_ktopl FROM t001 WHERE bukrs = p_bukrs.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '输入的公司代码不存在'.
+  ENDIF.
+
+  LOOP AT gt_saknr.
+    SELECT SINGLE ktoks INTO gt_saknr-ktoks
+      FROM ska1 WHERE ktopl = l_ktopl AND saknr = gt_saknr-saknr.
+    IF sy-subrc = 0.
+      SELECT SINGLE txt30 INTO gt_saknr-ktoks_name
+        FROM t077z WHERE spras = '1' AND ktopl = l_ktopl AND ktoks = gt_saknr-ktoks.
+    ENDIF.
+    MODIFY gt_saknr TRANSPORTING ktoks ktoks_name.
+  ENDLOOP.
+
+*Step2:  取期初余额
+*Step2.1: 取开始日期所在账期
+*  DATA: l_gjahr LIKE t009b-bdatj,
+*        l_buper LIKE t009b-poper.
+
+  CALL FUNCTION 'DATE_TO_PERIOD_CONVERT'
+    EXPORTING
+      i_date         = p_begda
+      i_periv        = g_periv
+    IMPORTING
+      e_buper        = g_buper
+      e_gjahr        = g_gjahr
+    EXCEPTIONS
+      input_false    = 1
+      t009_notfound  = 2
+      t009b_notfound = 3
+      OTHERS         = 4.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '账期取数错误，日期：' p_begda.
+  ENDIF.
+
+*Step2.2: 取所在年度的总账总计数
+  DATA: lt_faglflext LIKE gt_faglflext OCCURS 0 WITH HEADER LINE.
+
+  SELECT racct tslvt
+         tsl01 tsl02 tsl03 tsl04 tsl05 tsl06 tsl07 tsl08
+         tsl09 tsl10 tsl11 tsl12 tsl13 tsl14 tsl15 tsl16
+         hslvt
+         hsl01 hsl02 hsl03 hsl04 hsl05 hsl06 hsl07 hsl08
+         hsl09 hsl10 hsl11 hsl12 hsl13 hsl14 hsl15 hsl16
+         zz01 prctr rcntr segment
+    FROM faglflext
+    INTO CORRESPONDING FIELDS OF TABLE lt_faglflext
+    WHERE ryear = g_gjahr
+    AND rbukrs = p_bukrs
+    AND rldnr = '0L'
+    AND prctr IN s_prctr
+    AND segment IN s_segmt.  "r_segment.
+  IF p_bukrs = '8010' OR p_bukrs = '8020'.
+    LOOP AT lt_faglflext WHERE segment IS NOT INITIAL.
+      AUTHORITY-CHECK OBJECT 'F_FAGL_SEG'
+               ID 'SEGMENT' FIELD lt_faglflext-segment.
+      IF sy-subrc <> 0.
+        DELETE lt_faglflext.
+      ENDIF.
+    ENDLOOP.
+  ELSE.
+    LOOP AT lt_faglflext WHERE segment IS NOT INITIAL.
+      CLEAR lt_faglflext-segment.
+      MODIFY lt_faglflext TRANSPORTING segment.
+    ENDLOOP.
+  ENDIF.
+
+  gt_faglflext[] = lt_faglflext[].
+
+*Step2.3: 计算到月初余额
+  DATA: BEGIN OF lt_qcye OCCURS 0,
+*    ryear LIKE faglflext-ryear,
+*    rbukrs LIKE faglflext-rbukrs,
+    racct LIKE faglflext-racct,
+    tslvt LIKE faglflext-tslvt,
+    hslvt LIKE faglflext-hslvt,
+  END OF lt_qcye.
+
+  DATA: l_hslxx LIKE faglflext-hslvt,
+        l_tslxx LIKE faglflext-tslvt.
+
+  LOOP AT lt_faglflext.
+    CLEAR lt_qcye.
+*    lt_qcye-ryear = lt_faglflext-ryear.
+*    lt_qcye-rbukrs = lt_faglflext-rbukrs.
+    lt_qcye-racct = lt_faglflext-racct.
+    lt_qcye-tslvt = lt_faglflext-tslvt.    "年初余额（原币）
+    lt_qcye-hslvt = lt_faglflext-hslvt.    "年初余额（本位币）
+    DO 16 TIMES VARYING l_tslxx FROM lt_faglflext-tsl01 NEXT lt_faglflext-tsl02.   "本月期初余额（原币）
+      IF g_buper > sy-index.
+        ADD l_tslxx TO lt_qcye-tslvt.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDDO.
+    DO 16 TIMES VARYING l_hslxx FROM lt_faglflext-hsl01 NEXT lt_faglflext-hsl02.   "本月期初余额（本位币）
+      IF g_buper > sy-index.
+        ADD l_hslxx TO lt_qcye-hslvt.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDDO.
+    APPEND lt_qcye.
+  ENDLOOP.
+
+  DATA: lt_qcye_sum LIKE lt_qcye OCCURS 0 WITH HEADER LINE.
+  SORT lt_qcye BY racct.
+  LOOP AT lt_qcye.
+    AT NEW racct.
+      SUM.
+      lt_qcye_sum = lt_qcye.
+      APPEND lt_qcye_sum.
+    ENDAT.
+  ENDLOOP.
+
+
+*Step3: 本年累计和期间累计
+*Step3.1: 所有凭证
+  DATA: l_begda LIKE sy-datum.
+  REFRESH gt_bsis.
+  CONCATENATE g_gjahr '0101' INTO l_begda.
+  SELECT b~hkont b~shkzg b~budat b~wrbtr b~dmbtr b~bukrs b~belnr b~gjahr b~buzei b~blart b~waers b~xnegp b~segment
+    FROM bkpf AS a
+    INNER JOIN bsis AS b
+    ON a~bukrs = b~bukrs AND a~belnr = b~belnr AND a~gjahr = b~gjahr
+    INTO CORRESPONDING FIELDS OF TABLE gt_bsis
+    WHERE a~bukrs = p_bukrs
+    AND a~bstat = '' " IN ('','A','B','D','L','M','S','V','W','Z','C')
+    AND a~budat >= l_begda
+    AND a~budat <= p_endda
+    AND b~prctr IN s_prctr
+    AND b~segment IN s_segmt.
+
+  CONCATENATE g_gjahr '0101' INTO l_begda.
+  SELECT b~hkont b~shkzg b~budat b~wrbtr b~dmbtr b~bukrs b~belnr b~gjahr b~buzei b~blart b~waers b~xnegp b~segment
+    FROM bkpf AS a
+    INNER JOIN bsas AS b
+    ON a~bukrs = b~bukrs AND a~belnr = b~belnr AND a~gjahr = b~gjahr
+    APPENDING CORRESPONDING FIELDS OF TABLE gt_bsis
+    WHERE a~bukrs = p_bukrs
+    AND a~bstat = '' " IN ('','A','B','D','L','M','S','V','W','Z','C')
+    AND a~budat >= l_begda
+    AND a~budat <= p_endda
+    AND b~prctr IN s_prctr
+    AND b~segment IN s_segmt.
+
+  DATA: BEGIN OF lt_segment OCCURS 0,
+    segment LIKE bseg-segment,
+  END OF lt_segment.
+  DATA: l_authority_flag.
+  IF p_bukrs = '8010' OR p_bukrs = '8020'.
+    REFRESH lt_segment.
+    CLEAR l_authority_flag.
+    LOOP AT gt_bsis WHERE segment IS NOT INITIAL.
+      lt_segment-segment = gt_bsis-segment.
+      APPEND lt_segment.
+    ENDLOOP.
+    SORT lt_segment BY segment.
+    DELETE ADJACENT DUPLICATES FROM lt_segment COMPARING ALL FIELDS.
+    LOOP AT lt_segment.
+      AUTHORITY-CHECK OBJECT 'F_FAGL_SEG'
+               ID 'SEGMENT' FIELD lt_segment-segment.
+      IF sy-subrc <> 0.
+        DELETE lt_segment.
+        l_authority_flag = 'X'.  "存在没有权限的情况
+      ENDIF.
+    ENDLOOP.
+    IF l_authority_flag = 'X'.
+      LOOP AT gt_bsis WHERE segment IS NOT INITIAL.
+        READ TABLE lt_segment WITH KEY segment = gt_bsis-segment.
+        IF sy-subrc <> 0.
+          DELETE gt_bsis.
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+  ELSE.
+    LOOP AT gt_bsis WHERE segment IS NOT INITIAL.
+      CLEAR gt_bsis-segment.
+      MODIFY gt_bsis TRANSPORTING segment.
+    ENDLOOP.
+  ENDIF.
+
+  LOOP AT gt_bsis WHERE xnegp = 'X'.
+    gt_bsis-wrbtr = - gt_bsis-wrbtr.
+    gt_bsis-dmbtr = - gt_bsis-dmbtr.
+    IF gt_bsis-shkzg = 'S'.
+      gt_bsis-shkzg = 'H'.
+    ELSE.
+      gt_bsis-shkzg = 'S'.
+    ENDIF.
+    MODIFY gt_bsis TRANSPORTING shkzg wrbtr dmbtr.
+  ENDLOOP.
+
+  gt_bsis_bn_list[] = gt_bsis[].
+
+*Step3.2: 本年累计
+  DATA: lt_bsis_bnlj LIKE gt_bsis OCCURS 0 WITH HEADER LINE.
+  SORT gt_bsis BY hkont shkzg.
+  LOOP AT gt_bsis.
+    AT NEW shkzg.
+      SUM.
+      lt_bsis_bnlj = gt_bsis.
+      APPEND lt_bsis_bnlj.
+    ENDAT.
+  ENDLOOP.
+
+*Step3.3: 本期累计
+  DATA: lt_bsis_bqlj LIKE gt_bsis OCCURS 0 WITH HEADER LINE.
+  DELETE gt_bsis WHERE budat < p_begda OR budat > p_endda.
+  LOOP AT gt_bsis.
+    AT NEW shkzg.
+      SUM.
+      lt_bsis_bqlj = gt_bsis.
+      APPEND lt_bsis_bqlj.
+    ENDAT.
+  ENDLOOP.
+
+*Step2.4: 计算到今天期初余额
+  CALL FUNCTION 'G_POSTING_DATE_OF_PERIOD_GET'
+    EXPORTING
+      period              = g_buper
+      variant             = g_periv
+      year                = g_gjahr
+    IMPORTING
+      from_date           = l_begda
+    EXCEPTIONS
+      period_not_defined  = 1
+      variant_not_defined = 2
+      OTHERS              = 3.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '账期第一天取数错误，账期：' g_gjahr g_buper.
+  ENDIF.
+
+  REFRESH gt_bsis.
+  LOOP AT gt_bsis_bn_list WHERE budat >= l_begda AND budat < p_begda.
+    gt_bsis = gt_bsis_bn_list.
+    APPEND gt_bsis.
+  ENDLOOP.
+
+*  SELECT b~hkont b~shkzg b~budat b~wrbtr b~dmbtr b~bukrs b~belnr b~gjahr b~buzei
+*    FROM bkpf AS a
+*    INNER JOIN bsis AS b
+*    ON a~bukrs = b~bukrs AND a~belnr = b~belnr AND a~gjahr = b~gjahr
+*    INTO CORRESPONDING FIELDS OF TABLE gt_bsis
+*    WHERE a~bukrs = p_bukrs
+*    AND a~bstat IN ('','A','B','D','L','M','S','V','W','Z','C')
+*    AND a~budat >= l_begda
+*    AND a~budat < p_begda.
+*
+*
+*  SELECT b~hkont b~shkzg b~budat b~wrbtr b~dmbtr b~bukrs b~belnr b~gjahr b~buzei
+*    FROM bkpf AS a
+*    INNER JOIN bsas AS b
+*    ON a~bukrs = b~bukrs AND a~belnr = b~belnr AND a~gjahr = b~gjahr
+*    APPENDING CORRESPONDING FIELDS OF TABLE gt_bsis
+*    WHERE a~bukrs = p_bukrs
+*    AND a~bstat IN ('','A','B','D','L','M','S','V','W','Z','C')
+*    AND a~budat >= l_begda
+*    AND a~budat < p_begda.
+
+  gt_bsis_by_list[] = gt_bsis[].
+
+  LOOP AT gt_bsis WHERE shkzg = 'H'.
+    gt_bsis-wrbtr = - gt_bsis-wrbtr.
+    gt_bsis-dmbtr = - gt_bsis-dmbtr.
+    MODIFY gt_bsis TRANSPORTING wrbtr dmbtr.
+  ENDLOOP.
+
+  DATA: lt_bsis_sum LIKE gt_bsis OCCURS 0 WITH HEADER LINE.
+  SORT gt_bsis BY hkont.
+  LOOP AT gt_bsis.
+    AT NEW hkont.
+      SUM.
+      lt_bsis_sum = gt_bsis.
+      APPEND lt_bsis_sum.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT lt_qcye_sum.
+    READ TABLE lt_bsis_sum WITH KEY hkont = lt_qcye_sum-racct.
+    IF sy-subrc = 0.
+      DELETE lt_bsis_sum INDEX sy-tabix.
+      ADD lt_bsis_sum-wrbtr TO lt_qcye_sum-tslvt.
+      ADD lt_bsis_sum-dmbtr TO lt_qcye_sum-hslvt.
+      MODIFY lt_qcye_sum TRANSPORTING tslvt hslvt.
+    ENDIF.
+  ENDLOOP.
+
+  LOOP AT lt_bsis_sum.
+    CLEAR lt_qcye_sum.
+    lt_qcye_sum-racct = lt_bsis_sum-hkont.
+    lt_qcye_sum-tslvt = lt_bsis_sum-wrbtr.
+    lt_qcye_sum-hslvt = lt_bsis_sum-dmbtr.
+    APPEND lt_qcye_sum.
+  ENDLOOP.
+
+*Setp4: 合并
+  DATA: gt_result_all_tmp LIKE gt_result_all OCCURS 0 WITH HEADER LINE.
+  DATA: l_flag.
+  LOOP AT gt_saknr.
+    CLEAR l_flag.
+    CLEAR gt_result_all.
+    gt_result_all-saknr = gt_saknr-saknr.
+    gt_result_all-saknrt = gt_saknr-saknrt.
+*    gt_result_all-bilkt = gt_saknr-bilkt.
+    gt_result_all-zyjkm = gt_saknr-saknr(4).
+    gt_result_all-ktoks = gt_saknr-ktoks.
+    gt_result_all-ktoks_name = gt_saknr-ktoks_name.
+    gt_result_all-waers = gt_saknr-waers.
+    READ TABLE lt_qcye_sum WITH KEY racct = gt_saknr-saknr.
+    IF sy-subrc = 0.
+      gt_result_all-qcje_yb = lt_qcye_sum-tslvt.
+      gt_result_all-qcje_bwb = lt_qcye_sum-hslvt.
+    ENDIF.
+    IF gt_result_all-qcje_bwb > 0.
+      gt_result_all-fx_qc = '借'.
+    ELSEIF gt_result_all-qcje_bwb < 0.
+      gt_result_all-fx_qc = '贷'.
+    ELSE.
+      gt_result_all-fx_qc = '平'.
+    ENDIF.
+
+    READ TABLE lt_bsis_bqlj WITH KEY hkont = gt_saknr-saknr shkzg = 'S'.
+    IF sy-subrc = 0.
+      gt_result_all-bqjf_yb = lt_bsis_bqlj-wrbtr.
+      gt_result_all-bqjf_bwb = lt_bsis_bqlj-dmbtr.
+      l_flag = 'X'.
+    ENDIF.
+    READ TABLE lt_bsis_bqlj WITH KEY hkont = gt_saknr-saknr shkzg = 'H'.
+    IF sy-subrc = 0.
+      gt_result_all-bqdf_yb = lt_bsis_bqlj-wrbtr.
+      gt_result_all-bqdf_bwb = lt_bsis_bqlj-dmbtr.
+      l_flag = 'X'.
+    ENDIF.
+
+    READ TABLE lt_bsis_bnlj WITH KEY hkont = gt_saknr-saknr shkzg = 'S'.
+    IF sy-subrc = 0.
+      gt_result_all-bnjf_yb = lt_bsis_bnlj-wrbtr.
+      gt_result_all-bnjf_bwb = lt_bsis_bnlj-dmbtr.
+    ENDIF.
+    READ TABLE lt_bsis_bnlj WITH KEY hkont = gt_saknr-saknr shkzg = 'H'.
+    IF sy-subrc = 0.
+      gt_result_all-bndf_yb = lt_bsis_bnlj-wrbtr.
+      gt_result_all-bndf_bwb = lt_bsis_bnlj-dmbtr.
+    ENDIF.
+
+    gt_result_all-qmje_yb = gt_result_all-qcje_yb + gt_result_all-bqjf_yb - gt_result_all-bqdf_yb.
+    gt_result_all-qmje_bwb = gt_result_all-qcje_bwb + gt_result_all-bqjf_bwb - gt_result_all-bqdf_bwb.
+    IF gt_result_all-qmje_bwb > 0.
+      gt_result_all-fx_qm = '借'.
+    ELSEIF gt_result_all-qmje_bwb < 0.
+      gt_result_all-fx_qm = '贷'.
+    ELSE.
+      gt_result_all-fx_qm = '平'.
+    ENDIF.
+
+*    IF gt_result_all-waers = g_waers.
+*      CLEAR: gt_result_all-qcje_yb,
+*             gt_result_all-bqjf_yb,
+*             gt_result_all-bqdf_yb,
+*             gt_result_all-bnjf_yb,
+*             gt_result_all-bndf_yb,
+*             gt_result_all-qmje_yb.
+*    ENDIF.
+
+    gt_result_all_tmp = gt_result_all.
+
+    IF l_flag IS INITIAL AND
+       gt_result_all-qcje_yb IS INITIAL AND
+       gt_result_all-qcje_bwb IS INITIAL AND
+       gt_result_all-bqjf_yb IS INITIAL AND
+       gt_result_all-bqjf_bwb IS INITIAL AND
+       gt_result_all-bqdf_yb IS INITIAL AND
+       gt_result_all-bqdf_bwb IS INITIAL AND
+       gt_result_all-bnjf_yb IS INITIAL AND
+       gt_result_all-bnjf_bwb IS INITIAL AND
+       gt_result_all-bndf_yb IS INITIAL AND
+       gt_result_all-bndf_bwb IS INITIAL AND
+       gt_result_all-qmje_yb IS INITIAL AND
+       gt_result_all-qmje_bwb IS INITIAL.
+      CONTINUE.
+    ENDIF.
+
+    APPEND gt_result_all_tmp.
+
+    gt_result_all-qcje_yb = abs( gt_result_all-qcje_yb ).
+    gt_result_all-qcje_bwb = abs( gt_result_all-qcje_bwb ).
+    gt_result_all-qmje_yb = abs( gt_result_all-qmje_yb ).
+    gt_result_all-qmje_bwb = abs( gt_result_all-qmje_bwb ).
+
+    APPEND gt_result_all.
+  ENDLOOP.
+
+  SORT gt_result_all BY ktoks saknr.
+  SORT gt_result_all_tmp BY ktoks saknr.
+  DATA: l_tabix LIKE sy-tabix.
+
+  LOOP AT gt_result_all_tmp.
+    AT NEW ktoks.
+      SUM.
+      CLEAR l_tabix.
+      LOOP AT gt_result_all WHERE ktoks = gt_result_all_tmp-ktoks.
+        l_tabix = sy-tabix.
+      ENDLOOP.
+      IF l_tabix IS NOT INITIAL.
+        ADD 1 TO l_tabix.
+        CLEAR gt_result_all.
+        gt_result_all-color = 'C310'.
+        CLEAR gt_saknr.
+        READ TABLE gt_saknr WITH KEY ktoks = gt_result_all_tmp-ktoks.
+        CONCATENATE '合计 - ' gt_saknr-ktoks_name INTO gt_result_all-ktoks_name.
+
+        gt_result_all-qcje_bwb = gt_result_all_tmp-qcje_bwb.
+        gt_result_all-bqjf_bwb = gt_result_all_tmp-bqjf_bwb.
+        gt_result_all-bqdf_bwb = gt_result_all_tmp-bqdf_bwb.
+        gt_result_all-bnjf_bwb = gt_result_all_tmp-bnjf_bwb.
+        gt_result_all-bndf_bwb = gt_result_all_tmp-bndf_bwb.
+        gt_result_all-qmje_bwb = gt_result_all_tmp-qmje_bwb.
+        IF gt_result_all-qcje_bwb > 0.
+          gt_result_all-fx_qc = '借'.
+        ELSEIF gt_result_all-qcje_bwb < 0.
+          gt_result_all-fx_qc = '贷'.
+        ELSE.
+          gt_result_all-fx_qc = '平'.
+        ENDIF.
+
+        IF gt_result_all-qmje_bwb > 0.
+          gt_result_all-fx_qm = '借'.
+        ELSEIF gt_result_all-qmje_bwb < 0.
+          gt_result_all-fx_qm = '贷'.
+        ELSE.
+          gt_result_all-fx_qm = '平'.
+        ENDIF.
+
+        gt_result_all-qcje_bwb = abs( gt_result_all-qcje_bwb ).
+        gt_result_all-qmje_bwb = abs( gt_result_all-qmje_bwb ).
+
+        INSERT gt_result_all INDEX l_tabix.
+      ENDIF.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT gt_result_all_tmp.
+    SUM.
+  ENDLOOP.
+
+
+  CLEAR: gt_result_all.
+  gt_result_all-color = 'C310'.
+  gt_result_all-saknr = '总计'.
+  gt_result_all-qcje_bwb = gt_result_all_tmp-qcje_bwb.
+  gt_result_all-bqjf_bwb = gt_result_all_tmp-bqjf_bwb.
+  gt_result_all-bqdf_bwb = gt_result_all_tmp-bqdf_bwb.
+  gt_result_all-bnjf_bwb = gt_result_all_tmp-bnjf_bwb.
+  gt_result_all-bndf_bwb = gt_result_all_tmp-bndf_bwb.
+  gt_result_all-qmje_bwb = gt_result_all_tmp-qmje_bwb.
+  IF gt_result_all-qcje_bwb > 0.
+    gt_result_all-fx_qc = '借'.
+  ELSEIF gt_result_all-qcje_bwb < 0.
+    gt_result_all-fx_qc = '贷'.
+  ELSE.
+    gt_result_all-fx_qc = '平'.
+  ENDIF.
+
+  IF gt_result_all-qmje_bwb > 0.
+    gt_result_all-fx_qm = '借'.
+  ELSEIF gt_result_all-qmje_bwb < 0.
+    gt_result_all-fx_qm = '贷'.
+  ELSE.
+    gt_result_all-fx_qm = '平'.
+  ENDIF.
+
+  gt_result_all-qcje_bwb = abs( gt_result_all-qcje_bwb ).
+  gt_result_all-qmje_bwb = abs( gt_result_all-qmje_bwb ).
+
+  APPEND gt_result_all.
+ENDFORM. " FRM_GET_DATA
+
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display .
+  CLEAR s_layout.
+  s_layout-zebra = 'X'.
+  s_layout-colwidth_optimize = 'X'.
+  s_layout-info_fieldname = 'COLOR'.
+
+  REFRESH gt_fieldcat.
+  PERFORM frm_fill_field USING:
+        'KTOKS_NAME' '科目组',
+        'SAKNR' '科目代码',
+        'SAKNRT' '科目名称',
+*        'ZYJKM' '一级科目',
+        'WAERS' '币种',
+        'FX_QC' '方向',
+        'QCJE_YB' '期初金额(原币)',
+        'QCJE_BWB' '期初金额(本位币)',
+        'BQJF_YB' '本期借方(原币)',
+        'BQJF_BWB' '本期借方(本位币)',
+        'BQDF_YB' '本期贷方(原币)',
+        'BQDF_BWB' '本期贷方(本位币)',
+        'BNJF_YB' '本年累计借方(原币)',
+        'BNJF_BWB' '本年累计借方(本位币)',
+        'BNDF_YB' '本年累计贷方(原币)',
+        'BNDF_BWB' '本年累计贷方(本位币)',
+        'FX_QM' '方向',
+        'QMJE_YB' '期末金额(原币)',
+        'QMJE_BWB' '期末金额(本位币)'.
+
+  IF p_xsyb IS INITIAL.
+    DELETE gt_fieldcat WHERE seltext_s CS '原币'.
+  ENDIF.
+
+  LOOP AT gt_fieldcat.
+    gt_fieldcat-no_zero = 'X'.
+    MODIFY gt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = s_layout
+      it_fieldcat                 = gt_fieldcat[]
+*     i_grid_title                = '科目余额表'
+      i_callback_program          = sy-repid
+      i_callback_pf_status_set    = 'FRM_PF_STATUS_SET'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE'
+      i_html_height_top           = 13     "HTML框的高度
+      i_callback_user_command     = 'FRM_USER_COMMAND'
+    TABLES
+      t_outtab                    = gt_result_all.
+ENDFORM. " FRM_DISPLAY
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_fill_field
+*&---------------------------------------------------------------------*
+*       ALV显示字段定义
+*----------------------------------------------------------------------*
+*      -->NAME         字段名
+*      -->DESCRIPTION  字段描述
+*----------------------------------------------------------------------*
+FORM frm_fill_field USING name description.
+  CLEAR gt_fieldcat.
+  gt_fieldcat-fieldname     = name.
+  gt_fieldcat-seltext_s     = description.
+  gt_fieldcat-seltext_m     = description.
+  APPEND gt_fieldcat.
+ENDFORM. "FRM_FILL_FIELD_MASTER
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_pf_status_set
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->T_EX_TCODE text
+*----------------------------------------------------------------------*
+FORM frm_pf_status_set USING t_ex_tcode TYPE slis_t_extab.
+  DATA fcode TYPE TABLE OF sy-ucomm.
+  APPEND '&OUP' TO fcode.
+  APPEND '&ODN' TO fcode.
+  APPEND '&OAD' TO fcode.
+  APPEND '&AVE' TO fcode.
+
+  SET PF-STATUS 'GUI_STU_ALL' EXCLUDING fcode.
+ENDFORM. "SET_PF_STATUS
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      REFRESH gt_bseg.
+      PERFORM frm_get_bseg USING p_selfield.
+      gt_bseg_display[] = gt_bseg[].
+      DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda.
+      PERFORM frm_subreport USING p_selfield.
+    WHEN 'BITEM'.
+      CLEAR p_ucomm.
+      REFRESH gt_bseg.
+      PERFORM frm_get_bseg USING p_selfield.
+      gt_bseg_display[] = gt_bseg[].
+      DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda.
+      PERFORM frm_display_detail.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '科目余额表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_SUBREPORT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_subreport USING p_selfield TYPE slis_selfield.
+  DATA: l_type.
+*A)与现金流量相关  - 科目编码是1001/1002/1015开头
+*B)一般总账类科目  - 其他
+*C)客户类科目      - SKB1-MITKZ=D
+*D)供应商类科目    - SKB1-MITKZ=K
+*E)费用类科目      - 科目编码是66*
+
+  READ TABLE gt_result_all INDEX p_selfield-tabindex.
+  IF sy-subrc = 0 AND ( gt_result_all-saknr BETWEEN '0000000001' AND '9999999999' ).
+    CLEAR gt_saknr.
+    READ TABLE gt_saknr WITH KEY saknr = gt_result_all-saknr.
+    IF gt_result_all-zyjkm = '1001' OR gt_result_all-zyjkm = '1002' OR gt_result_all-zyjkm = '1015'.
+      l_type = 'A'.
+    ELSEIF gt_result_all-saknr(2) = '66'.
+      l_type = 'E'.
+    ELSEIF gt_saknr-mitkz = 'D'.
+      l_type = 'C'.
+    ELSEIF gt_saknr-mitkz = 'K'.
+      l_type = 'D'.
+    ELSE.
+      l_type = 'B'.
+    ENDIF.
+
+    CASE l_type.
+      WHEN 'A'.
+        PERFORM frm_xjllkm.  "现金流量相关科目
+      WHEN 'B'.
+        PERFORM frm_ybzzkm.  "一般总账科目
+      WHEN 'C'.
+        PERFORM frm_khlkm.   "客户类科目
+      WHEN 'D'.
+        PERFORM frm_gyslkm.  "供应商类
+      WHEN 'E'.
+        PERFORM frm_fylkm.   "费用类科目
+    ENDCASE.
+  ENDIF.
+ENDFORM. " FRM_SUBREPORT
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY_DETAIL
+*&---------------------------------------------------------------------*
+*      显示明细
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_detail .
+  DATA: BEGIN OF lt_ztfi006_2 OCCURS 0,
+    zz01 LIKE ztfi006_2-zz01,
+    zz01d LIKE ztfi006_2-zz01d,
+  END OF lt_ztfi006_2.
+
+  DATA: BEGIN OF lt_kunnr_name OCCURS 0,
+    kunnr LIKE kna1-kunnr,
+    name1 LIKE kna1-name1,
+  END OF lt_kunnr_name.
+
+  DATA: BEGIN OF lt_lifnr_name OCCURS 0,
+    lifnr LIKE lfa1-lifnr,
+    name1 LIKE lfa1-name1,
+  END OF lt_lifnr_name.
+
+  DATA: BEGIN OF lt_anlhtxt OCCURS 0,
+    anln1 LIKE anlh-anln1,     "固定资产编号
+    anlhtxt LIKE anlh-anlhtxt, "固定资产描述
+  END OF lt_anlhtxt.
+
+  DATA: BEGIN OF lt_maktx OCCURS 0,
+    matnr LIKE makt-matnr,
+    maktx LIKE makt-maktx,
+  END OF lt_maktx.
+
+  IF gt_bseg_display[] IS NOT INITIAL.
+    SORT gt_bseg_display BY budat belnr buzei.
+
+    SELECT zz01 zz01d INTO TABLE lt_ztfi006_2
+      FROM ztfi006_2
+      FOR ALL ENTRIES IN gt_bseg_display
+      WHERE zz01 = gt_bseg_display-zz01.
+
+    SELECT kunnr name1 INTO TABLE lt_kunnr_name
+      FROM kna1
+      FOR ALL ENTRIES IN gt_bseg_display
+      WHERE kunnr = gt_bseg_display-kunnr.
+
+    SELECT lifnr name1 INTO TABLE lt_lifnr_name
+      FROM lfa1
+      FOR ALL ENTRIES IN gt_bseg_display
+      WHERE lifnr = gt_bseg_display-lifnr.
+
+    SELECT anln1 anlhtxt INTO TABLE lt_anlhtxt
+      FROM anlh
+      FOR ALL ENTRIES IN gt_bseg_display
+      WHERE anln1 = gt_bseg_display-anln1
+      AND bukrs = p_bukrs.
+
+    SELECT matnr maktx INTO TABLE lt_maktx
+      FROM makt
+      FOR ALL ENTRIES IN gt_bseg_display
+      WHERE matnr = gt_bseg_display-matnr
+      AND spras = '1'.
+
+    LOOP AT gt_bseg_display.
+      gt_bseg_display-zzmon = gt_bseg_display-budat+4(2).
+      gt_bseg_display-zzdate = gt_bseg_display-budat+6(2).
+      IF gt_bseg_display-zz01 IS NOT INITIAL.
+        READ TABLE lt_ztfi006_2 WITH KEY zz01 = gt_bseg_display-zz01.
+        IF sy-subrc = 0.
+          gt_bseg_display-zz01d = lt_ztfi006_2-zz01d.
+        ENDIF.
+      ENDIF.
+      IF gt_bseg_display-kunnr IS NOT INITIAL.
+        READ TABLE lt_kunnr_name WITH KEY kunnr = gt_bseg_display-kunnr.
+        IF sy-subrc = 0.
+          gt_bseg_display-kunnr_name = lt_kunnr_name-name1.
+        ENDIF.
+      ENDIF.
+      IF gt_bseg_display-lifnr IS NOT INITIAL.
+        READ TABLE lt_lifnr_name WITH KEY lifnr = gt_bseg_display-lifnr.
+        IF sy-subrc = 0.
+          gt_bseg_display-lifnr_name = lt_lifnr_name-name1.
+        ENDIF.
+      ENDIF.
+      IF gt_bseg_display-anln1 IS NOT INITIAL.
+        READ TABLE lt_anlhtxt WITH KEY anln1 = gt_bseg_display-anln1.
+        IF sy-subrc = 0.
+          gt_bseg_display-anlhtxt = lt_anlhtxt-anlhtxt.
+        ENDIF.
+      ENDIF.
+      IF gt_bseg_display-matnr IS NOT INITIAL.
+        READ TABLE lt_maktx WITH KEY matnr = gt_bseg_display-matnr.
+        IF sy-subrc = 0.
+          gt_bseg_display-maktx = lt_maktx-maktx.
+        ENDIF.
+      ENDIF.
+
+      SELECT SINGLE ktext INTO gt_bseg_display-kostl_name
+        FROM cskt WHERE spras = '1'
+        AND kokrs = 'YR01'
+        AND kostl = gt_bseg_display-kostl.
+
+      SELECT SINGLE ktext INTO gt_bseg_display-prctr_name
+        FROM cepct WHERE spras = '1'
+        AND prctr = gt_bseg_display-prctr
+        AND kokrs = 'YR01'.
+
+      IF gt_bseg_display-shkzg = 'S'.
+        gt_bseg_display-ybjf = gt_bseg_display-wrbtr.
+        gt_bseg_display-bbjf = gt_bseg_display-dmbtr.
+      ELSE.
+        gt_bseg_display-ybdf = gt_bseg_display-wrbtr.
+        gt_bseg_display-bbdf = gt_bseg_display-dmbtr.
+      ENDIF.
+
+      IF gt_bseg_display-segment IS NOT INITIAL.
+        SELECT SINGLE name FROM fagl_segmt INTO gt_bseg_display-segname WHERE langu = '1' AND segment = gt_bseg_display-segment.
+      ENDIF.
+
+      MODIFY gt_bseg_display.
+    ENDLOOP.
+
+    CLEAR gt_bseg_display.
+    gt_bseg_display-zzmon = p_begda+4(2).
+    gt_bseg_display-zzdate = p_begda+6(2).
+    gt_bseg_display-sgtxt = '期初余额'.
+    gt_bseg_display-zzyue = g_qcye.
+    INSERT gt_bseg_display INDEX 1.
+
+    DATA: ls_bseg LIKE gt_bseg_display.
+    DATA: l_dmbtr LIKE bseg-dmbtr.
+    LOOP AT gt_bseg_display.
+      IF sy-tabix = 1.
+        l_dmbtr = gt_bseg_display-zzyue.
+        CONTINUE.
+      ENDIF.
+      gt_bseg_display-zzyue = l_dmbtr + gt_bseg_display-bbjf - gt_bseg_display-bbdf.
+      MODIFY gt_bseg_display TRANSPORTING zzyue.
+      l_dmbtr = gt_bseg_display-zzyue.
+    ENDLOOP.
+
+    CLEAR ls_bseg.
+    LOOP AT gt_bseg_display.
+      IF gt_bseg_display-zzyue < 0.
+        gt_bseg_display-fangx = '贷'.
+      ELSEIF gt_bseg_display-zzyue > 0.
+        gt_bseg_display-fangx = '借'.
+      ELSE.
+        gt_bseg_display-fangx = '平'.
+      ENDIF.
+      gt_bseg_display-zzyue = abs( gt_bseg_display-zzyue ).
+      MODIFY gt_bseg_display TRANSPORTING fangx zzyue.
+*      ADD GT_BSEG_DISPLAY-ybjf TO ls_bseg-ybjf.
+      ADD gt_bseg_display-bbjf TO ls_bseg-bbjf.
+*      ADD GT_BSEG_DISPLAY-ybdf TO ls_bseg-ybdf.
+      ADD gt_bseg_display-bbdf TO ls_bseg-bbdf.
+    ENDLOOP.
+    ls_bseg-prctr_name = '总计'.
+    ls_bseg-fangx = gt_bseg_display-fangx.
+    ls_bseg-zzyue = gt_bseg_display-zzyue.
+    ls_bseg-color = 'C310'.
+    APPEND ls_bseg TO gt_bseg_display.
+  ENDIF.
+
+*  LOOP AT gt_bseg_display WHERE waers = g_waers.
+*    CLEAR gt_bseg_display-ybjf.
+*    CLEAR gt_bseg_display-ybdf.
+*    MODIFY gt_bseg_display TRANSPORTING ybjf ybdf.
+*  ENDLOOP.
+
+  DEFINE insert_fieldcat.
+    clear lt_fieldcat.
+    lt_fieldcat-fieldname     = &1.
+    lt_fieldcat-seltext_s     = &2.
+    lt_fieldcat-seltext_m     = &2.
+    append lt_fieldcat.
+  END-OF-DEFINITION.
+
+  DATA: ls_layout TYPE slis_layout_alv,
+        lt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+  CLEAR ls_layout.
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-info_fieldname = 'COLOR'.
+
+  REFRESH lt_fieldcat.
+  insert_fieldcat:
+                   'ZZMON' '月',
+                   'ZZDATE' '日',
+                   'BLART' '凭证类型',
+                   'BELNR' '凭证编号',
+                   'PRCTR_NAME' '利润中心',
+                   'KOSTL_NAME' '成本中心',
+                   'AUFNR' '内部订单',
+                   'ZZ01D' '收支项目类别',
+                   'KUNNR' '客户代码',
+                   'KUNNR_NAME' '客户名称',
+                   'LIFNR' '供应商代码',
+                   'LIFNR_NAME' '供应商名称',
+                   'SEGMENT' '部门',
+                   'SEGNAME' '部门名称',
+                   'ANLN1' '固定资产编号',
+                   'ANLHTXT' '固定资产名称',
+                   'MATNR' '物料号',
+                   'MAKTX' '物料名称',
+                   'SGTXT' '摘要',
+                   'WAERS' '币种',
+                   'YBJF' '原币借方',
+                   'BBJF' '本币借方',
+                   'YBDF' '原币贷方',
+                   'BBDF' '本币贷方',
+                   'FANGX' '方向',
+                   'ZZYUE' '余额'.
+
+
+  IF p_xsyb IS INITIAL.
+    DELETE lt_fieldcat WHERE seltext_s CS '原币'.
+  ENDIF.
+
+
+  LOOP AT lt_fieldcat.
+    lt_fieldcat-no_zero = 'X'.
+    MODIFY lt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = ls_layout
+      it_fieldcat                 = lt_fieldcat[]
+      i_callback_program          = sy-repid
+*     i_callback_pf_status_set    = 'FRM_PF_STATUS_SET_XJLLKM'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE_DETAIL'
+      i_callback_user_command     = 'FRM_USER_COMMAND_DETAIL'
+      i_html_height_top           = 16     "HTML框的高度
+    TABLES
+      t_outtab                    = gt_bseg_display.
+
+ENDFORM. " FRM_DISPLAY_DETAIL
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command_detail USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      READ TABLE gt_bseg_display INDEX p_selfield-tabindex.
+      IF sy-subrc = 0 AND gt_bseg_display-belnr IS NOT INITIAL.
+        SET PARAMETER ID 'BLN' FIELD gt_bseg_display-belnr.
+        SET PARAMETER ID 'BUK' FIELD gt_bseg_display-bukrs.
+        SET PARAMETER ID 'GJR' FIELD gt_bseg_display-gjahr.
+        CALL TRANSACTION 'FB03' AND SKIP FIRST SCREEN.
+      ENDIF.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_XJLLKM
+*&---------------------------------------------------------------------*
+*       现金流量相关科目
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_xjllkm .
+  DATA: BEGIN OF lt_qcye_szlb_list OCCURS 0,  "期初余额 - 收支类别
+    segment LIKE faglflext-segment,
+    zz01 LIKE faglflext-zz01,
+    hslvt LIKE faglflext-hslvt,
+  END OF lt_qcye_szlb_list.
+  DATA: l_hslxx LIKE faglflext-hslvt.
+
+  DATA: lt_qcye_szlb_sum LIKE lt_qcye_szlb_list OCCURS 0 WITH HEADER LINE.
+
+* 月度期初余额
+  LOOP AT gt_faglflext_sel.
+    lt_qcye_szlb_list-segment = gt_faglflext_sel-segment.
+    lt_qcye_szlb_list-zz01 = gt_faglflext_sel-zz01.
+    lt_qcye_szlb_list-hslvt = gt_faglflext_sel-hslvt.
+    DO 16 TIMES VARYING l_hslxx FROM gt_faglflext_sel-hsl01 NEXT gt_faglflext_sel-hsl02.   "本月期初余额（本位币）
+      IF g_buper > sy-index.
+        ADD l_hslxx TO lt_qcye_szlb_list-hslvt.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDDO.
+    APPEND lt_qcye_szlb_list.
+  ENDLOOP.
+
+  SORT lt_qcye_szlb_list BY segment zz01.
+  LOOP AT lt_qcye_szlb_list.
+    AT NEW zz01.
+      SUM.
+      lt_qcye_szlb_sum = lt_qcye_szlb_list.
+      APPEND lt_qcye_szlb_sum.
+    ENDAT.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bseg_szlb OCCURS 0,
+    segment LIKE bseg-segment,
+    zz01 LIKE bseg-zz01,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+    bukrs LIKE bseg-bukrs,
+    gjahr LIKE bseg-gjahr,
+    belnr LIKE bseg-belnr,
+    buzei LIKE bseg-buzei,
+    budat LIKE bsis-budat,
+  END OF lt_bseg_szlb.
+
+  REFRESH lt_bseg_szlb.
+  LOOP AT gt_bseg.
+    MOVE-CORRESPONDING gt_bseg TO lt_bseg_szlb.
+    APPEND lt_bseg_szlb.
+  ENDLOOP.
+
+*期初余额
+  DATA: BEGIN OF lt_bseg_szlb_qcye_list OCCURS 0,
+    segment LIKE bseg-segment,
+    zz01 LIKE bseg-zz01,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_szlb_qcye_list.
+
+  DATA: l_begda LIKE sy-datum.
+
+  CALL FUNCTION 'G_POSTING_DATE_OF_PERIOD_GET'
+    EXPORTING
+      period              = g_buper
+      variant             = g_periv
+      year                = g_gjahr
+    IMPORTING
+      from_date           = l_begda
+    EXCEPTIONS
+      period_not_defined  = 1
+      variant_not_defined = 2
+      OTHERS              = 3.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '账期第一天取数错误，账期：' g_gjahr g_buper.
+  ENDIF.
+
+  LOOP AT lt_bseg_szlb WHERE budat >= l_begda AND budat < p_begda.
+    lt_bseg_szlb_qcye_list-segment = lt_bseg_szlb-segment.
+    lt_bseg_szlb_qcye_list-zz01 = lt_bseg_szlb-zz01.
+    lt_bseg_szlb_qcye_list-shkzg = lt_bseg_szlb-shkzg.
+    lt_bseg_szlb_qcye_list-dmbtr = lt_bseg_szlb-dmbtr.
+    APPEND lt_bseg_szlb_qcye_list.
+  ENDLOOP.
+
+  SORT lt_bseg_szlb_qcye_list BY segment zz01.
+  LOOP AT lt_bseg_szlb_qcye_list WHERE shkzg = 'H'.
+    lt_bseg_szlb_qcye_list-dmbtr = - lt_bseg_szlb_qcye_list-dmbtr.
+    MODIFY lt_bseg_szlb_qcye_list TRANSPORTING dmbtr.
+  ENDLOOP.
+
+  DATA: lt_bseg_szlb_qcye_sum LIKE lt_bseg_szlb_qcye_list OCCURS 0 WITH HEADER LINE.
+  LOOP AT lt_bseg_szlb_qcye_list.
+    AT NEW zz01.
+      SUM.
+      lt_bseg_szlb_qcye_sum = lt_bseg_szlb_qcye_list.
+      APPEND lt_bseg_szlb_qcye_sum.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_szlb_qcye_sum.
+    READ TABLE lt_qcye_szlb_sum WITH KEY segment = lt_bseg_szlb_qcye_sum-segment zz01 = lt_bseg_szlb_qcye_sum-zz01.
+    IF sy-subrc = 0.
+      ADD lt_bseg_szlb_qcye_sum-dmbtr TO lt_qcye_szlb_sum-hslvt.
+      MODIFY lt_qcye_szlb_sum INDEX sy-tabix TRANSPORTING hslvt.
+    ELSE.
+      lt_qcye_szlb_sum-segment = lt_bseg_szlb_qcye_sum-segment.
+      lt_qcye_szlb_sum-zz01 = lt_bseg_szlb_qcye_sum-zz01.
+      lt_qcye_szlb_sum-hslvt = lt_bseg_szlb_qcye_sum-dmbtr.
+      APPEND lt_qcye_szlb_sum.
+    ENDIF.
+  ENDLOOP.
+* 本年及本期借贷方
+  DATA: BEGIN OF lt_bseg_szlb_bnlj OCCURS 0,  "本年累计
+    segment LIKE bseg-segment,
+    zz01 LIKE bseg-zz01,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_szlb_bnlj.
+
+  SORT lt_bseg_szlb BY segment zz01 shkzg.
+  LOOP AT lt_bseg_szlb.
+    AT NEW shkzg.
+      SUM.
+      lt_bseg_szlb_bnlj-segment = lt_bseg_szlb-segment.
+      lt_bseg_szlb_bnlj-zz01 = lt_bseg_szlb-zz01.
+      lt_bseg_szlb_bnlj-shkzg = lt_bseg_szlb-shkzg.
+      lt_bseg_szlb_bnlj-dmbtr = lt_bseg_szlb-dmbtr.
+      APPEND lt_bseg_szlb_bnlj.
+    ENDAT.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bseg_szlb_bqlj OCCURS 0,  "本期累计
+    segment LIKE bseg-segment,
+    zz01 LIKE bseg-zz01,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_szlb_bqlj.
+  DELETE lt_bseg_szlb WHERE budat < p_begda OR budat > p_endda.
+  LOOP AT lt_bseg_szlb.
+    AT NEW shkzg.
+      SUM.
+      lt_bseg_szlb_bqlj-segment = lt_bseg_szlb-segment.
+      lt_bseg_szlb_bqlj-zz01 = lt_bseg_szlb-zz01.
+      lt_bseg_szlb_bqlj-shkzg = lt_bseg_szlb-shkzg.
+      lt_bseg_szlb_bqlj-dmbtr = lt_bseg_szlb-dmbtr.
+      APPEND lt_bseg_szlb_bqlj.
+    ENDAT.
+  ENDLOOP.
+
+* 合并
+  REFRESH gt_result_xjllkm.
+  DATA: lt_ztfi006_2 LIKE ztfi006_2 OCCURS 0 WITH HEADER LINE.
+  SELECT * FROM ztfi006_2 INTO TABLE lt_ztfi006_2.
+  LOOP AT lt_ztfi006_2.
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+      EXPORTING
+        input  = lt_ztfi006_2-zz01
+      IMPORTING
+        output = lt_ztfi006_2-zz01.
+    MODIFY lt_ztfi006_2 TRANSPORTING zz01.
+
+  ENDLOOP.
+
+  LOOP AT lt_qcye_szlb_sum.
+    CLEAR: gt_result_xjllkm.
+    gt_result_xjllkm-segment = lt_qcye_szlb_sum-segment.
+    gt_result_xjllkm-zz01 = lt_qcye_szlb_sum-zz01.
+    gt_result_xjllkm-qcye = lt_qcye_szlb_sum-hslvt.
+    APPEND gt_result_xjllkm.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_szlb_bnlj.
+    READ TABLE gt_result_xjllkm WITH KEY segment = lt_bseg_szlb_bnlj-segment zz01 = lt_bseg_szlb_bnlj-zz01.
+    IF sy-subrc = 0.
+      CASE lt_bseg_szlb_bnlj-shkzg.
+        WHEN 'S'.
+          gt_result_xjllkm-bnlj_jf = lt_bseg_szlb_bnlj-dmbtr.
+        WHEN 'H'.
+          gt_result_xjllkm-bnlj_df = lt_bseg_szlb_bnlj-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_xjllkm INDEX sy-tabix TRANSPORTING bnlj_jf bnlj_df.
+    ELSE.
+      CLEAR gt_result_xjllkm.
+      gt_result_xjllkm-segment = lt_bseg_szlb_bnlj-segment.
+      gt_result_xjllkm-zz01 = lt_bseg_szlb_bnlj-zz01.
+      CASE lt_bseg_szlb_bnlj-shkzg.
+        WHEN 'S'.
+          gt_result_xjllkm-bnlj_jf = lt_bseg_szlb_bnlj-dmbtr.
+        WHEN 'H'.
+          gt_result_xjllkm-bnlj_df = lt_bseg_szlb_bnlj-dmbtr.
+      ENDCASE.
+      APPEND gt_result_xjllkm.
+    ENDIF.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_szlb_bqlj.
+    READ TABLE gt_result_xjllkm WITH KEY segment = lt_bseg_szlb_bqlj-segment zz01 = lt_bseg_szlb_bqlj-zz01.
+    IF sy-subrc = 0.
+      CASE lt_bseg_szlb_bqlj-shkzg.
+        WHEN 'S'.
+          gt_result_xjllkm-bqjf = lt_bseg_szlb_bqlj-dmbtr.
+        WHEN 'H'.
+          gt_result_xjllkm-bqdf = lt_bseg_szlb_bqlj-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_xjllkm INDEX sy-tabix TRANSPORTING bqjf bqdf.
+    ELSE.
+      CLEAR gt_result_xjllkm.
+      gt_result_xjllkm-segment = lt_bseg_szlb_bqlj-segment.
+      gt_result_xjllkm-zz01 = lt_bseg_szlb_bqlj-zz01.
+      CASE lt_bseg_szlb_bqlj-shkzg.
+        WHEN 'S'.
+          gt_result_xjllkm-bqjf = lt_bseg_szlb_bqlj-dmbtr.
+        WHEN 'H'.
+          gt_result_xjllkm-bqdf = lt_bseg_szlb_bqlj-dmbtr.
+      ENDCASE.
+      APPEND gt_result_xjllkm.
+    ENDIF.
+  ENDLOOP.
+
+  DATA: lt_result_xjllkm_tmp LIKE gt_result_xjllkm OCCURS 0 WITH HEADER LINE.
+
+  LOOP AT gt_result_xjllkm.
+    IF gt_result_xjllkm-segment IS NOT INITIAL.
+      SELECT SINGLE name FROM fagl_segmt INTO gt_result_xjllkm-segname WHERE langu = '1' AND segment = gt_result_xjllkm-segment.
+    ENDIF.
+    READ TABLE lt_ztfi006_2 WITH KEY zz01 = gt_result_xjllkm-zz01.
+    IF sy-subrc = 0.
+      gt_result_xjllkm-zz01d = lt_ztfi006_2-zz01d.
+      gt_result_xjllkm-zz02 = lt_ztfi006_2-zz02.
+      gt_result_xjllkm-zz02d = lt_ztfi006_2-zz02d.
+    ENDIF.
+    gt_result_xjllkm-qmye = gt_result_xjllkm-qcye + gt_result_xjllkm-bqjf - gt_result_xjllkm-bqdf.
+    IF gt_result_xjllkm-qcye > 0.
+      gt_result_xjllkm-fx_qc = '借'.
+    ELSEIF gt_result_xjllkm-qcye < 0.
+      gt_result_xjllkm-fx_qc = '贷'.
+    ELSE.
+      gt_result_xjllkm-fx_qc = '平'.
+    ENDIF.
+
+    IF gt_result_xjllkm-qmye > 0.
+      gt_result_xjllkm-fx_qm = '借'.
+    ELSEIF gt_result_xjllkm-qmye < 0.
+      gt_result_xjllkm-fx_qm = '贷'.
+    ELSE.
+      gt_result_xjllkm-fx_qm = '平'.
+    ENDIF.
+
+    lt_result_xjllkm_tmp = gt_result_xjllkm.
+    APPEND lt_result_xjllkm_tmp.
+
+    gt_result_xjllkm-qcye = abs( gt_result_xjllkm-qcye ).
+    gt_result_xjllkm-qmye = abs( gt_result_xjllkm-qmye ).
+    MODIFY gt_result_xjllkm.
+  ENDLOOP.
+  SORT gt_result_xjllkm BY segment zz01.
+
+
+  LOOP AT lt_result_xjllkm_tmp.
+    SUM.
+  ENDLOOP.
+
+  CLEAR: gt_result_xjllkm.
+  gt_result_xjllkm-color = 'C310'.
+  gt_result_xjllkm-zz01 = '总计'.
+  gt_result_xjllkm-qcye = lt_result_xjllkm_tmp-qcye.
+  gt_result_xjllkm-bqjf = lt_result_xjllkm_tmp-bqjf.
+  gt_result_xjllkm-bqdf = lt_result_xjllkm_tmp-bqdf.
+  gt_result_xjllkm-bnlj_jf = lt_result_xjllkm_tmp-bnlj_jf.
+  gt_result_xjllkm-bnlj_df = lt_result_xjllkm_tmp-bnlj_df.
+  gt_result_xjllkm-qmye = lt_result_xjllkm_tmp-qmye.
+
+  IF gt_result_xjllkm-qcye > 0.
+    gt_result_xjllkm-fx_qc = '借'.
+  ELSEIF gt_result_xjllkm-qcye < 0.
+    gt_result_xjllkm-fx_qc = '贷'.
+  ELSE.
+    gt_result_xjllkm-fx_qc = '平'.
+  ENDIF.
+
+  IF gt_result_xjllkm-qmye > 0.
+    gt_result_xjllkm-fx_qm = '借'.
+  ELSEIF gt_result_xjllkm-qmye < 0.
+    gt_result_xjllkm-fx_qm = '贷'.
+  ELSE.
+    gt_result_xjllkm-fx_qm = '平'.
+  ENDIF.
+
+  gt_result_xjllkm-qcye = abs( gt_result_xjllkm-qcye ).
+  gt_result_xjllkm-qmye = abs( gt_result_xjllkm-qmye ).
+  APPEND gt_result_xjllkm.
+
+  PERFORM frm_display_xjllkm.
+ENDFORM. " FRM_XJLLKM
+
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_xjllkm .
+  DEFINE insert_fieldcat.
+    clear lt_fieldcat.
+    lt_fieldcat-fieldname     = &1.
+    lt_fieldcat-seltext_s     = &2.
+    lt_fieldcat-seltext_m     = &2.
+    append lt_fieldcat.
+  END-OF-DEFINITION.
+
+  DATA: ls_layout TYPE slis_layout_alv,
+        lt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+  CLEAR ls_layout.
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-info_fieldname = 'COLOR'.
+
+  REFRESH lt_fieldcat.
+  insert_fieldcat: 'SEGNAME' '部门',
+                   'ZZ01' '收支项目类别',
+                   'ZZ01D' '收支项目类别描述',
+                   'ZZ02' '现金流量代码',
+                   'ZZ02D' '现金流量描述',
+                   'FX_QC' '方向',
+                   'QCYE' '期初余额',
+                   'BQJF' '本期借方',
+                   'BQDF' '本期贷方',
+                   'BNLJ_JF' '本年累计借方',
+                   'BNLJ_DF' '本年累计贷方',
+                   'FX_QM' '方向',
+                   'QMYE' '期末余额'.
+
+  LOOP AT lt_fieldcat.
+    lt_fieldcat-no_zero = 'X'.
+    MODIFY lt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = ls_layout
+      it_fieldcat                 = lt_fieldcat[]
+      i_callback_program          = sy-repid
+*     i_callback_pf_status_set    = 'FRM_PF_STATUS_SET_XJLLKM'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE_XJLLKM'
+      i_html_height_top           = 16     "HTML框的高度
+      i_callback_user_command     = 'FRM_USER_COMMAND_XJLLKM'
+    TABLES
+      t_outtab                    = gt_result_xjllkm.
+ENDFORM. " FRM_DISPLAY
+
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page_xjllkm USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '现金流量相关科目扩展科目余额表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CLEAR l_text.
+  CALL METHOD document->new_line.
+  CONCATENATE gt_result_all-saknr gt_result_all-saknrt INTO l_text SEPARATED BY space.
+  CONCATENATE '会计科目：' l_text INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command_xjllkm USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      CLEAR g_qcye.
+      READ TABLE gt_result_xjllkm INDEX p_selfield-tabindex.
+      IF sy-subrc = 0 AND gt_result_xjllkm-zz01 <> '总计'.
+        g_qcye = gt_result_xjllkm-qcye.
+        IF gt_result_xjllkm-fx_qc = '贷'.
+          g_qcye = - g_qcye.
+        ENDIF.
+        gt_bseg_display[] = gt_bseg[].
+        DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda OR zz01 <> gt_result_xjllkm-zz01 OR segment <> gt_result_xjllkm-segment.
+        PERFORM frm_display_detail.
+      ENDIF.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_BSEG
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_P_SELFIELD  text
+*----------------------------------------------------------------------*
+FORM frm_get_bseg USING p_selfield TYPE slis_selfield.
+  CLEAR g_qcye.
+  READ TABLE gt_result_all INDEX p_selfield-tabindex.
+  IF sy-subrc = 0 AND ( gt_result_all-saknr BETWEEN '0000000001' AND '9999999999' ).
+    g_qcye = gt_result_all-qcje_bwb.
+    IF gt_result_all-fx_qc = '贷'.
+      g_qcye = - g_qcye.
+    ENDIF.
+    REFRESH gt_bsis_index.
+    REFRESH gt_faglflext_sel.
+    LOOP AT gt_bsis_bn_list WHERE hkont = gt_result_all-saknr.
+      gt_bsis_index-bukrs = gt_bsis_bn_list-bukrs.
+      gt_bsis_index-gjahr = gt_bsis_bn_list-gjahr.
+      gt_bsis_index-belnr = gt_bsis_bn_list-belnr.
+      gt_bsis_index-buzei = gt_bsis_bn_list-buzei.
+      gt_bsis_index-budat = gt_bsis_bn_list-budat.
+      gt_bsis_index-blart = gt_bsis_bn_list-blart.
+      gt_bsis_index-waers = gt_bsis_bn_list-waers.
+      APPEND gt_bsis_index.
+    ENDLOOP.
+
+    LOOP AT gt_faglflext WHERE racct = gt_result_all-saknr.
+      gt_faglflext_sel = gt_faglflext.
+      APPEND gt_faglflext_sel.
+    ENDLOOP.
+
+    IF gt_bsis_index[] IS NOT INITIAL.
+      SORT gt_bsis_index BY bukrs gjahr belnr buzei.
+      REFRESH gt_bseg.
+      SELECT bukrs gjahr belnr buzei zz01 shkzg dmbtr wrbtr
+             prctr kostl aufnr kunnr lifnr segment anln1 matnr sgtxt xnegp
+*  待增加
+        FROM bseg
+        INTO CORRESPONDING FIELDS OF TABLE gt_bseg
+        FOR ALL ENTRIES IN gt_bsis_index
+        WHERE bukrs = gt_bsis_index-bukrs
+        AND belnr = gt_bsis_index-belnr
+        AND gjahr = gt_bsis_index-gjahr
+        AND buzei = gt_bsis_index-buzei.
+      LOOP AT gt_bseg.
+        IF gt_bseg-xnegp = 'X'.
+          gt_bseg-dmbtr = - gt_bseg-dmbtr.
+          gt_bseg-wrbtr = - gt_bseg-wrbtr.
+          IF gt_bseg-shkzg = 'S'.
+            gt_bseg-shkzg = 'H'.
+          ELSE.
+            gt_bseg-shkzg = 'S'.
+          ENDIF.
+        ENDIF.
+
+*        IF gt_bseg-zz01 IS NOT INITIAL.
+*          CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+*            EXPORTING
+*              input  = gt_bseg-zz01
+*            IMPORTING
+*              output = gt_bseg-zz01.
+*
+*        ENDIF.
+        READ TABLE gt_bsis_index WITH KEY bukrs = gt_bseg-bukrs
+                                          belnr = gt_bseg-belnr
+                                          gjahr = gt_bseg-gjahr
+                                          buzei = gt_bseg-buzei BINARY SEARCH.
+        IF sy-subrc = 0.
+          gt_bseg-budat = gt_bsis_index-budat.
+          gt_bseg-blart = gt_bsis_index-blart.
+          gt_bseg-waers = gt_bsis_index-waers.
+        ENDIF.
+        IF p_bukrs <> '8010' AND p_bukrs <> '8020'.
+          CLEAR gt_bseg-segment.
+        ENDIF.
+        MODIFY gt_bseg TRANSPORTING budat zz01 blart waers dmbtr wrbtr shkzg segment.
+      ENDLOOP.
+    ENDIF.
+  ENDIF.
+ENDFORM. " FRM_GET_BSEG
+
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page_detail
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->DOCUMENT   text
+*----------------------------------------------------------------------*
+FORM html_top_of_page_detail USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '凭证明细帐'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CLEAR l_text.
+  CALL METHOD document->new_line.
+  CONCATENATE gt_result_all-saknr gt_result_all-saknrt INTO l_text SEPARATED BY space.
+  CONCATENATE '会计科目：' l_text INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_YBZZKM
+*&---------------------------------------------------------------------*
+*       一般总账科目
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_ybzzkm .
+
+  DATA: BEGIN OF lt_qcye_lrzx_list OCCURS 0,  "期初余额 - 利润中心
+    segment LIKE faglflext-segment,
+    prctr LIKE faglflext-prctr,
+    hslvt LIKE faglflext-hslvt,
+  END OF lt_qcye_lrzx_list.
+  DATA: l_hslxx LIKE faglflext-hslvt.
+
+  DATA: lt_qcye_lrzx_sum LIKE lt_qcye_lrzx_list OCCURS 0 WITH HEADER LINE.
+
+* 月度期初余额
+  LOOP AT gt_faglflext_sel.
+    lt_qcye_lrzx_list-segment = gt_faglflext_sel-segment.
+    lt_qcye_lrzx_list-prctr = gt_faglflext_sel-prctr.
+    lt_qcye_lrzx_list-hslvt = gt_faglflext_sel-hslvt.
+    DO 16 TIMES VARYING l_hslxx FROM gt_faglflext_sel-hsl01 NEXT gt_faglflext_sel-hsl02.   "本月期初余额（本位币）
+      IF g_buper > sy-index.
+        ADD l_hslxx TO lt_qcye_lrzx_list-hslvt.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDDO.
+    APPEND lt_qcye_lrzx_list.
+  ENDLOOP.
+
+  SORT lt_qcye_lrzx_list BY segment prctr.
+  LOOP AT lt_qcye_lrzx_list.
+    AT NEW prctr.
+      SUM.
+      lt_qcye_lrzx_sum = lt_qcye_lrzx_list.
+      APPEND lt_qcye_lrzx_sum.
+    ENDAT.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bseg_lrzx OCCURS 0,
+    segment LIKE bseg-segment,
+    prctr LIKE bseg-prctr,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+    bukrs LIKE bseg-bukrs,
+    gjahr LIKE bseg-gjahr,
+    belnr LIKE bseg-belnr,
+    buzei LIKE bseg-buzei,
+    budat LIKE bsis-budat,
+  END OF lt_bseg_lrzx.
+
+  REFRESH lt_bseg_lrzx.
+  LOOP AT gt_bseg.
+    MOVE-CORRESPONDING gt_bseg TO lt_bseg_lrzx.
+    APPEND lt_bseg_lrzx.
+  ENDLOOP.
+
+*期初余额
+  DATA: BEGIN OF lt_bseg_lrzx_qcye_list OCCURS 0,
+    segment LIKE bseg-segment,
+    prctr LIKE bseg-prctr,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_lrzx_qcye_list.
+
+  DATA: l_begda LIKE sy-datum.
+
+  CALL FUNCTION 'G_POSTING_DATE_OF_PERIOD_GET'
+    EXPORTING
+      period              = g_buper
+      variant             = g_periv
+      year                = g_gjahr
+    IMPORTING
+      from_date           = l_begda
+    EXCEPTIONS
+      period_not_defined  = 1
+      variant_not_defined = 2
+      OTHERS              = 3.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '账期第一天取数错误，账期：' g_gjahr g_buper.
+  ENDIF.
+
+  LOOP AT lt_bseg_lrzx WHERE budat >= l_begda AND budat < p_begda.
+    lt_bseg_lrzx_qcye_list-segment = lt_bseg_lrzx-segment.
+    lt_bseg_lrzx_qcye_list-prctr = lt_bseg_lrzx-prctr.
+    lt_bseg_lrzx_qcye_list-shkzg = lt_bseg_lrzx-shkzg.
+    lt_bseg_lrzx_qcye_list-dmbtr = lt_bseg_lrzx-dmbtr.
+    APPEND lt_bseg_lrzx_qcye_list.
+  ENDLOOP.
+
+  SORT lt_bseg_lrzx_qcye_list BY segment prctr.
+  LOOP AT lt_bseg_lrzx_qcye_list WHERE shkzg = 'H'.
+    lt_bseg_lrzx_qcye_list-dmbtr = - lt_bseg_lrzx_qcye_list-dmbtr.
+    MODIFY lt_bseg_lrzx_qcye_list TRANSPORTING dmbtr.
+  ENDLOOP.
+
+  DATA: lt_bseg_lrzx_qcye_sum LIKE lt_bseg_lrzx_qcye_list OCCURS 0 WITH HEADER LINE.
+  LOOP AT lt_bseg_lrzx_qcye_list.
+    AT NEW prctr.
+      SUM.
+      lt_bseg_lrzx_qcye_sum = lt_bseg_lrzx_qcye_list.
+      APPEND lt_bseg_lrzx_qcye_sum.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_lrzx_qcye_sum.
+    READ TABLE lt_qcye_lrzx_sum WITH KEY segment = lt_bseg_lrzx_qcye_sum-segment prctr = lt_bseg_lrzx_qcye_sum-prctr.
+    IF sy-subrc = 0.
+      ADD lt_bseg_lrzx_qcye_sum-dmbtr TO lt_qcye_lrzx_sum-hslvt.
+      MODIFY lt_qcye_lrzx_sum INDEX sy-tabix TRANSPORTING hslvt.
+    ELSE.
+      lt_qcye_lrzx_sum-segment = lt_bseg_lrzx_qcye_sum-segment.
+      lt_qcye_lrzx_sum-prctr = lt_bseg_lrzx_qcye_sum-prctr.
+      lt_qcye_lrzx_sum-hslvt = lt_bseg_lrzx_qcye_sum-dmbtr.
+      APPEND lt_qcye_lrzx_sum.
+    ENDIF.
+  ENDLOOP.
+* 本年及本期借贷方
+  DATA: BEGIN OF lt_bseg_lrzx_bnlj OCCURS 0,  "本年累计
+    segment LIKE bseg-segment,
+    prctr LIKE bseg-prctr,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_lrzx_bnlj.
+
+  SORT lt_bseg_lrzx BY segment prctr shkzg.
+  LOOP AT lt_bseg_lrzx.
+    AT NEW shkzg.
+      SUM.
+      lt_bseg_lrzx_bnlj-segment = lt_bseg_lrzx-segment.
+      lt_bseg_lrzx_bnlj-prctr = lt_bseg_lrzx-prctr.
+      lt_bseg_lrzx_bnlj-shkzg = lt_bseg_lrzx-shkzg.
+      lt_bseg_lrzx_bnlj-dmbtr = lt_bseg_lrzx-dmbtr.
+      APPEND lt_bseg_lrzx_bnlj.
+    ENDAT.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bseg_lrzx_bqlj OCCURS 0,  "本期累计
+    segment LIKE bseg-segment,
+    prctr LIKE bseg-prctr,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_lrzx_bqlj.
+  DELETE lt_bseg_lrzx WHERE budat < p_begda OR budat > p_endda.
+  LOOP AT lt_bseg_lrzx.
+    AT NEW shkzg.
+      SUM.
+      lt_bseg_lrzx_bqlj-segment = lt_bseg_lrzx-segment.
+      lt_bseg_lrzx_bqlj-prctr = lt_bseg_lrzx-prctr.
+      lt_bseg_lrzx_bqlj-shkzg = lt_bseg_lrzx-shkzg.
+      lt_bseg_lrzx_bqlj-dmbtr = lt_bseg_lrzx-dmbtr.
+      APPEND lt_bseg_lrzx_bqlj.
+    ENDAT.
+  ENDLOOP.
+
+* 合并
+  REFRESH gt_result_ybzzkm.
+
+  LOOP AT lt_qcye_lrzx_sum.
+    CLEAR: gt_result_ybzzkm.
+    gt_result_ybzzkm-segment = lt_qcye_lrzx_sum-segment.
+    gt_result_ybzzkm-prctr = lt_qcye_lrzx_sum-prctr.
+    gt_result_ybzzkm-qcye = lt_qcye_lrzx_sum-hslvt.
+    APPEND gt_result_ybzzkm.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_lrzx_bnlj.
+    READ TABLE gt_result_ybzzkm WITH KEY segment = lt_bseg_lrzx_bnlj-segment prctr = lt_bseg_lrzx_bnlj-prctr.
+    IF sy-subrc = 0.
+      CASE lt_bseg_lrzx_bnlj-shkzg.
+        WHEN 'S'.
+          gt_result_ybzzkm-bnlj_jf = lt_bseg_lrzx_bnlj-dmbtr.
+        WHEN 'H'.
+          gt_result_ybzzkm-bnlj_df = lt_bseg_lrzx_bnlj-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_ybzzkm INDEX sy-tabix TRANSPORTING bnlj_jf bnlj_df.
+    ELSE.
+      CLEAR gt_result_ybzzkm.
+      gt_result_ybzzkm-segment = lt_bseg_lrzx_bnlj-segment.
+      gt_result_ybzzkm-prctr = lt_bseg_lrzx_bnlj-prctr.
+      CASE lt_bseg_lrzx_bnlj-shkzg.
+        WHEN 'S'.
+          gt_result_ybzzkm-bnlj_jf = lt_bseg_lrzx_bnlj-dmbtr.
+        WHEN 'H'.
+          gt_result_ybzzkm-bnlj_df = lt_bseg_lrzx_bnlj-dmbtr.
+      ENDCASE.
+      APPEND gt_result_ybzzkm.
+    ENDIF.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_lrzx_bqlj.
+    READ TABLE gt_result_ybzzkm WITH KEY segment = lt_bseg_lrzx_bqlj-segment prctr = lt_bseg_lrzx_bqlj-prctr.
+    IF sy-subrc = 0.
+      CASE lt_bseg_lrzx_bqlj-shkzg.
+        WHEN 'S'.
+          gt_result_ybzzkm-bqjf = lt_bseg_lrzx_bqlj-dmbtr.
+        WHEN 'H'.
+          gt_result_ybzzkm-bqdf = lt_bseg_lrzx_bqlj-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_ybzzkm INDEX sy-tabix TRANSPORTING bqjf bqdf.
+    ELSE.
+      CLEAR gt_result_ybzzkm.
+      gt_result_ybzzkm-segment = lt_bseg_lrzx_bqlj-segment.
+      gt_result_ybzzkm-prctr = lt_bseg_lrzx_bqlj-prctr.
+      CASE lt_bseg_lrzx_bqlj-shkzg.
+        WHEN 'S'.
+          gt_result_ybzzkm-bqjf = lt_bseg_lrzx_bqlj-dmbtr.
+        WHEN 'H'.
+          gt_result_ybzzkm-bqdf = lt_bseg_lrzx_bqlj-dmbtr.
+      ENDCASE.
+      APPEND gt_result_ybzzkm.
+    ENDIF.
+  ENDLOOP.
+
+  DATA: lt_result_ybzzkm_tmp LIKE gt_result_ybzzkm OCCURS 0 WITH HEADER LINE.
+
+  LOOP AT gt_result_ybzzkm.
+    IF gt_result_ybzzkm-segment IS NOT INITIAL.
+      SELECT SINGLE name INTO gt_result_ybzzkm-segname FROM fagl_segmt WHERE langu = '1' AND segment = gt_result_ybzzkm-segment.
+    ENDIF.
+    SELECT SINGLE ktext INTO gt_result_ybzzkm-prctr_name
+      FROM cepct WHERE spras = '1'
+      AND prctr = gt_result_ybzzkm-prctr
+      AND kokrs = 'YR01'.
+    gt_result_ybzzkm-qmye = gt_result_ybzzkm-qcye + gt_result_ybzzkm-bqjf - gt_result_ybzzkm-bqdf.
+    IF gt_result_ybzzkm-qcye > 0.
+      gt_result_ybzzkm-fx_qc = '借'.
+    ELSEIF gt_result_ybzzkm-qcye < 0.
+      gt_result_ybzzkm-fx_qc = '贷'.
+    ELSE.
+      gt_result_ybzzkm-fx_qc = '平'.
+    ENDIF.
+
+    IF gt_result_ybzzkm-qmye > 0.
+      gt_result_ybzzkm-fx_qm = '借'.
+    ELSEIF gt_result_ybzzkm-qmye < 0.
+      gt_result_ybzzkm-fx_qm = '贷'.
+    ELSE.
+      gt_result_ybzzkm-fx_qm = '平'.
+    ENDIF.
+
+    lt_result_ybzzkm_tmp = gt_result_ybzzkm.
+    APPEND lt_result_ybzzkm_tmp.
+
+    gt_result_ybzzkm-qcye = abs( gt_result_ybzzkm-qcye ).
+    gt_result_ybzzkm-qmye = abs( gt_result_ybzzkm-qmye ).
+    MODIFY gt_result_ybzzkm.
+  ENDLOOP.
+  SORT gt_result_ybzzkm BY segment prctr.
+
+
+  LOOP AT lt_result_ybzzkm_tmp.
+    SUM.
+  ENDLOOP.
+
+  CLEAR: gt_result_ybzzkm.
+  gt_result_ybzzkm-color = 'C310'.
+  gt_result_ybzzkm-prctr = '总计'.
+  gt_result_ybzzkm-qcye = lt_result_ybzzkm_tmp-qcye.
+  gt_result_ybzzkm-bqjf = lt_result_ybzzkm_tmp-bqjf.
+  gt_result_ybzzkm-bqdf = lt_result_ybzzkm_tmp-bqdf.
+  gt_result_ybzzkm-bnlj_jf = lt_result_ybzzkm_tmp-bnlj_jf.
+  gt_result_ybzzkm-bnlj_df = lt_result_ybzzkm_tmp-bnlj_df.
+  gt_result_ybzzkm-qmye = lt_result_ybzzkm_tmp-qmye.
+
+  IF gt_result_ybzzkm-qcye > 0.
+    gt_result_ybzzkm-fx_qc = '借'.
+  ELSEIF gt_result_ybzzkm-qcye < 0.
+    gt_result_ybzzkm-fx_qc = '贷'.
+  ELSE.
+    gt_result_ybzzkm-fx_qc = '平'.
+  ENDIF.
+
+  IF gt_result_ybzzkm-qmye > 0.
+    gt_result_ybzzkm-fx_qm = '借'.
+  ELSEIF gt_result_ybzzkm-qmye < 0.
+    gt_result_ybzzkm-fx_qm = '贷'.
+  ELSE.
+    gt_result_ybzzkm-fx_qm = '平'.
+  ENDIF.
+
+  gt_result_ybzzkm-qcye = abs( gt_result_ybzzkm-qcye ).
+  gt_result_ybzzkm-qmye = abs( gt_result_ybzzkm-qmye ).
+  APPEND gt_result_ybzzkm.
+
+  PERFORM frm_display_ybzzkm.
+ENDFORM. " FRM_YBZZKM
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY_YBZZKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_ybzzkm .
+
+  DEFINE insert_fieldcat.
+    clear lt_fieldcat.
+    lt_fieldcat-fieldname     = &1.
+    lt_fieldcat-seltext_s     = &2.
+    lt_fieldcat-seltext_m     = &2.
+    append lt_fieldcat.
+  END-OF-DEFINITION.
+
+  DATA: ls_layout TYPE slis_layout_alv,
+        lt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+  CLEAR ls_layout.
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-info_fieldname = 'COLOR'.
+
+  REFRESH lt_fieldcat.
+  insert_fieldcat: 'SEGNAME' '部门',
+                   'PRCTR' '利润中心',
+                   'PRCTR_NAME' '利润中心描述',
+                   'FX_QC' '方向',
+                   'QCYE' '期初余额',
+                   'BQJF' '本期借方',
+                   'BQDF' '本期贷方',
+                   'BNLJ_JF' '本年累计借方',
+                   'BNLJ_DF' '本年累计贷方',
+                   'FX_QM' '方向',
+                   'QMYE' '期末余额'.
+
+  LOOP AT lt_fieldcat.
+    lt_fieldcat-no_zero = 'X'.
+    MODIFY lt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = ls_layout
+      it_fieldcat                 = lt_fieldcat[]
+      i_callback_program          = sy-repid
+*     i_callback_pf_status_set    = 'FRM_PF_STATUS_SET_XJLLKM'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE_YBZZKM'
+      i_html_height_top           = 16     "HTML框的高度
+      i_callback_user_command     = 'FRM_USER_COMMAND_YBZZKM'
+    TABLES
+      t_outtab                    = gt_result_ybzzkm.
+ENDFORM. " FRM_DISPLAY_YBZZKM
+
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page_ybzzkm USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '一般总账科目扩展科目余额表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CLEAR l_text.
+  CALL METHOD document->new_line.
+  CONCATENATE gt_result_all-saknr gt_result_all-saknrt INTO l_text SEPARATED BY space.
+  CONCATENATE '会计科目：' l_text INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command_ybzzkm USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      CLEAR g_qcye.
+      READ TABLE gt_result_ybzzkm INDEX p_selfield-tabindex.
+      IF sy-subrc = 0 AND gt_result_ybzzkm-prctr <> '总计'.
+        g_qcye = gt_result_ybzzkm-qcye.
+        IF gt_result_ybzzkm-fx_qc = '贷'.
+          g_qcye = - g_qcye.
+        ENDIF.
+        gt_bseg_display[] = gt_bseg[].
+        DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda OR prctr <> gt_result_ybzzkm-prctr OR segment <> gt_result_ybzzkm-segment.
+        PERFORM frm_display_detail.
+      ENDIF.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+*&---------------------------------------------------------------------*
+*&      Form  FRM_FYLKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_fylkm .
+
+  DATA: BEGIN OF lt_qcye_cbzx_list OCCURS 0,  "期初余额 - 利润中心
+    segment LIKE bseg-segment,
+    rcntr LIKE faglflext-rcntr,
+    hslvt LIKE faglflext-hslvt,
+  END OF lt_qcye_cbzx_list.
+  DATA: l_hslxx LIKE faglflext-hslvt.
+
+  DATA: lt_qcye_cbzx_sum LIKE lt_qcye_cbzx_list OCCURS 0 WITH HEADER LINE.
+
+* 月度期初余额
+  LOOP AT gt_faglflext_sel.
+    lt_qcye_cbzx_list-segment = gt_faglflext_sel-segment.
+    lt_qcye_cbzx_list-rcntr = gt_faglflext_sel-rcntr.
+    lt_qcye_cbzx_list-hslvt = gt_faglflext_sel-hslvt.
+    DO 16 TIMES VARYING l_hslxx FROM gt_faglflext_sel-hsl01 NEXT gt_faglflext_sel-hsl02.   "本月期初余额（本位币）
+      IF g_buper > sy-index.
+        ADD l_hslxx TO lt_qcye_cbzx_list-hslvt.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDDO.
+    APPEND lt_qcye_cbzx_list.
+  ENDLOOP.
+
+  SORT lt_qcye_cbzx_list BY segment rcntr.
+  LOOP AT lt_qcye_cbzx_list.
+    AT NEW rcntr.
+      SUM.
+      lt_qcye_cbzx_sum = lt_qcye_cbzx_list.
+      APPEND lt_qcye_cbzx_sum.
+    ENDAT.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bseg_cbzx OCCURS 0,
+    segment LIKE bseg-segment,
+    rcntr LIKE bseg-kostl,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+    bukrs LIKE bseg-bukrs,
+    gjahr LIKE bseg-gjahr,
+    belnr LIKE bseg-belnr,
+    buzei LIKE bseg-buzei,
+    budat LIKE bsis-budat,
+  END OF lt_bseg_cbzx.
+
+  REFRESH lt_bseg_cbzx.
+  LOOP AT gt_bseg.
+    MOVE-CORRESPONDING gt_bseg TO lt_bseg_cbzx.
+    lt_bseg_cbzx-rcntr = gt_bseg-kostl.
+    APPEND lt_bseg_cbzx.
+  ENDLOOP.
+
+*期初余额
+  DATA: BEGIN OF lt_bseg_cbzx_qcye_list OCCURS 0,
+    segment LIKE bseg-segment,
+    rcntr LIKE bseg-kostl,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_cbzx_qcye_list.
+
+  DATA: l_begda LIKE sy-datum.
+
+  CALL FUNCTION 'G_POSTING_DATE_OF_PERIOD_GET'
+    EXPORTING
+      period              = g_buper
+      variant             = g_periv
+      year                = g_gjahr
+    IMPORTING
+      from_date           = l_begda
+    EXCEPTIONS
+      period_not_defined  = 1
+      variant_not_defined = 2
+      OTHERS              = 3.
+  IF sy-subrc <> 0.
+    MESSAGE e999 WITH '账期第一天取数错误，账期：' g_gjahr g_buper.
+  ENDIF.
+
+  LOOP AT lt_bseg_cbzx WHERE budat >= l_begda AND budat < p_begda.
+    lt_bseg_cbzx_qcye_list-segment = lt_bseg_cbzx-segment.
+    lt_bseg_cbzx_qcye_list-rcntr = lt_bseg_cbzx-rcntr.
+    lt_bseg_cbzx_qcye_list-shkzg = lt_bseg_cbzx-shkzg.
+    lt_bseg_cbzx_qcye_list-dmbtr = lt_bseg_cbzx-dmbtr.
+    APPEND lt_bseg_cbzx_qcye_list.
+  ENDLOOP.
+
+  SORT lt_bseg_cbzx_qcye_list BY segment rcntr.
+  LOOP AT lt_bseg_cbzx_qcye_list WHERE shkzg = 'H'.
+    lt_bseg_cbzx_qcye_list-dmbtr = - lt_bseg_cbzx_qcye_list-dmbtr.
+    MODIFY lt_bseg_cbzx_qcye_list TRANSPORTING dmbtr.
+  ENDLOOP.
+
+  DATA: lt_bseg_cbzx_qcye_sum LIKE lt_bseg_cbzx_qcye_list OCCURS 0 WITH HEADER LINE.
+  LOOP AT lt_bseg_cbzx_qcye_list.
+    AT NEW rcntr.
+      SUM.
+      lt_bseg_cbzx_qcye_sum = lt_bseg_cbzx_qcye_list.
+      APPEND lt_bseg_cbzx_qcye_sum.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_cbzx_qcye_sum.
+    READ TABLE lt_qcye_cbzx_sum WITH KEY segment = lt_bseg_cbzx_qcye_sum-segment rcntr = lt_bseg_cbzx_qcye_sum-rcntr.
+    IF sy-subrc = 0.
+      ADD lt_bseg_cbzx_qcye_sum-dmbtr TO lt_qcye_cbzx_sum-hslvt.
+      MODIFY lt_qcye_cbzx_sum INDEX sy-tabix TRANSPORTING hslvt.
+    ELSE.
+      lt_qcye_cbzx_sum-segment = lt_bseg_cbzx_qcye_sum-segment.
+      lt_qcye_cbzx_sum-rcntr = lt_bseg_cbzx_qcye_sum-rcntr.
+      lt_qcye_cbzx_sum-hslvt = lt_bseg_cbzx_qcye_sum-dmbtr.
+      APPEND lt_qcye_cbzx_sum.
+    ENDIF.
+  ENDLOOP.
+* 本年及本期借贷方
+  DATA: BEGIN OF lt_bseg_cbzx_bnlj OCCURS 0,  "本年累计
+    segment LIKE bseg-segment,
+    rcntr LIKE bseg-kostl,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_cbzx_bnlj.
+
+  SORT lt_bseg_cbzx BY segment rcntr shkzg.
+  LOOP AT lt_bseg_cbzx.
+    AT NEW shkzg.
+      SUM.
+      lt_bseg_cbzx_bnlj-segment = lt_bseg_cbzx-segment.
+      lt_bseg_cbzx_bnlj-rcntr = lt_bseg_cbzx-rcntr.
+      lt_bseg_cbzx_bnlj-shkzg = lt_bseg_cbzx-shkzg.
+      lt_bseg_cbzx_bnlj-dmbtr = lt_bseg_cbzx-dmbtr.
+      APPEND lt_bseg_cbzx_bnlj.
+    ENDAT.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bseg_cbzx_bqlj OCCURS 0,  "本期累计
+    segment LIKE bseg-segment,
+    rcntr LIKE bseg-kostl,
+    shkzg LIKE bseg-shkzg,
+    dmbtr LIKE bseg-dmbtr,
+  END OF lt_bseg_cbzx_bqlj.
+  DELETE lt_bseg_cbzx WHERE budat < p_begda OR budat > p_endda.
+  LOOP AT lt_bseg_cbzx.
+    AT NEW shkzg.
+      SUM.
+      lt_bseg_cbzx_bqlj-segment = lt_bseg_cbzx-segment.
+      lt_bseg_cbzx_bqlj-rcntr = lt_bseg_cbzx-rcntr.
+      lt_bseg_cbzx_bqlj-shkzg = lt_bseg_cbzx-shkzg.
+      lt_bseg_cbzx_bqlj-dmbtr = lt_bseg_cbzx-dmbtr.
+      APPEND lt_bseg_cbzx_bqlj.
+    ENDAT.
+  ENDLOOP.
+
+* 合并
+  REFRESH gt_result_fylkm.
+
+  LOOP AT lt_qcye_cbzx_sum.
+    CLEAR: gt_result_fylkm.
+    gt_result_fylkm-segment = lt_qcye_cbzx_sum-segment.
+    gt_result_fylkm-rcntr = lt_qcye_cbzx_sum-rcntr.
+    gt_result_fylkm-qcye = lt_qcye_cbzx_sum-hslvt.
+    APPEND gt_result_fylkm.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_cbzx_bnlj.
+    READ TABLE gt_result_fylkm WITH KEY segment = lt_bseg_cbzx_bnlj-segment rcntr = lt_bseg_cbzx_bnlj-rcntr.
+    IF sy-subrc = 0.
+      CASE lt_bseg_cbzx_bnlj-shkzg.
+        WHEN 'S'.
+          gt_result_fylkm-bnlj_jf = lt_bseg_cbzx_bnlj-dmbtr.
+        WHEN 'H'.
+          gt_result_fylkm-bnlj_df = lt_bseg_cbzx_bnlj-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_fylkm INDEX sy-tabix TRANSPORTING bnlj_jf bnlj_df.
+    ELSE.
+      CLEAR gt_result_fylkm.
+      gt_result_fylkm-segment = lt_bseg_cbzx_bnlj-segment.
+      gt_result_fylkm-rcntr = lt_bseg_cbzx_bnlj-rcntr.
+      CASE lt_bseg_cbzx_bnlj-shkzg.
+        WHEN 'S'.
+          gt_result_fylkm-bnlj_jf = lt_bseg_cbzx_bnlj-dmbtr.
+        WHEN 'H'.
+          gt_result_fylkm-bnlj_df = lt_bseg_cbzx_bnlj-dmbtr.
+      ENDCASE.
+      APPEND gt_result_fylkm.
+    ENDIF.
+  ENDLOOP.
+
+  LOOP AT lt_bseg_cbzx_bqlj.
+    READ TABLE gt_result_fylkm WITH KEY segment = lt_bseg_cbzx_bqlj-segment rcntr = lt_bseg_cbzx_bqlj-rcntr.
+    IF sy-subrc = 0.
+      CASE lt_bseg_cbzx_bqlj-shkzg.
+        WHEN 'S'.
+          gt_result_fylkm-bqjf = lt_bseg_cbzx_bqlj-dmbtr.
+        WHEN 'H'.
+          gt_result_fylkm-bqdf = lt_bseg_cbzx_bqlj-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_fylkm INDEX sy-tabix TRANSPORTING bqjf bqdf.
+    ELSE.
+      CLEAR gt_result_fylkm.
+      gt_result_fylkm-segment = lt_bseg_cbzx_bqlj-segment.
+      gt_result_fylkm-rcntr = lt_bseg_cbzx_bqlj-rcntr.
+      CASE lt_bseg_cbzx_bqlj-shkzg.
+        WHEN 'S'.
+          gt_result_fylkm-bqjf = lt_bseg_cbzx_bqlj-dmbtr.
+        WHEN 'H'.
+          gt_result_fylkm-bqdf = lt_bseg_cbzx_bqlj-dmbtr.
+      ENDCASE.
+      APPEND gt_result_fylkm.
+    ENDIF.
+  ENDLOOP.
+
+  DATA: lt_result_fylkm_tmp LIKE gt_result_fylkm OCCURS 0 WITH HEADER LINE.
+
+  LOOP AT gt_result_fylkm.
+    IF gt_result_fylkm-segment IS NOT INITIAL.
+      SELECT SINGLE name FROM fagl_segmt INTO gt_result_fylkm-segname WHERE langu = '1' AND segment = gt_result_fylkm-segment.
+    ENDIF.
+    SELECT SINGLE ktext INTO gt_result_fylkm-rcntr_name
+      FROM cskt WHERE spras = '1'
+      AND kokrs = 'YR01'
+      AND kostl = gt_result_fylkm-rcntr.
+
+    gt_result_fylkm-qmye = gt_result_fylkm-qcye + gt_result_fylkm-bqjf - gt_result_fylkm-bqdf.
+    IF gt_result_fylkm-qcye > 0.
+      gt_result_fylkm-fx_qc = '借'.
+    ELSEIF gt_result_fylkm-qcye < 0.
+      gt_result_fylkm-fx_qc = '贷'.
+    ELSE.
+      gt_result_fylkm-fx_qc = '平'.
+    ENDIF.
+
+    IF gt_result_fylkm-qmye > 0.
+      gt_result_fylkm-fx_qm = '借'.
+    ELSEIF gt_result_fylkm-qmye < 0.
+      gt_result_fylkm-fx_qm = '贷'.
+    ELSE.
+      gt_result_fylkm-fx_qm = '平'.
+    ENDIF.
+
+    lt_result_fylkm_tmp = gt_result_fylkm.
+    APPEND lt_result_fylkm_tmp.
+
+    gt_result_fylkm-qcye = abs( gt_result_fylkm-qcye ).
+    gt_result_fylkm-qmye = abs( gt_result_fylkm-qmye ).
+    MODIFY gt_result_fylkm.
+  ENDLOOP.
+  SORT gt_result_fylkm BY segment rcntr.
+
+
+  LOOP AT lt_result_fylkm_tmp.
+    SUM.
+  ENDLOOP.
+
+  CLEAR: gt_result_fylkm.
+  gt_result_fylkm-color = 'C310'.
+  gt_result_fylkm-rcntr = '总计'.
+  gt_result_fylkm-qcye = lt_result_fylkm_tmp-qcye.
+  gt_result_fylkm-bqjf = lt_result_fylkm_tmp-bqjf.
+  gt_result_fylkm-bqdf = lt_result_fylkm_tmp-bqdf.
+  gt_result_fylkm-bnlj_jf = lt_result_fylkm_tmp-bnlj_jf.
+  gt_result_fylkm-bnlj_df = lt_result_fylkm_tmp-bnlj_df.
+  gt_result_fylkm-qmye = lt_result_fylkm_tmp-qmye.
+
+  IF gt_result_fylkm-qcye > 0.
+    gt_result_fylkm-fx_qc = '借'.
+  ELSEIF gt_result_fylkm-qcye < 0.
+    gt_result_fylkm-fx_qc = '贷'.
+  ELSE.
+    gt_result_fylkm-fx_qc = '平'.
+  ENDIF.
+
+  IF gt_result_fylkm-qmye > 0.
+    gt_result_fylkm-fx_qm = '借'.
+  ELSEIF gt_result_fylkm-qmye < 0.
+    gt_result_fylkm-fx_qm = '贷'.
+  ELSE.
+    gt_result_fylkm-fx_qm = '平'.
+  ENDIF.
+
+  gt_result_fylkm-qcye = abs( gt_result_fylkm-qcye ).
+  gt_result_fylkm-qmye = abs( gt_result_fylkm-qmye ).
+  APPEND gt_result_fylkm.
+
+  PERFORM frm_display_fylkm.
+ENDFORM. " FRM_FYLKM
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY_FYLKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_fylkm .
+  DEFINE insert_fieldcat.
+    clear lt_fieldcat.
+    lt_fieldcat-fieldname     = &1.
+    lt_fieldcat-seltext_s     = &2.
+    lt_fieldcat-seltext_m     = &2.
+    append lt_fieldcat.
+  END-OF-DEFINITION.
+
+  DATA: ls_layout TYPE slis_layout_alv,
+        lt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+  CLEAR ls_layout.
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-info_fieldname = 'COLOR'.
+
+  REFRESH lt_fieldcat.
+  insert_fieldcat: 'SEGNAME' '部门',
+                   'RCNTR' '成本中心',
+                   'RCNTR_NAME' '成本中心描述',
+                   'FX_QC' '方向',
+                   'QCYE' '期初余额',
+                   'BQJF' '本期借方',
+                   'BQDF' '本期贷方',
+                   'BNLJ_JF' '本年累计借方',
+                   'BNLJ_DF' '本年累计贷方',
+                   'FX_QM' '方向',
+                   'QMYE' '期末余额'.
+
+  LOOP AT lt_fieldcat.
+    lt_fieldcat-no_zero = 'X'.
+    MODIFY lt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = ls_layout
+      it_fieldcat                 = lt_fieldcat[]
+      i_callback_program          = sy-repid
+*     i_callback_pf_status_set    = 'FRM_PF_STATUS_SET_XJLLKM'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE_FYLKM'
+      i_html_height_top           = 16     "HTML框的高度
+      i_callback_user_command     = 'FRM_USER_COMMAND_FYLKM'
+    TABLES
+      t_outtab                    = gt_result_fylkm.
+ENDFORM. " FRM_DISPLAY_FYLKM
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page_fylkm USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '费用类科目扩展科目余额表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CLEAR l_text.
+  CALL METHOD document->new_line.
+  CONCATENATE gt_result_all-saknr gt_result_all-saknrt INTO l_text SEPARATED BY space.
+  CONCATENATE '会计科目：' l_text INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command_fylkm USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      CLEAR g_qcye.
+      READ TABLE gt_result_fylkm INDEX p_selfield-tabindex.
+      IF sy-subrc = 0 AND gt_result_fylkm-rcntr <> '总计'.
+        g_qcye = gt_result_fylkm-qcye.
+        IF gt_result_fylkm-fx_qc = '贷'.
+          g_qcye = - g_qcye.
+        ENDIF.
+        gt_bseg_display[] = gt_bseg[].
+        DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda OR kostl <> gt_result_fylkm-rcntr OR segment <> gt_result_fylkm-segment.
+        PERFORM frm_display_detail.
+      ENDIF.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+*&---------------------------------------------------------------------*
+*&      Form  FRM_KHLKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_khlkm .
+  DATA: BEGIN OF lt_bsid OCCURS 0,
+    segment LIKE bseg-segment,
+    kunnr LIKE bsid-kunnr,
+    shkzg LIKE bsid-shkzg,
+    dmbtr LIKE bsid-dmbtr,
+    budat LIKE bsid-budat,
+    bukrs LIKE bsid-bukrs,
+    gjahr LIKE bsid-gjahr,
+    belnr LIKE bsid-belnr,
+    buzei LIKE bsid-buzei,
+    xnegp LIKE bsid-xnegp,
+  END OF lt_bsid.
+
+* 选定科目的所有凭证
+  SELECT b~segment a~kunnr a~shkzg a~dmbtr a~budat a~bukrs a~gjahr a~belnr a~buzei a~xnegp
+    FROM bsid AS a
+*    INNER JOIN faglflexa AS b
+    INNER JOIN bsis AS b
+    ON b~bukrs = a~bukrs
+    AND b~belnr = a~belnr
+    AND b~gjahr = a~gjahr
+    AND b~buzei = a~buzei
+    INTO CORRESPONDING FIELDS OF TABLE lt_bsid
+    WHERE a~hkont = gt_result_all-saknr
+    AND a~bukrs = p_bukrs
+    AND a~budat <= p_endda
+    AND a~bstat = ''
+*    AND b~rldnr = '0L'
+    AND b~prctr IN s_prctr
+    AND b~segment IN s_segmt.
+
+  SELECT b~segment a~kunnr a~shkzg a~dmbtr a~budat a~bukrs a~gjahr a~belnr a~buzei a~xnegp
+    FROM bsad AS a
+*    INNER JOIN faglflexa AS b
+    INNER JOIN bsas AS b
+    ON b~bukrs = a~bukrs
+    AND b~belnr = a~belnr
+    AND b~gjahr = a~gjahr
+    AND b~buzei = a~buzei
+    APPENDING CORRESPONDING FIELDS OF TABLE lt_bsid
+    WHERE a~hkont = gt_result_all-saknr
+    AND a~bukrs = p_bukrs
+    AND a~budat <= p_endda
+    AND a~bstat = ''
+*    AND b~rldnr = '0L'
+    AND b~prctr IN s_prctr
+    AND b~segment IN s_segmt.
+
+
+  IF p_bukrs = '8010' OR p_bukrs = '8020'.
+    LOOP AT lt_bsid WHERE segment IS NOT INITIAL.
+      AUTHORITY-CHECK OBJECT 'F_FAGL_SEG'
+               ID 'SEGMENT' FIELD lt_bsid-segment.
+      IF sy-subrc <> 0.
+        DELETE lt_bsid.
+      ENDIF.
+    ENDLOOP.
+  ELSE.
+    LOOP AT lt_bsid WHERE segment IS NOT INITIAL.
+      CLEAR lt_bsid-segment.
+      MODIFY lt_bsid TRANSPORTING segment.
+    ENDLOOP.
+  ENDIF.
+
+  LOOP AT lt_bsid WHERE xnegp = 'X'.
+    lt_bsid-dmbtr = - lt_bsid-dmbtr.
+    IF lt_bsid-shkzg = 'S'.
+      lt_bsid-shkzg = 'H'.
+    ELSE.
+      lt_bsid-shkzg = 'S'.
+    ENDIF.
+    MODIFY lt_bsid TRANSPORTING shkzg dmbtr.
+  ENDLOOP.
+*分拆本年及本期
+  DATA: BEGIN OF lt_bsid_bq OCCURS 0,
+    segment LIKE bseg-segment,
+    kunnr LIKE bsid-kunnr,
+    shkzg LIKE bsid-shkzg,
+    dmbtr LIKE bsid-dmbtr,
+  END OF lt_bsid_bq.
+
+  DATA: BEGIN OF lt_bsid_bn OCCURS 0,
+    segment LIKE bseg-segment,
+    kunnr LIKE bsid-kunnr,
+    shkzg LIKE bsid-shkzg,
+    dmbtr LIKE bsid-dmbtr,
+  END OF lt_bsid_bn.
+
+  DATA: l_date LIKE sy-datum.
+  l_date = p_begda.
+  l_date+4(4) = '0101'.
+
+  SORT lt_bsid BY segment kunnr shkzg.
+  LOOP AT lt_bsid.
+    IF lt_bsid-budat >= p_begda AND lt_bsid-budat <= p_endda.
+      MOVE-CORRESPONDING lt_bsid TO lt_bsid_bq.
+      APPEND lt_bsid_bq.
+    ENDIF.
+    IF lt_bsid-budat >= l_date AND lt_bsid-budat <= p_endda.
+      MOVE-CORRESPONDING lt_bsid TO lt_bsid_bn.
+      APPEND lt_bsid_bn.
+    ENDIF.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bq_sum OCCURS 0,
+    segment LIKE bseg-segment,
+    kunnr LIKE bsid-kunnr,
+    shkzg LIKE bsid-shkzg,
+    dmbtr LIKE bsid-dmbtr,
+  END OF lt_bq_sum.
+
+  DATA: BEGIN OF lt_bn_sum OCCURS 0,
+    segment LIKE bseg-segment,
+    kunnr LIKE bsid-kunnr,
+    shkzg LIKE bsid-shkzg,
+    dmbtr LIKE bsid-dmbtr,
+  END OF lt_bn_sum.
+
+*合计本年及本期
+  LOOP AT lt_bsid_bq.
+    AT NEW shkzg.
+      SUM.
+      lt_bq_sum = lt_bsid_bq.
+      APPEND lt_bq_sum.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT lt_bsid_bn.
+    AT NEW shkzg.
+      SUM.
+      lt_bn_sum = lt_bsid_bn.
+      APPEND lt_bn_sum.
+    ENDAT.
+  ENDLOOP.
+
+*取期初
+  DELETE lt_bsid WHERE budat >= p_begda.
+  LOOP AT lt_bsid WHERE shkzg = 'H'.
+    lt_bsid-dmbtr = - lt_bsid-dmbtr.
+    MODIFY lt_bsid TRANSPORTING dmbtr.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_qc_sum OCCURS 0,
+    segment LIKE bseg-segment,
+    kunnr LIKE bsid-kunnr,
+    dmbtr LIKE bsid-dmbtr,
+  END OF lt_qc_sum.
+
+  LOOP AT lt_bsid.
+    AT NEW kunnr.
+      SUM.
+      lt_qc_sum-segment = lt_bsid-segment.
+      lt_qc_sum-kunnr = lt_bsid-kunnr.
+      lt_qc_sum-dmbtr = lt_bsid-dmbtr.
+      APPEND lt_qc_sum.
+    ENDAT.
+  ENDLOOP.
+
+*  合并
+  REFRESH gt_result_khlkm.
+  LOOP AT lt_qc_sum.
+    CLEAR gt_result_khlkm.
+    gt_result_khlkm-segment = lt_qc_sum-segment.
+    gt_result_khlkm-kunnr = lt_qc_sum-kunnr.
+    gt_result_khlkm-qcye = lt_qc_sum-dmbtr.
+    APPEND gt_result_khlkm.
+  ENDLOOP.
+
+  LOOP AT lt_bn_sum.
+    READ TABLE gt_result_khlkm WITH KEY segment = lt_bn_sum-segment
+                                        kunnr = lt_bn_sum-kunnr.
+    IF sy-subrc = 0.
+      CASE lt_bn_sum-shkzg.
+        WHEN 'S'.
+          gt_result_khlkm-bnlj_jf = lt_bn_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_khlkm-bnlj_df = lt_bn_sum-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_khlkm INDEX sy-tabix TRANSPORTING bnlj_jf bnlj_df.
+    ELSE.
+      CLEAR gt_result_khlkm.
+      gt_result_khlkm-segment = lt_bn_sum-segment.
+      gt_result_khlkm-kunnr = lt_bn_sum-kunnr.
+      CASE lt_bn_sum-shkzg.
+        WHEN 'S'.
+          gt_result_khlkm-bnlj_jf = lt_bn_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_khlkm-bnlj_df = lt_bn_sum-dmbtr.
+      ENDCASE.
+      APPEND gt_result_khlkm.
+    ENDIF.
+  ENDLOOP.
+
+  LOOP AT lt_bq_sum.
+    READ TABLE gt_result_khlkm WITH KEY segment = lt_bq_sum-segment kunnr = lt_bq_sum-kunnr.
+    IF sy-subrc = 0.
+      CASE lt_bq_sum-shkzg.
+        WHEN 'S'.
+          gt_result_khlkm-bqjf = lt_bq_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_khlkm-bqdf = lt_bq_sum-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_khlkm INDEX sy-tabix TRANSPORTING bqjf bqdf.
+    ELSE.
+      CLEAR gt_result_khlkm.
+      gt_result_khlkm-segment = lt_bq_sum-segment.
+      gt_result_khlkm-kunnr = lt_bq_sum-kunnr.
+      CASE lt_bq_sum-shkzg.
+        WHEN 'S'.
+          gt_result_khlkm-bqjf = lt_bq_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_khlkm-bqdf = lt_bq_sum-dmbtr.
+      ENDCASE.
+      APPEND gt_result_khlkm.
+    ENDIF.
+  ENDLOOP.
+
+  SORT gt_result_khlkm BY segment kunnr.
+  CLEAR gt_result_khlkm.
+  LOOP AT gt_result_khlkm.
+    SUM.
+  ENDLOOP.
+
+  CLEAR: gt_result_khlkm-segment,
+         gt_result_khlkm-segname,
+         gt_result_khlkm-name1,
+         gt_result_khlkm-fx_qc,
+         gt_result_khlkm-fx_qm.
+
+  gt_result_khlkm-color = 'C310'.
+  gt_result_khlkm-kunnr = '总计'.
+  APPEND gt_result_khlkm.
+
+  LOOP AT gt_result_khlkm.
+    IF gt_result_khlkm-qcye > 0.
+      gt_result_khlkm-fx_qc = '借'.
+    ELSEIF gt_result_khlkm-qcye < 0.
+      gt_result_khlkm-fx_qc = '贷'.
+    ELSE.
+      gt_result_khlkm-fx_qc = '平'.
+    ENDIF.
+    gt_result_khlkm-qmye = gt_result_khlkm-qcye + gt_result_khlkm-bqjf - gt_result_khlkm-bqdf.
+
+    IF gt_result_khlkm-qmye > 0.
+      gt_result_khlkm-fx_qm = '借'.
+    ELSEIF gt_result_khlkm-qmye < 0.
+      gt_result_khlkm-fx_qm = '贷'.
+    ELSE.
+      gt_result_khlkm-fx_qm = '平'.
+    ENDIF.
+    IF gt_result_khlkm-kunnr IS NOT INITIAL.
+      SELECT SINGLE name1 FROM kna1 INTO gt_result_khlkm-name1 WHERE kunnr = gt_result_khlkm-kunnr.
+    ENDIF.
+    IF gt_result_khlkm-segment IS NOT INITIAL.
+      SELECT SINGLE name FROM fagl_segmt INTO gt_result_khlkm-segname WHERE langu = '1' AND segment = gt_result_khlkm-segment.
+    ENDIF.
+    gt_result_khlkm-qcye = abs( gt_result_khlkm-qcye ).
+    gt_result_khlkm-qmye = abs( gt_result_khlkm-qmye ).
+    MODIFY gt_result_khlkm.
+  ENDLOOP.
+*  SORT gt_result_khlkm BY segment kunnr.
+  PERFORM frm_display_khlkm.
+ENDFORM. " FRM_KHLKM
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY_KHLKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_khlkm .
+
+  DEFINE insert_fieldcat.
+    clear lt_fieldcat.
+    lt_fieldcat-fieldname     = &1.
+    lt_fieldcat-seltext_s     = &2.
+    lt_fieldcat-seltext_m     = &2.
+    append lt_fieldcat.
+  END-OF-DEFINITION.
+
+  DATA: ls_layout TYPE slis_layout_alv,
+        lt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+  CLEAR ls_layout.
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-info_fieldname = 'COLOR'.
+
+  REFRESH lt_fieldcat.
+  insert_fieldcat: "'SEGMENT' '部门',
+                   'SEGNAME' '部门',
+                   'KUNNR' '客户',
+                   'NAME1' '客户名称',
+                   'FX_QC' '方向',
+                   'QCYE' '期初余额',
+                   'BQJF' '本期借方',
+                   'BQDF' '本期贷方',
+                   'BNLJ_JF' '本年累计借方',
+                   'BNLJ_DF' '本年累计贷方',
+                   'FX_QM' '方向',
+                   'QMYE' '期末余额'.
+
+  LOOP AT lt_fieldcat.
+    lt_fieldcat-no_zero = 'X'.
+    MODIFY lt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = ls_layout
+      it_fieldcat                 = lt_fieldcat[]
+      i_callback_program          = sy-repid
+*     i_callback_pf_status_set    = 'FRM_PF_STATUS_SET_XJLLKM'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE_KHLKM'
+      i_html_height_top           = 16     "HTML框的高度
+      i_callback_user_command     = 'FRM_USER_COMMAND_KHLKM'
+    TABLES
+      t_outtab                    = gt_result_khlkm.
+ENDFORM. " FRM_DISPLAY_KHLKM
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page_khlkm USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '客户类科目扩展科目余额表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CLEAR l_text.
+  CALL METHOD document->new_line.
+  CONCATENATE gt_result_all-saknr gt_result_all-saknrt INTO l_text SEPARATED BY space.
+  CONCATENATE '会计科目：' l_text INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command_khlkm USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      CLEAR g_qcye.
+      READ TABLE gt_result_khlkm INDEX p_selfield-tabindex.
+      IF sy-subrc = 0 AND gt_result_khlkm-kunnr <> '总计'.
+        g_qcye = gt_result_khlkm-qcye.
+        IF gt_result_khlkm-fx_qc = '贷'.
+          g_qcye = - g_qcye.
+        ENDIF.
+        gt_bseg_display[] = gt_bseg[].
+        DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda OR kunnr <> gt_result_khlkm-kunnr OR segment <> gt_result_khlkm-segment.
+        PERFORM frm_display_detail.
+      ENDIF.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GYSLKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_gyslkm .
+
+  DATA: BEGIN OF lt_bsik OCCURS 0,
+    segment LIKE bseg-segment,
+    lifnr LIKE bsik-lifnr,
+    shkzg LIKE bsik-shkzg,
+    dmbtr LIKE bsik-dmbtr,
+    budat LIKE bsik-budat,
+    bukrs LIKE bsik-bukrs,
+    gjahr LIKE bsik-gjahr,
+    belnr LIKE bsik-belnr,
+    buzei LIKE bsik-buzei,
+    xnegp LIKE bsik-xnegp,
+  END OF lt_bsik.
+
+* 选定科目的所有凭证
+  SELECT b~segment a~lifnr a~shkzg a~dmbtr a~budat a~bukrs a~gjahr a~belnr a~buzei a~xnegp
+    FROM bsik AS a
+*    INNER JOIN faglflexa AS b
+    INNER JOIN bsis AS b
+    ON b~bukrs = a~bukrs
+    AND b~belnr = a~belnr
+    AND b~gjahr = a~gjahr
+    AND b~buzei = a~buzei
+    INTO CORRESPONDING FIELDS OF TABLE lt_bsik
+    WHERE a~hkont = gt_result_all-saknr
+    AND a~bukrs = p_bukrs
+    AND a~budat <= p_endda
+    AND a~bstat = ''
+*    AND b~rldnr = '0L'
+    AND b~prctr IN s_prctr
+    AND b~segment IN s_segmt.
+
+  SELECT b~segment a~lifnr a~shkzg a~dmbtr a~budat a~bukrs a~gjahr a~belnr a~buzei a~xnegp
+    FROM bsak AS a
+*    INNER JOIN faglflexa AS b
+    INNER JOIN bsas AS b
+    ON b~bukrs = a~bukrs
+    AND b~belnr = a~belnr
+    AND b~gjahr = a~gjahr
+    AND b~buzei = a~buzei
+    APPENDING CORRESPONDING FIELDS OF TABLE lt_bsik
+    WHERE a~hkont = gt_result_all-saknr
+    AND a~bukrs = p_bukrs
+    AND a~budat <= p_endda
+    AND a~bstat = ''
+*    AND b~rldnr = '0L'
+    AND b~prctr IN s_prctr
+    AND b~segment IN s_segmt.
+
+  IF p_bukrs = '8010' OR p_bukrs = '8020'.
+    LOOP AT lt_bsik WHERE segment IS NOT INITIAL.
+      AUTHORITY-CHECK OBJECT 'F_FAGL_SEG'
+               ID 'SEGMENT' FIELD lt_bsik-segment.
+      IF sy-subrc <> 0.
+        DELETE lt_bsik.
+      ENDIF.
+    ENDLOOP.
+  ELSE.
+    LOOP AT lt_bsik WHERE segment IS NOT INITIAL.
+      CLEAR lt_bsik-segment.
+      MODIFY lt_bsik TRANSPORTING segment.
+    ENDLOOP.
+  ENDIF.
+
+  LOOP AT lt_bsik WHERE xnegp = 'X'.
+    lt_bsik-dmbtr = - lt_bsik-dmbtr.
+    IF lt_bsik-shkzg = 'S'.
+      lt_bsik-shkzg = 'H'.
+    ELSE.
+      lt_bsik-shkzg = 'S'.
+    ENDIF.
+    MODIFY lt_bsik TRANSPORTING shkzg dmbtr.
+  ENDLOOP.
+
+*分拆本年及本期
+  DATA: BEGIN OF lt_bsik_bq OCCURS 0,
+    segment LIKE bseg-segment,
+    lifnr LIKE bsik-lifnr,
+    shkzg LIKE bsik-shkzg,
+    dmbtr LIKE bsik-dmbtr,
+  END OF lt_bsik_bq.
+
+  DATA: BEGIN OF lt_bsik_bn OCCURS 0,
+    segment LIKE bseg-segment,
+    lifnr LIKE bsik-lifnr,
+    shkzg LIKE bsik-shkzg,
+    dmbtr LIKE bsik-dmbtr,
+  END OF lt_bsik_bn.
+
+  DATA: l_date LIKE sy-datum.
+  l_date = p_begda.
+  l_date+4(4) = '0101'.
+
+  SORT lt_bsik BY segment lifnr shkzg.
+  LOOP AT lt_bsik.
+    IF lt_bsik-budat >= p_begda AND lt_bsik-budat <= p_endda.
+      MOVE-CORRESPONDING lt_bsik TO lt_bsik_bq.
+      APPEND lt_bsik_bq.
+    ENDIF.
+    IF lt_bsik-budat >= l_date AND lt_bsik-budat <= p_endda.
+      MOVE-CORRESPONDING lt_bsik TO lt_bsik_bn.
+      APPEND lt_bsik_bn.
+    ENDIF.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_bq_sum OCCURS 0,
+    segment LIKE bseg-segment,
+    lifnr LIKE bsik-lifnr,
+    shkzg LIKE bsik-shkzg,
+    dmbtr LIKE bsik-dmbtr,
+  END OF lt_bq_sum.
+
+  DATA: BEGIN OF lt_bn_sum OCCURS 0,
+    segment LIKE bseg-segment,
+    lifnr LIKE bsik-lifnr,
+    shkzg LIKE bsik-shkzg,
+    dmbtr LIKE bsik-dmbtr,
+  END OF lt_bn_sum.
+
+*合计本年及本期
+  LOOP AT lt_bsik_bq.
+    AT NEW shkzg.
+      SUM.
+      lt_bq_sum = lt_bsik_bq.
+      APPEND lt_bq_sum.
+    ENDAT.
+  ENDLOOP.
+
+  LOOP AT lt_bsik_bn.
+    AT NEW shkzg.
+      SUM.
+      lt_bn_sum = lt_bsik_bn.
+      APPEND lt_bn_sum.
+    ENDAT.
+  ENDLOOP.
+
+*取期初
+  DELETE lt_bsik WHERE budat >= p_begda.
+  LOOP AT lt_bsik WHERE shkzg = 'H'.
+    lt_bsik-dmbtr = - lt_bsik-dmbtr.
+    MODIFY lt_bsik TRANSPORTING dmbtr.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_qc_sum OCCURS 0,
+    segment LIKE bseg-segment,
+    lifnr LIKE bsik-lifnr,
+    dmbtr LIKE bsik-dmbtr,
+  END OF lt_qc_sum.
+
+  LOOP AT lt_bsik.
+    AT NEW lifnr.
+      SUM.
+      lt_qc_sum-segment = lt_bsik-segment.
+      lt_qc_sum-lifnr = lt_bsik-lifnr.
+      lt_qc_sum-dmbtr = lt_bsik-dmbtr.
+      APPEND lt_qc_sum.
+    ENDAT.
+  ENDLOOP.
+
+*  合并
+  REFRESH gt_result_gyslkm.
+  LOOP AT lt_qc_sum.
+    CLEAR gt_result_gyslkm.
+    gt_result_gyslkm-segment = lt_qc_sum-segment.
+    gt_result_gyslkm-lifnr = lt_qc_sum-lifnr.
+    gt_result_gyslkm-qcye = lt_qc_sum-dmbtr.
+    APPEND gt_result_gyslkm.
+  ENDLOOP.
+
+  LOOP AT lt_bn_sum.
+    READ TABLE gt_result_gyslkm WITH KEY segment = lt_bn_sum-segment lifnr = lt_bn_sum-lifnr.
+    IF sy-subrc = 0.
+      CASE lt_bn_sum-shkzg.
+        WHEN 'S'.
+          gt_result_gyslkm-bnlj_jf = lt_bn_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_gyslkm-bnlj_df = lt_bn_sum-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_gyslkm INDEX sy-tabix TRANSPORTING bnlj_jf bnlj_df.
+    ELSE.
+      CLEAR gt_result_gyslkm.
+      gt_result_gyslkm-segment = lt_bn_sum-segment.
+      gt_result_gyslkm-lifnr = lt_bn_sum-lifnr.
+      CASE lt_bn_sum-shkzg.
+        WHEN 'S'.
+          gt_result_gyslkm-bnlj_jf = lt_bn_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_gyslkm-bnlj_df = lt_bn_sum-dmbtr.
+      ENDCASE.
+      APPEND gt_result_gyslkm.
+    ENDIF.
+  ENDLOOP.
+
+  LOOP AT lt_bq_sum.
+    READ TABLE gt_result_gyslkm WITH KEY segment = lt_bq_sum-segment lifnr = lt_bq_sum-lifnr.
+    IF sy-subrc = 0.
+      CASE lt_bq_sum-shkzg.
+        WHEN 'S'.
+          gt_result_gyslkm-bqjf = lt_bq_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_gyslkm-bqdf = lt_bq_sum-dmbtr.
+      ENDCASE.
+      MODIFY gt_result_gyslkm INDEX sy-tabix TRANSPORTING bqjf bqdf.
+    ELSE.
+      CLEAR gt_result_gyslkm.
+      gt_result_gyslkm-segment = lt_bq_sum-segment.
+      gt_result_gyslkm-lifnr = lt_bq_sum-lifnr.
+      CASE lt_bq_sum-shkzg.
+        WHEN 'S'.
+          gt_result_gyslkm-bqjf = lt_bq_sum-dmbtr.
+        WHEN 'H'.
+          gt_result_gyslkm-bqdf = lt_bq_sum-dmbtr.
+      ENDCASE.
+      APPEND gt_result_gyslkm.
+    ENDIF.
+  ENDLOOP.
+
+  SORT gt_result_gyslkm BY segment lifnr.
+  CLEAR gt_result_gyslkm.
+  LOOP AT gt_result_gyslkm.
+    SUM.
+  ENDLOOP.
+
+  CLEAR: gt_result_gyslkm-segment,
+         gt_result_gyslkm-segname,
+         gt_result_gyslkm-lifnr,
+         gt_result_gyslkm-name1,
+         gt_result_gyslkm-fx_qc,
+         gt_result_gyslkm-fx_qm.
+
+  gt_result_gyslkm-color = 'C310'.
+  gt_result_gyslkm-lifnr = '总计'.
+  APPEND gt_result_gyslkm.
+
+  LOOP AT gt_result_gyslkm.
+    IF gt_result_gyslkm-qcye > 0.
+      gt_result_gyslkm-fx_qc = '借'.
+    ELSEIF gt_result_gyslkm-qcye < 0.
+      gt_result_gyslkm-fx_qc = '贷'.
+    ELSE.
+      gt_result_gyslkm-fx_qc = '平'.
+    ENDIF.
+    gt_result_gyslkm-qmye = gt_result_gyslkm-qcye + gt_result_gyslkm-bqjf - gt_result_gyslkm-bqdf.
+
+    IF gt_result_gyslkm-qmye > 0.
+      gt_result_gyslkm-fx_qm = '借'.
+    ELSEIF gt_result_gyslkm-qmye < 0.
+      gt_result_gyslkm-fx_qm = '贷'.
+    ELSE.
+      gt_result_gyslkm-fx_qm = '平'.
+    ENDIF.
+    IF gt_result_gyslkm-lifnr IS NOT INITIAL.
+      SELECT SINGLE name1 FROM lfa1 INTO gt_result_gyslkm-name1 WHERE lifnr = gt_result_gyslkm-lifnr.
+    ENDIF.
+    IF gt_result_gyslkm-segment IS NOT INITIAL.
+      SELECT SINGLE name FROM fagl_segmt INTO gt_result_gyslkm-segname WHERE langu = '1' AND segment = gt_result_gyslkm-segment.
+    ENDIF.
+    gt_result_gyslkm-qcye = abs( gt_result_gyslkm-qcye ).
+    gt_result_gyslkm-qmye = abs( gt_result_gyslkm-qmye ).
+    MODIFY gt_result_gyslkm.
+  ENDLOOP.
+  PERFORM frm_display_gyslkm.
+
+ENDFORM. " FRM_GYSLKM
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY_GYSLKM
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_gyslkm .
+
+  DEFINE insert_fieldcat.
+    clear lt_fieldcat.
+    lt_fieldcat-fieldname     = &1.
+    lt_fieldcat-seltext_s     = &2.
+    lt_fieldcat-seltext_m     = &2.
+    append lt_fieldcat.
+  END-OF-DEFINITION.
+
+  DATA: ls_layout TYPE slis_layout_alv,
+        lt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+
+  CLEAR ls_layout.
+  ls_layout-zebra = 'X'.
+  ls_layout-colwidth_optimize = 'X'.
+  ls_layout-info_fieldname = 'COLOR'.
+
+  REFRESH lt_fieldcat.
+  insert_fieldcat: 'SEGNAME' '部门',
+                   'LIFNR' '供应商',
+                   'NAME1' '供应商名称',
+                   'FX_QC' '方向',
+                   'QCYE' '期初余额',
+                   'BQJF' '本期借方',
+                   'BQDF' '本期贷方',
+                   'BNLJ_JF' '本年累计借方',
+                   'BNLJ_DF' '本年累计贷方',
+                   'FX_QM' '方向',
+                   'QMYE' '期末余额'.
+
+  LOOP AT lt_fieldcat.
+    lt_fieldcat-no_zero = 'X'.
+    MODIFY lt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout                   = ls_layout
+      it_fieldcat                 = lt_fieldcat[]
+      i_callback_program          = sy-repid
+*     i_callback_pf_status_set    = 'FRM_PF_STATUS_SET_XJLLKM'
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE_GYSLKM'
+      i_html_height_top           = 16     "HTML框的高度
+      i_callback_user_command     = 'FRM_USER_COMMAND_GYSLKM'
+    TABLES
+      t_outtab                    = gt_result_gyslkm.
+ENDFORM. " FRM_DISPLAY_GYSLKM
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page_gyslkm USING document TYPE REF TO cl_dd_document.
+  DATA: l_text TYPE sdydo_text_element.
+
+  DATA: l_begda_string(10),
+        l_endda_string(10).
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_begda
+    IMPORTING
+      date_external            = l_begda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_begda_string = p_begda.
+  ENDIF.
+
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = p_endda
+    IMPORTING
+      date_external            = l_endda_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_endda_string = p_endda.
+  ENDIF.
+
+  CLEAR l_text.
+  l_text = '供应商类科目扩展科目余额表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Heading'.
+
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '开始日期：' l_begda_string  '　　　　结束日期：' l_endda_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 40.
+
+  CLEAR l_text.
+  DATA: l_prtdate_string(10).
+  CALL FUNCTION 'CONVERT_DATE_TO_EXTERNAL'
+    EXPORTING
+      date_internal            = sy-datum
+    IMPORTING
+      date_external            = l_prtdate_string
+    EXCEPTIONS
+      date_internal_is_invalid = 1
+      OTHERS                   = 2.
+  IF sy-subrc <> 0.
+    l_prtdate_string = sy-datum.
+  ENDIF.
+  CONCATENATE '打印日期：' l_prtdate_string INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->new_line.
+
+  CLEAR l_text.
+  CONCATENATE '公司代码：' p_bukrs g_butxt INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  CLEAR l_text.
+  CONCATENATE '本位币：' g_waers g_waersd INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+
+  CLEAR l_text.
+  CALL METHOD document->new_line.
+  CONCATENATE gt_result_all-saknr gt_result_all-saknrt INTO l_text SEPARATED BY space.
+  CONCATENATE '会计科目：' l_text INTO l_text.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = l_text
+      sap_style = 'Strong'.
+ENDFORM. "HTML_TOP_OF_PAGE
+
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_user_command
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_UCOMM    text
+*      -->P_SELFIELD text
+*----------------------------------------------------------------------*
+FORM frm_user_command_gyslkm USING p_ucomm TYPE sy-ucomm "响应功能代码
+                             p_selfield TYPE slis_selfield.
+  DATA: l_ucomm LIKE sy-ucomm.
+  l_ucomm = p_ucomm.
+  CASE p_ucomm.
+    WHEN '&IC1'.
+      CLEAR p_ucomm.
+      CLEAR g_qcye.
+      READ TABLE gt_result_gyslkm INDEX p_selfield-tabindex.
+      IF sy-subrc = 0 AND gt_result_gyslkm-lifnr <> '总计'.
+        g_qcye = gt_result_gyslkm-qcye.
+        IF gt_result_gyslkm-fx_qc = '贷'.
+          g_qcye = - g_qcye.
+        ENDIF.
+        gt_bseg_display[] = gt_bseg[].
+        DELETE gt_bseg_display WHERE budat < p_begda OR budat > p_endda OR lifnr <> gt_result_gyslkm-lifnr OR segment <> gt_result_gyslkm-segment.
+        PERFORM frm_display_detail.
+      ENDIF.
+  ENDCASE.
+ENDFORM. "FRM_USER_COMMAND
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择条件
+* 002 记账日期    从
+* 003 到
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_BUKRS D       .
+* P_XSYB         显示原币
+* S_PRCTR D       .
+* S_SEGMT         部门
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: ZYR
+*999   &1 &2 &3 &4
+Extracted by Mass Download version 1.4.3 - E.G.Mellodew. 1998-2016. Sap Release 731

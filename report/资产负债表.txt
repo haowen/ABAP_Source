@@ -1,0 +1,842 @@
+Description: 资产负债表
+
+REPORT zfirpr050.
+
+TABLES: faglflext.
+
+*----------------------------------------------------------------------*
+* Type Declaration
+*----------------------------------------------------------------------*
+
+TYPES: BEGIN OF ty_faglflext,
+        ryear   TYPE gjahr,
+        drcrk   TYPE shkzg,
+        racct   TYPE racct,
+        rbukrs  TYPE bukrs,
+        rcntr   TYPE kostl.
+        INCLUDE TYPE faglflex_hsl.
+TYPES: END OF ty_faglflext.
+
+TYPES: BEGIN OF ty_out,
+         prkey_1  TYPE rf011p-prkey,
+         txt45_1  TYPE rf011q-txt45,
+         hslvt_1  TYPE hslvt12,
+         hslsum_1 TYPE hslvt12,
+         prkey_2  TYPE rf011p-prkey,
+         txt45_2  TYPE rf011q-txt45,
+         hslvt_2  TYPE hslvt12,
+         hslsum_2 TYPE hslvt12,
+       END OF ty_out.
+
+TYPES: BEGIN OF ty_lkey,
+          prkey TYPE rf011p-prkey,
+          xflag TYPE char1,
+       END OF ty_lkey.
+
+*----------------------------------------------------------------------*
+* Internal Table Declaration
+*----------------------------------------------------------------------*
+DATA: gt_fcat TYPE lvc_t_fcat,
+      gs_fcat     TYPE lvc_s_fcat,
+      gs_layo     TYPE lvc_s_layo,
+      g_repid     TYPE sy-repid.
+
+DATA: gt_faglflext TYPE STANDARD TABLE OF ty_faglflext.
+DATA: gs_faglflext TYPE ty_faglflext.
+
+DATA: gt_i011z TYPE STANDARD TABLE OF rf011z,
+      gs_i011z TYPE rf011z,
+      gt_x011p TYPE STANDARD TABLE OF rf011p,
+      gs_x011p TYPE rf011p.
+
+DATA: gt_x011q TYPE STANDARD TABLE OF rf011q,
+      gs_x011q TYPE rf011q.
+
+DATA: gt_out TYPE STANDARD TABLE OF ty_out,
+      gs_out TYPE ty_out.
+
+DATA: gt_lkey TYPE STANDARD TABLE OF ty_lkey,
+      gs_lkey TYPE ty_lkey.
+
+DATA: gt_lkey_sum TYPE STANDARD TABLE OF ty_lkey,
+      gs_lkey_sum TYPE ty_lkey.
+
+RANGES: r_racct FOR faglflext-racct.
+
+DATA: BEGIN OF gt_summation OCCURS 0,
+  ergsl LIKE rf011p-ergsl,
+  ergsl_item LIKE rf011p-ergsl,
+  sign,  " +/-
+  prkey LIKE rf011p-prkey,
+  prkey_item LIKE rf011p-prkey,
+END OF gt_summation.
+
+
+FIELD-SYMBOLS: <fs_out> TYPE ty_out.
+*----------------------------------------------------------------------*
+* Selection Screen
+*----------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK bl1 WITH FRAME TITLE text-001.
+
+PARAMETERS: p_rbukrs TYPE bukrs OBLIGATORY MEMORY ID buk, "Company Code
+              p_ryear   TYPE gjahr OBLIGATORY  DEFAULT sy-datum(4),      "Fiscal  Year
+              p_lfmon   TYPE lfmon OBLIGATORY  DEFAULT sy-datum+4(2).    "Current Period
+SELECT-OPTIONS: s_prctr FOR faglflext-prctr.
+SELECTION-SCREEN END OF BLOCK bl1.
+*----------------------------------------------------------------------*
+* AT SELECTION-SCREEN Event
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN.
+  AUTHORITY-CHECK OBJECT 'F_BKPF_BUK'
+           ID 'BUKRS' FIELD p_rbukrs.
+  IF sy-subrc <> 0.
+    MESSAGE e999(zyr) WITH '输入的公司代码超出权限范围'.
+  ENDIF.
+
+
+*----------------------------------------------------------------------*
+* Start-Of-Selection Event
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+
+  PERFORM frm_get_version.   "取得利润表相关财务版本结构
+  PERFORM frm_get_data.      "取得数据
+  PERFORM frm_set_layout.    "设置 LAYOUT
+  PERFORM frm_ref_fieldcat.  "设置FIELDCAT
+  PERFORM frm_display_data.  "ALV 显示信息
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_VERSION
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_get_version .
+
+  DATA: lt_i011z TYPE STANDARD TABLE OF rf011z,
+        ls_i011z TYPE rf011z,
+        lt_x011p TYPE STANDARD TABLE OF rf011p,
+        ls_x011p TYPE rf011p.
+
+  DATA: lt_x011q TYPE STANDARD TABLE OF rf011q,
+        ls_x011q TYPE rf011q.
+
+  DATA: lt_x011p_1 TYPE STANDARD TABLE OF rf011p,
+        lt_x011p_2 TYPE STANDARD TABLE OF rf011p,
+        ls_x011p_1 TYPE rf011p,
+        ls_x011p_2 TYPE rf011p.
+
+  CALL FUNCTION 'FI_IMPORT_BALANCE_SHEET_POS'
+    EXPORTING
+      version           = 'Y001'
+    TABLES
+      i011z             = lt_i011z
+      x011p             = lt_x011p
+*     X011S             =
+*     X011V             =
+*     X011F             =
+    EXCEPTIONS
+      new_balance_sheet = 1
+      OTHERS            = 2.
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+
+  CALL FUNCTION 'FI_IMPORT_BALANCE_SHEET_TEXT'
+    EXPORTING
+      sprache        = sy-langu
+      version        = 'Y001'
+    TABLES
+      x011q          = lt_x011q
+*     TSTAMP_TAB     =
+    EXCEPTIONS
+      text_not_found = 1
+      OTHERS         = 2.
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+
+  r_racct(3) = 'IBT'.
+
+  DATA: lv_flag TYPE char1.
+
+  LOOP AT lt_x011q INTO ls_x011q WHERE txt45 CS '资产负债表'.
+
+    READ TABLE lt_x011p INTO ls_x011p WITH KEY ergsl = ls_x011q-ergsl.
+    IF sy-subrc EQ 0.
+      gs_lkey-prkey = ls_x011p-prkey.
+      IF ls_x011q-txt45 CS '所有者权益'.
+        gs_lkey-xflag = '2'.
+      ELSE.
+        gs_lkey-xflag = '1'.
+      ENDIF.
+      APPEND gs_lkey TO gt_lkey.
+
+      LOOP AT lt_x011p INTO gs_x011p.
+        CHECK gs_x011p-prkey(2) EQ ls_x011p-prkey(2).
+        APPEND gs_x011p TO gt_x011p.
+
+        CASE gs_x011p-stufe.
+          WHEN '2' OR '3'.
+            IF ls_x011q-txt45 CS '所有者权益'.
+              APPEND gs_x011p TO lt_x011p_2.
+            ELSE.
+              APPEND gs_x011p TO lt_x011p_1.
+            ENDIF.
+          WHEN OTHERS.
+        ENDCASE.
+
+        READ TABLE lt_x011q INTO gs_x011q WITH KEY ergsl = gs_x011p-ergsl.
+        IF sy-subrc EQ 0.
+          APPEND gs_x011q TO gt_x011q.
+          IF gs_x011p-stufe EQ '2' AND ( gs_x011q-txt45 CS '合计' OR gs_x011q-txt45 CS '总计' ).
+            CLEAR: gs_lkey_sum.
+            gs_lkey_sum-prkey = gs_x011p-prkey.
+            IF gs_x011q-txt45 CS '总计' OR gs_x011q-txt45 EQ '负债合计'.
+              gs_lkey_sum-xflag = 'X'.
+            ENDIF.
+            APPEND gs_lkey_sum TO gt_lkey_sum.
+          ENDIF.
+        ENDIF.
+
+        LOOP AT lt_i011z INTO gs_i011z WHERE ergso EQ gs_x011p-ergsl
+                                          OR erghb EQ gs_x011p-ergsl.
+          r_racct-low = gs_i011z-vonkt.
+          r_racct-high = gs_i011z-bilkt.
+          APPEND r_racct.
+          APPEND gs_i011z TO gt_i011z.
+        ENDLOOP.
+
+      ENDLOOP.
+    ENDIF.
+
+  ENDLOOP.
+
+  DELETE gt_x011p WHERE stufe EQ '01'.
+
+  DATA: lv_tabix1 TYPE sy-tabix,
+        lv_tabix2 TYPE sy-tabix.
+  DATA: lv_line TYPE sy-tabix.
+
+  SORT lt_x011p_1 BY prkey.
+  SORT lt_x011p_2 BY prkey.
+
+  DESCRIBE TABLE lt_x011p_1 LINES lv_tabix1.
+  DESCRIBE TABLE lt_x011p_2 LINES lv_tabix2.
+
+  IF lv_tabix1 > lv_tabix2.
+    lv_line = lv_tabix1 - lv_tabix2.
+    DO lv_line TIMES.
+      IF lv_tabix2 IS NOT INITIAL.
+        INSERT INITIAL LINE INTO lt_x011p_2 INDEX lv_tabix2.
+      ELSE.
+        INSERT INITIAL LINE INTO lt_x011p_2 INDEX 1.
+      ENDIF.
+    ENDDO.
+  ELSEIF lv_tabix1 < lv_tabix2.
+    lv_line = lv_tabix2 - lv_tabix1.
+    DO lv_line TIMES.
+      IF lv_tabix1 IS NOT INITIAL.
+        INSERT INITIAL LINE INTO lt_x011p_1 INDEX lv_tabix1.
+      ELSE.
+        INSERT INITIAL LINE INTO lt_x011p_1 INDEX 1.
+      ENDIF.
+    ENDDO.
+  ELSE.
+  ENDIF.
+
+  DATA: lv_times TYPE sy-tabix,
+        lv_space TYPE char2.
+
+  lv_space = '　　'.
+
+  LOOP AT lt_x011p_1 INTO ls_x011p_1.
+    READ TABLE lt_x011p_2 INTO ls_x011p_2 INDEX sy-tabix.
+    CLEAR: gs_out.
+    gs_out-prkey_1 = ls_x011p_1-prkey.
+    gs_out-prkey_2 = ls_x011p_2-prkey.
+
+    READ TABLE gt_x011q INTO gs_x011q WITH KEY ergsl = ls_x011p_1-ergsl.
+    IF sy-subrc EQ 0.
+      CLEAR: lv_times.
+      IF gs_x011q-txt45 CS '合计'.
+        lv_times = '2'.
+      ELSEIF gs_x011q-txt45 CS '总计'.
+        lv_times = '3'.
+      ELSE.
+        IF ls_x011p_1-stufe EQ '3'.
+          lv_times = '1'.
+        ENDIF.
+      ENDIF.
+      gs_out-txt45_1 = gs_x011q-txt45.
+      DO lv_times TIMES.
+        CONCATENATE lv_space gs_out-txt45_1 INTO gs_out-txt45_1.
+      ENDDO.
+    ENDIF.
+
+    READ TABLE gt_x011q INTO gs_x011q WITH KEY ergsl = ls_x011p_2-ergsl.
+    IF sy-subrc EQ 0.
+      CLEAR: lv_times.
+      IF gs_x011q-txt45 CS '合计'.
+        lv_times = '2'.
+      ELSEIF gs_x011q-txt45 CS '总计'.
+        lv_times = '3'.
+      ELSE.
+        IF ls_x011p_2-stufe EQ '3'.
+          lv_times = '1'.
+        ENDIF.
+      ENDIF.
+      gs_out-txt45_2 = gs_x011q-txt45.
+      DO lv_times TIMES.
+        CONCATENATE lv_space gs_out-txt45_2 INTO gs_out-txt45_2.
+      ENDDO.
+    ENDIF.
+
+    APPEND gs_out TO gt_out.
+  ENDLOOP.
+
+
+  DEFINE add_summation.
+    gt_summation-ergsl = &1.
+    gt_summation-ergsl_item = &2.
+    gt_summation-sign = &3.
+    read table lt_x011p into ls_x011p with key ergsl = &1.
+    if sy-subrc = 0.
+      gt_summation-prkey = ls_x011p-prkey.
+    endif.
+    read table lt_x011p into ls_x011p with key ergsl = &2.
+    if sy-subrc = 0.
+      gt_summation-prkey_item = ls_x011p-prkey.
+    endif.
+    if gt_summation-prkey is not initial and gt_summation-prkey_item is not initial.
+      append gt_summation.
+    endif.
+  END-OF-DEFINITION.
+
+  add_summation: '1248' '1122' '+',
+                 '1248' '1124' '+',
+                 '1248' '1125' '+',
+                 '1248' '124101' '+',
+
+                 '1472' '1401' '+',
+                 '1472' '1471' '+',
+
+                 '1499' '1001' '+',
+                 '1499' '1101' '+',
+                 '1499' '1121' '+',
+                 '1499' '1248' '+',
+                 '1499' '1123' '+',
+                 '1499' '1132' '+',
+                 '1499' '1131' '+',
+                 '1499' '1221' '+',
+                 '1499' '1472' '+',
+                 '1499' '1490' '+',
+                 '1499' '1492' '+',
+                 '1499' '1491' '+',
+
+                 '1503' '1501' '+',
+                 '1503' '1502' '+',
+
+                 '1506' '1504' '+',
+                 '1506' '1505' '+',
+
+                 '1509' '1507' '+',
+                 '1509' '1508' '+',
+
+                 '1512' '1510' '+',
+                 '1512' '1511' '+',
+
+                 '1515' '1513' '+',
+                 '1515' '1514' '+',
+
+                 '1599' '1503' '+',
+                 '1599' '1506' '+',
+                 '1599' '1509' '+',
+                 '1599' '1512' '+',
+                 '1599' '1515' '+',
+
+                 '1605' '1601' '+',
+                 '1605' '1602' '+',
+                 '1605' '1604' '+',
+
+                 '1699' '1605' '+',
+                 '1699' '1606' '+',
+                 '1699' '1607' '+',
+                 '1699' '1608' '+',
+                 '1699' '1609' '+',
+                 '1699' '1610' '+',
+
+                 '1704' '1701' '+',
+                 '1704' '1702' '+',
+                 '1704' '1703' '+',
+
+                 '1708' '1706' '+',
+                 '1708' '1707' '+',
+
+                 '17' '1704' '+',
+                 '17' '1705' '+',
+                 '17' '1708' '+',
+
+                 '30' '1499' '+',
+                 '30' '1599' '+',
+                 '30' '1699' '+',
+                 '30' '17' '+',
+                 '30' '18' '+',
+                 '30' '19' '+',
+                 '30' '20' '+'.
+
+  add_summation: '40' '2001' '+',
+                 '40' '2002' '+',
+                 '40' '2003' '+',
+                 '40' '2004' '+',
+                 '40' '2005' '+',
+                 '40' '2006' '+',
+                 '40' '2007' '+',
+                 '40' '2008' '+',
+                 '40' '2009' '+',
+                 '40' '2010' '+',
+                 '40' '2011' '+',
+                 '40' '2012' '+',
+                 '40' '2013' '+',
+                 '40' '2014' '+',
+
+                 '42' '2501' '+',
+                 '42' '2502' '+',
+                 '42' '2503' '+',
+                 '42' '2504' '+',
+                 '42' '2505' '+',
+                 '42' '2506' '+',
+                 '42' '2507' '+',
+                 '42' '2508' '+',
+                 '42' '2509' '+',
+
+                 '09' '051' '+',
+                 '09' '052' '+',
+                 '09' '053' '+',
+                 '09' '054' '+',
+                 '09' '08' '+',
+
+                 '00' '40' '+',
+                 '00' '42' '+',
+                 '00' '09' '+'.
+
+
+ENDFORM. " FRM_GET_VERSION
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_get_data.
+
+  DATA: lv_hslvt1 TYPE hslvt12,
+        lv_hslvt2 TYPE hslvt12.
+
+  DATA: lv_ergsl TYPE rf011p-ergsl.
+
+  DATA: lv_flag TYPE char1.
+
+  DATA: lv_prkey TYPE rf011p-prkey VALUE '00000000000000000000'.
+  DATA: lv_prkey2 TYPE rf011p-prkey VALUE '00000000000000000000'.
+
+  DATA: lv_fname TYPE fieldname.
+  DATA: lv_fname1 TYPE fieldname,
+        lv_fname2 TYPE fieldname.
+
+  FIELD-SYMBOLS: <fs1>, <fs2>.
+
+  SELECT  ryear
+          drcrk
+          racct
+          rbukrs
+          rcntr
+          SUM( hslvt )
+          SUM( hsl01 )
+          SUM( hsl02 )
+          SUM( hsl03 )
+          SUM( hsl04 )
+          SUM( hsl05 )
+          SUM( hsl06 )
+          SUM( hsl07 )
+          SUM( hsl08 )
+          SUM( hsl09 )
+          SUM( hsl10 )
+          SUM( hsl11 )
+          SUM( hsl12 )
+          SUM( hsl13 )
+          SUM( hsl14 )
+          SUM( hsl15 )
+          SUM( hsl16 )
+    INTO TABLE gt_faglflext
+    FROM faglflext
+    WHERE ryear EQ p_ryear
+      AND rldnr  =  '0L'
+      AND rbukrs =  p_rbukrs
+      AND racct IN r_racct
+      AND prctr IN s_prctr
+    GROUP BY ryear drcrk racct rbukrs rcntr.
+  IF sy-subrc EQ 0.
+
+    LOOP AT gt_faglflext INTO gs_faglflext.
+      CLEAR: gs_out, lv_hslvt1, lv_hslvt2.
+
+      PERFORM frm_get_value USING gs_faglflext p_lfmon 'X'
+                           CHANGING lv_hslvt1 lv_hslvt2.
+
+      LOOP AT gt_i011z INTO gs_i011z WHERE bilkt >= gs_faglflext-racct
+                                        AND vonkt <= gs_faglflext-racct.
+        IF gs_faglflext-drcrk = 'S'.
+          CHECK gs_i011z-ergso IS NOT INITIAL.
+          lv_ergsl = gs_i011z-ergso.
+        ELSE.
+          CHECK gs_i011z-erghb IS NOT INITIAL.
+          lv_ergsl = gs_i011z-erghb.
+        ENDIF.
+
+        READ TABLE gt_x011p INTO gs_x011p WITH KEY ergsl = lv_ergsl.
+        IF sy-subrc EQ 0.
+          lv_prkey(2) = gs_x011p-prkey(2).
+
+          READ TABLE gt_lkey INTO gs_lkey WITH KEY prkey = lv_prkey.
+          IF sy-subrc EQ 0.
+            CONCATENATE 'PRKEY' gs_lkey-xflag INTO lv_fname SEPARATED BY '_'.
+
+            IF gs_lkey-xflag = '2'.
+              lv_hslvt1 = - lv_hslvt1.
+              lv_hslvt2 = - lv_hslvt2.
+            ENDIF.
+
+            lv_prkey2(6) = gs_x011p-prkey(6).
+            READ TABLE gt_out ASSIGNING <fs_out> WITH KEY (lv_fname) = lv_prkey2. "gs_x011p-prkey.
+            IF sy-subrc EQ 0.
+              CONCATENATE 'HSLVT' gs_lkey-xflag INTO lv_fname1 SEPARATED BY '_'.
+              CONCATENATE 'HSLSUM' gs_lkey-xflag INTO lv_fname2 SEPARATED BY '_'.
+              ASSIGN COMPONENT lv_fname1 OF STRUCTURE <fs_out> TO <fs1>.
+              ASSIGN COMPONENT lv_fname2 OF STRUCTURE <fs_out> TO <fs2>.
+
+              ADD lv_hslvt1 TO <fs1>.
+              ADD lv_hslvt2 TO <fs2> .
+            ENDIF.
+
+            CLEAR: lv_flag.
+            LOOP AT gt_lkey_sum INTO gs_lkey_sum WHERE prkey > gs_x011p-prkey.
+
+              CHECK gs_lkey_sum-prkey(2) EQ gs_x011p-prkey(2).
+              CHECK gs_lkey_sum-xflag EQ 'X' OR lv_flag IS INITIAL.
+              IF lv_flag IS INITIAL AND gs_lkey_sum-xflag IS INITIAL.
+                lv_flag = 'X'.
+              ENDIF.
+
+              READ TABLE gt_out ASSIGNING <fs_out> WITH KEY (lv_fname) = gs_lkey_sum-prkey.
+              IF sy-subrc EQ 0.
+                CONCATENATE 'HSLVT' gs_lkey-xflag INTO lv_fname1 SEPARATED BY '_'.
+                CONCATENATE 'HSLSUM' gs_lkey-xflag INTO lv_fname2 SEPARATED BY '_'.
+                ASSIGN COMPONENT lv_fname1 OF STRUCTURE <fs_out> TO <fs1>.
+                ASSIGN COMPONENT lv_fname2 OF STRUCTURE <fs_out> TO <fs2>.
+                ADD lv_hslvt1 TO <fs1>.
+                ADD lv_hslvt2 TO <fs2> .
+              ENDIF.
+
+            ENDLOOP.
+          ENDIF.
+
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+  ENDIF.
+
+  DATA: lt_out LIKE LINE OF gt_out OCCURS 0 WITH HEADER LINE.
+
+  LOOP AT gt_out INTO gs_out.
+    READ TABLE gt_summation WITH KEY prkey = gs_out-prkey_1.
+    IF sy-subrc = 0.
+      CLEAR: gs_out-hslvt_1,
+             gs_out-hslsum_1.
+    ENDIF.
+
+    READ TABLE gt_summation WITH KEY prkey = gs_out-prkey_2.
+    IF sy-subrc = 0.
+      CLEAR: gs_out-hslvt_2,
+             gs_out-hslsum_2.
+    ENDIF.
+    MODIFY gt_out FROM gs_out.
+  ENDLOOP.
+
+  LOOP AT gt_out INTO gs_out.
+    lt_out[] = gt_out[].
+    LOOP AT gt_summation WHERE prkey = gs_out-prkey_1.
+      READ TABLE lt_out WITH KEY prkey_1 = gt_summation-prkey_item.
+      IF sy-subrc = 0.
+        IF gt_summation-sign = '-'.
+          SUBTRACT lt_out-hslvt_1 FROM gs_out-hslvt_1.
+          SUBTRACT lt_out-hslsum_1 FROM gs_out-hslsum_1.
+        ELSE.
+          ADD lt_out-hslvt_1 TO gs_out-hslvt_1.
+          ADD lt_out-hslsum_1 TO gs_out-hslsum_1.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+
+    LOOP AT gt_summation WHERE prkey = gs_out-prkey_2.
+      READ TABLE lt_out WITH KEY prkey_2 = gt_summation-prkey_item.
+      IF sy-subrc = 0.
+        IF gt_summation-sign = '-'.
+          SUBTRACT lt_out-hslvt_2 FROM gs_out-hslvt_2.
+          SUBTRACT lt_out-hslsum_2 FROM gs_out-hslsum_2.
+        ELSE.
+          ADD lt_out-hslvt_2 TO gs_out-hslvt_2.
+          ADD lt_out-hslsum_2 TO gs_out-hslsum_2.
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+    MODIFY gt_out FROM gs_out.
+  ENDLOOP.
+
+ENDFORM. " FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_VALUE
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_GS_FAGLFLEXT  text
+*      -->P_P_LFMON  text
+*      <--P_GS_ALV_R_HSLVT  text
+*----------------------------------------------------------------------*
+FORM frm_get_value USING ps_faglflext TYPE ty_faglflext
+                             pv_lfmon TYPE lfmon
+                             pv_flag TYPE char1
+                    CHANGING pv_hslvt1 TYPE hslvt12
+                             pv_hslvt2 TYPE hslvt12.
+
+  FIELD-SYMBOLS: <hslvt> TYPE hslvt12.
+  DATA: lv_fields TYPE char30.
+  DATA: lv_num(2) TYPE n.
+  DATA: lv_lfmon TYPE lfmon.
+
+  CLEAR: pv_hslvt1,pv_hslvt2.
+
+  pv_hslvt1 = ps_faglflext-hslvt.
+
+  IF pv_lfmon EQ '12'.
+    lv_lfmon = '16'.
+  ELSE.
+    lv_lfmon = pv_lfmon.
+  ENDIF.
+
+  CLEAR: lv_num.
+  pv_hslvt2 = gs_faglflext-hslvt.
+  DO lv_lfmon TIMES.
+    ADD 1 TO lv_num.
+    CONCATENATE 'HSL' lv_num INTO lv_fields.
+    ASSIGN COMPONENT lv_fields OF STRUCTURE ps_faglflext TO <hslvt>.
+    pv_hslvt2 = pv_hslvt2 + <hslvt>.
+  ENDDO.
+
+ENDFORM. " FRM_GET_VALUE
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_SET_LAYOUT
+*&---------------------------------------------------------------------*
+*       设置ALV布局信息
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_set_layout .
+
+  g_repid = sy-repid.                "当前程序
+  gs_layo-zebra = 'X'.               "斑马显示
+  gs_layo-cwidth_opt = 'X'.          "优化列宽
+
+ENDFORM. " frm_SET_LAYOUT
+*&---------------------------------------------------------------------*
+*&      Form  frm_SET_FIELDCAT
+*&---------------------------------------------------------------------*
+*       设置ALV输出字段信息
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_ref_fieldcat .
+
+  PERFORM frm_set_fields USING 'TXT45_1'  text-101.  "资产
+  PERFORM frm_set_fields USING 'HSLVT_1'  text-102.  "年初数
+  PERFORM frm_set_fields USING 'HSLSUM_1' text-103.  "本月数
+  PERFORM frm_set_fields USING 'TXT45_2'  text-104.  "负债和权益
+  PERFORM frm_set_fields USING 'HSLVT_2'  text-102.
+  PERFORM frm_set_fields USING 'HSLSUM_2' text-103.
+
+  CLEAR: gs_fcat.
+  gs_fcat-no_zero = 'X'.
+  MODIFY gt_fcat FROM gs_fcat TRANSPORTING no_zero
+                              WHERE fieldname CS 'HSL'.
+ENDFORM. " frm_REF_FIELDCAT
+*&---------------------------------------------------------------------*
+*&   Form FRM_SET_FIELDS
+*&---------------------------------------------------------------------*
+*    创建ALV列字段
+*----------------------------------------------------------------------*
+*   -->L_FIELDNAME  text
+*   -->L_REPTEXT  text
+*----------------------------------------------------------------------*
+FORM frm_set_fields USING r_fieldname TYPE lvc_fname
+                          r_coltext  TYPE lvc_txtcol.
+  gs_fcat-fieldname = r_fieldname.
+  gs_fcat-coltext =   r_coltext.
+  APPEND gs_fcat TO gt_fcat.
+  CLEAR gs_fcat.
+
+ENDFORM. " frm_SET_FIELDS
+*&---------------------------------------------------------------------*
+*&      Form  frm_DISPLAY_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display_data .
+
+* 显示数据
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY_LVC'
+    EXPORTING
+      i_callback_program          = g_repid
+      i_callback_html_top_of_page = 'HTML_TOP_OF_PAGE'
+      i_save                      = 'A'
+      is_layout_lvc               = gs_layo
+      it_fieldcat_lvc             = gt_fcat
+    TABLES
+      t_outtab                    = gt_out
+    EXCEPTIONS
+      program_error               = 1
+      OTHERS                      = 2.
+  IF sy-subrc <> 0.
+    MESSAGE ID sy-msgid TYPE sy-msgty NUMBER sy-msgno
+            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+  ENDIF.
+
+ENDFORM. " frm_DISPLAY_DATA
+
+*&---------------------------------------------------------------------*
+*&      Form  html_top_of_page
+*&---------------------------------------------------------------------*
+FORM html_top_of_page USING document TYPE REF TO cl_dd_document.
+  DATA: text TYPE sdydo_text_element.
+  text =  '资产负债表'.
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = text
+      sap_style = 'HEADING'.
+  CALL METHOD document->new_line.
+  CALL METHOD document->new_line.
+  text = '公司: '.
+
+  CALL METHOD document->add_text
+    EXPORTING
+      text         = text
+      sap_emphasis = 'STRONG'.
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+  SELECT SINGLE butxt FROM t001 INTO text WHERE bukrs EQ p_rbukrs.
+
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = text
+      sap_style = 'KEY'.
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 10.
+
+  CALL METHOD document->new_line.
+  text = '期间: '.
+  CALL METHOD document->add_text
+    EXPORTING
+      text         = text
+      sap_emphasis = 'STRONG'.
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+  CONCATENATE p_ryear p_lfmon INTO text.
+
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = text
+      sap_style = 'KEY'.
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 10.
+
+  CALL METHOD document->new_line.
+  text = '单位: '.
+  CALL METHOD document->add_text
+    EXPORTING
+      text         = text
+      sap_emphasis = 'STRONG'.
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 2.
+
+  SELECT SINGLE waers FROM t001 INTO text WHERE bukrs EQ p_rbukrs.
+
+  CALL METHOD document->add_text
+    EXPORTING
+      text      = text
+      sap_style = 'KEY'.
+  CALL METHOD document->add_gap
+    EXPORTING
+      width = 10.
+
+ENDFORM. "HTML_TOP_OF_PAGE
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择条件
+* 101 资产
+* 102 年初余额
+* 103 期末余额
+* 104 负债和所有者权益（或股东权益）
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_LFMON D       .
+* P_RBUKRS D       .
+* P_RYEAR D       .
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: ZPPMSG
+*003   没有取得符合的数据，请确认您的输入条件
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择条件
+* 101 资产
+* 102 年初数
+* 103 本月数
+* 104 负债和权益
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_LFMON         会计期间
+* P_RBUKRS         公司代码
+* P_RYEAR         会计年度
+* S_PRCTR D       .
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: ZYR
+*999   &1 &2 &3 &4
+Extracted by Mass Download version 1.4.3 - E.G.Mellodew. 1998-2016. Sap Release 731

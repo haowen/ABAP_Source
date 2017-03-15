@@ -1,0 +1,683 @@
+
+Code listing for: ZFIRPR052
+
+Description: 利润表
+
+REPORT zfirpr052 MESSAGE-ID zyr.
+
+*----------------------------------------------------------------------*
+* Type
+*----------------------------------------------------------------------*
+TABLES: sscrfields,faglflext.
+
+TYPE-POOLS icon.
+
+TYPES: BEGIN OF typ_fagl,
+         ergsl LIKE fagl_011zc-ergsl,   "项目号
+         vonkt LIKE fagl_011zc-vonkt,   "科目下限
+         biskt LIKE fagl_011zc-biskt,   "科目上限
+         vonfb LIKE fagl_011fc-vonfb,  "功能范围从
+         bisfb LIKE fagl_011fc-bisfb,  "功能范围到
+         sign LIKE fagl_011pc-sign,
+         lin TYPE i,                    "行号
+         colvt TYPE i,                  "本期数的列号
+         hslvt TYPE glt0-hslvt,         "本期数
+         colmt TYPE i,                  "本年累计数的列号
+         hslmt TYPE glt0-hslvt,         "本年累计数
+         collt TYPE i,                  "去年同期累计数的列号
+         hsllt TYPE glt0-hslvt,         "去年同期累计
+       END OF typ_fagl.
+
+TYPES: BEGIN OF typ_list,
+         ergsl LIKE fagl_011zc-ergsl,   "项目号
+         lin TYPE i,
+         colvt TYPE i,
+         hslvt TYPE glt0-hslvt,
+         colmt TYPE i,
+         hslmt TYPE glt0-hslvt,
+         collt TYPE i,
+         hsllt TYPE glt0-hslvt,
+       END OF typ_list.
+*----------------------------------------------------------------------*
+* Constants
+*----------------------------------------------------------------------*
+CONSTANTS: c_field(12) TYPE c VALUE 'GTH_GLT0-HSL',
+           c_count TYPE i VALUE 1.
+*---模板文件名
+CONSTANTS: cs_objid TYPE wwwdata-objid VALUE 'ZFIR052'.
+*----------------------------------------------------------------------*
+* Data
+*----------------------------------------------------------------------*
+DATA: gtd_fagl TYPE TABLE OF typ_fagl,
+      gth_fagl TYPE typ_fagl,
+      gtd_list TYPE TABLE OF typ_list,
+      gth_list TYPE typ_list.
+
+DATA: gtd_glt0 TYPE TABLE OF faglflext,
+      gth_glt0 TYPE faglflext.
+
+DATA: gwk_ryear_last TYPE glt0-ryear.
+
+*----------------------------------------------------------------------*
+* Defination
+*----------------------------------------------------------------------*
+DEFINE covert.
+
+  gth_fagl-ergsl = &1.        "项目号(手工定义的)
+  gth_fagl-vonkt = &2.        "科目下限
+  gth_fagl-biskt = &3.        "科目上限
+  gth_fagl-vonfb = &4.        "功能范围从
+  gth_fagl-bisfb = &5.        "功能范围到
+  gth_fagl-sign = &6.          "+/-号标志
+  gth_fagl-lin = &7.          "项目号对应模板的行号
+  gth_fagl-colvt = '3'.        "项目号对应模板中本月值的列号
+  append gth_fagl to gtd_fagl.
+  clear gth_fagl.
+
+END-OF-DEFINITION.
+
+*----------------------------------------------------------------------*
+* SELECTION SCREEN
+*----------------------------------------------------------------------*
+SELECTION-SCREEN: FUNCTION KEY 1. " download template
+
+SELECTION-SCREEN BEGIN OF BLOCK blk1 WITH FRAME TITLE text-001.
+PARAMETERS : p_bukrs LIKE glt0-bukrs. " DEFAULT '3300' OBLIGATORY .
+PARAMETERS : p_ryear LIKE glt0-ryear OBLIGATORY DEFAULT sy-datum+0(4).
+PARAMETERS : p_perid LIKE bkpf-monat OBLIGATORY DEFAULT sy-datum+4(2).
+SELECT-OPTIONS : s_prctr FOR faglflext-prctr .
+PARAMETERS : p_fname TYPE string DEFAULT text-f01 OBLIGATORY.
+
+SELECTION-SCREEN END OF BLOCK blk1.
+
+*----------------------------------------------------------------------*
+* Include
+*----------------------------------------------------------------------*
+INCLUDE ole2incl. "FOR OLE
+include zfirpr052_form01. "FI通用FORM
+
+*----------------------------------------------------------------------*
+* INITIALIZATION
+*----------------------------------------------------------------------*
+INITIALIZATION.
+  PERFORM sub_init.
+  PERFORM sub_covert.
+*----------------------------------------------------------------------*
+* AT SELECTION SCREEN
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN.
+  CASE sscrfields-ucomm.
+    WHEN 'FC01'.
+      PERFORM sub_download_temp USING cs_objid.
+    WHEN OTHERS.
+
+  ENDCASE.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR p_fname.
+  PERFORM sub_get_file CHANGING p_fname.
+
+*----------------------------------------------------------------------*
+* START-OF-SELECTION
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+  AUTHORITY-CHECK OBJECT 'F_BKPF_BUK'
+    ID 'BUKRS' FIELD p_bukrs.
+  IF sy-subrc <> 0.
+    MESSAGE i398(00) WITH '无公司代码' p_bukrs '的权限!' .
+    STOP.
+  ENDIF.
+  DATA: BEGIN OF z_prctr OCCURS 0,
+       prctr LIKE cepc-prctr,   "
+     END OF z_prctr.
+  DATA:l_prctr(16).
+  REFRESH z_prctr.
+  SELECT prctr INTO TABLE z_prctr FROM cepc WHERE prctr IN s_prctr.
+  LOOP AT z_prctr.
+    CLEAR l_prctr.
+    CONCATENATE 'PC1000' z_prctr-prctr INTO l_prctr.
+    CONDENSE l_prctr NO-GAPS.
+    AUTHORITY-CHECK OBJECT 'K_PCA'
+                   ID 'RESPAREA' FIELD l_prctr
+                   ID 'CO_ACTION' DUMMY
+                   ID 'KSTAR'     DUMMY.
+    IF sy-subrc NE 0.
+      MESSAGE i398(00) WITH '无利润中心' z_prctr-prctr '的权限!' .
+      STOP.
+    ENDIF.
+  ENDLOOP.
+  PERFORM sub_check_file USING p_fname.   "检查文件是否存在
+  PERFORM sub_get_data.
+  PERFORM sub_process_data.
+  PERFORM sub_display_data.
+
+*&---------------------------------------------------------------------*
+*&      Form  SUB_INIT
+*&---------------------------------------------------------------------*
+*       初始化屏幕
+*----------------------------------------------------------------------*
+FORM sub_init .
+  DATA: lth_functxt TYPE smp_dyntxt.
+*- Set the button info for Upload process
+  CLEAR lth_functxt.
+  lth_functxt-icon_id   = icon_export.
+  lth_functxt-icon_text = text-002.
+  lth_functxt-quickinfo = text-002.
+  sscrfields-functxt_01 = lth_functxt.
+
+ENDFORM. " SUB_INIT
+*&---------------------------------------------------------------------*
+*&      Form  SUB_GET_DATA
+*&---------------------------------------------------------------------*
+*       取出数据，并计算出年初及期末值
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM sub_get_data .
+
+  gwk_ryear_last = p_ryear - 1.
+
+* 取科目余额(新总帐）
+  SELECT * INTO CORRESPONDING FIELDS OF TABLE gtd_glt0
+  FROM faglflext
+  WHERE ( ryear = p_ryear OR ryear = gwk_ryear_last )
+  AND   rbukrs = p_bukrs
+  AND   prctr IN s_prctr
+  AND   rrcty = '0'.
+
+*  IF p_perid = '01'.
+*    lwk_ryear = p_ryear - 1.  "上年
+*    lwk_rperid = '12'.
+*
+*    SELECT *
+*    APPENDING CORRESPONDING FIELDS OF TABLE gtd_glt0
+*     FROM faglflext
+*     WHERE ryear = lwk_ryear
+*     AND   rbukrs = p_bukrs.
+*
+*  ELSE.
+*    lwk_ryear = p_ryear.
+*    lwk_rperid = p_perid - 1.
+*
+*  ENDIF.
+
+  IF gtd_glt0 IS INITIAL.
+    MESSAGE i999 WITH '选择范围内无数据，请重新选择！'.
+    STOP.
+  ENDIF.
+
+
+ENDFORM. " SUB_GET_DATA
+*&---------------------------------------------------------------------*
+*&      Form  SUB_PROCESS_DATA
+*&---------------------------------------------------------------------*
+* 计算利润表项目的本期数，本年累计数，去年同期累计数
+*----------------------------------------------------------------------*
+FORM sub_process_data .
+
+  DATA: lwk_text(4) TYPE c,
+        lwk_monat(2) TYPE n,
+        lwk_lin(3) TYPE n,
+        lwk_colvt(3) TYPE n,
+        lwk_field(30) TYPE c,
+        lwk_rperid TYPE glt0-rpmax,
+        lwk_ryear TYPE glt0-ryear,
+        lwk_hslvt LIKE glt0-hslvt,
+        lwk_hsllt LIKE glt0-hslvt,
+        lwk_hslmt LIKE glt0-hslvt.
+
+  FIELD-SYMBOLS: <lwk_value>.
+
+  SORT gtd_fagl BY ergsl.
+  SORT gtd_glt0 BY ryear.
+
+  LOOP AT gtd_fagl INTO gth_fagl.
+*    CONDENSE gth_fagl-ergsl NO-GAPS.
+*    SPLIT gth_fagl-ergsl AT text-c07 INTO lwk_text
+*                                          lwk_lin
+*                                          lwk_colvt.
+*    gth_fagl-lin = lwk_lin.
+*    gth_fagl-colvt = lwk_colvt.
+*    IF gth_fagl-lin = 0 OR gth_fagl-colvt = 0.
+*      CONTINUE.
+*    ENDIF.
+
+
+* 默认本年累计数的输出列是当月数输出列的后c_count列
+    gth_fagl-colmt = gth_fagl-colvt + c_count.
+
+* 默认去年同期累计数的输出列是本期累计数输出列的后c_count列
+    gth_fagl-collt = gth_fagl-colmt + c_count.
+
+**-------------总账科目的判断
+    IF NOT gth_fagl-biskt IS INITIAL.
+      LOOP AT gtd_glt0 INTO gth_glt0 WHERE rldnr = '0L'
+                                        AND racct <= gth_fagl-biskt
+                                        AND racct >= gth_fagl-vonkt.
+        lwk_monat = p_perid.
+
+        IF gth_fagl-vonfb IS NOT INITIAL.
+          IF gth_glt0-rfarea <> gth_fagl-vonfb.
+            CONTINUE.
+          ENDIF.
+        ENDIF.
+
+        IF gth_glt0-ryear = p_ryear.
+          CLEAR lwk_field.
+          CONCATENATE c_field lwk_monat INTO lwk_field.
+          CONDENSE lwk_field NO-GAPS.
+          ASSIGN (lwk_field) TO <lwk_value>.
+          gth_fagl-hslvt = gth_fagl-hslvt + <lwk_value>.  "当期值
+        ENDIF.
+
+        WHILE lwk_monat > '00'.
+          CLEAR lwk_field.
+          CONCATENATE c_field lwk_monat INTO lwk_field.
+          CONDENSE lwk_field NO-GAPS.
+          ASSIGN (lwk_field) TO <lwk_value>.
+          IF sy-subrc = 0.
+            IF gth_glt0-ryear = p_ryear.
+              gth_fagl-hslmt = gth_fagl-hslmt + <lwk_value>.
+
+            ELSEIF gth_glt0-ryear = gwk_ryear_last.
+              gth_fagl-hsllt = gth_fagl-hsllt + <lwk_value>.
+            ENDIF.
+
+          ENDIF.
+          lwk_monat = lwk_monat - 1.
+        ENDWHILE.
+
+        gth_fagl-hslmt = gth_fagl-hslmt + gth_glt0-hslvt.  "当期累计期末值
+        gth_fagl-hsllt = gth_fagl-hsllt + gth_glt0-hslvt.   "去年同期累计值
+
+      ENDLOOP.
+
+    ENDIF.
+
+*-------转置符号
+    IF gth_fagl-sign = 'X'.
+      gth_fagl-hslmt = 0 - gth_fagl-hslmt.
+      gth_fagl-hsllt = 0 - gth_fagl-hsllt.
+      gth_fagl-hslvt = 0 - gth_fagl-hslvt.
+    ENDIF.
+
+    MODIFY gtd_fagl FROM gth_fagl TRANSPORTING lin colvt hslvt collt hsllt colmt hslmt.
+
+    lwk_hslmt = lwk_hslmt + gth_fagl-hslmt.
+    lwk_hsllt = lwk_hsllt + gth_fagl-hsllt.
+    lwk_hslvt = lwk_hslvt + gth_fagl-hslvt.
+
+    MOVE-CORRESPONDING gth_fagl TO gth_list.
+
+    AT END OF ergsl.
+      gth_list-hslvt = lwk_hslvt.
+      gth_list-hsllt = lwk_hsllt.
+      gth_list-hslmt = lwk_hslmt.
+      APPEND gth_list TO gtd_list.
+      CLEAR: lwk_hslmt,
+             lwk_hsllt,
+             lwk_hslvt.
+    ENDAT.
+    CLEAR:  gth_fagl,
+            gth_list,
+            gth_glt0,
+            lwk_text,
+            lwk_lin,
+            lwk_monat,
+            lwk_colvt,
+            lwk_field.
+  ENDLOOP.
+
+  PERFORM sub_special_change.
+
+  IF gtd_list IS INITIAL.
+    MESSAGE i999 WITH '选择范围内无数据，请重新选择！'.
+    STOP.
+  ENDIF.
+
+  FREE: lwk_text,
+        lwk_lin,
+        lwk_monat,
+        lwk_colvt,
+        lwk_field,
+        lwk_rperid,
+        lwk_ryear,
+        lwk_hslmt,
+        lwk_hsllt,
+        lwk_hslvt.
+ENDFORM. " SUB_PROCESS_DATA
+*&---------------------------------------------------------------------*
+*&      Form  SUB_SPECIAL_CHANGE
+*&---------------------------------------------------------------------*
+**----(1)
+*       针对15行营业利润的特殊处理
+*       15=5-6-7-8-9-10-11+12+13
+**----(2)
+*       针对19行利润总额的特殊处理
+*       19=15+16-17
+**----(3)
+*       针对21行净利润的特殊处理
+*       21=19-20
+*----------------------------------------------------------------------*
+FORM sub_special_change .
+
+*11	15=5-6-7-8-9-10-11+12+13
+*15	19=15+16-17
+*17	21=19-20
+
+
+  LOOP AT gtd_list INTO gth_list WHERE lin = '5'
+        OR lin = '12'  OR lin = '13' OR lin = '16'
+        OR lin = '27'  OR lin = '29'.
+    gth_list-hslmt = 0 - gth_list-hslmt.
+    gth_list-hslvt = 0 - gth_list-hslvt.
+    gth_list-hsllt = 0 - gth_list-hsllt.
+    MODIFY gtd_list FROM gth_list TRANSPORTING hslmt hslvt hsllt.
+  ENDLOOP.
+
+
+  DATA:    lwk_hslvt LIKE glt0-hslvt,
+      lwk_hslmt LIKE glt0-hslvt,
+      lwk_hsllt LIKE glt0-hslvt.
+
+**----(1)
+  LOOP AT gtd_list INTO gth_list WHERE lin = '5'
+        OR lin = '6'  OR lin = '7' OR lin = '8'
+        OR lin = '9'  OR lin = '10' OR lin = '11'
+        OR lin = '12'  OR lin = '13'.
+    IF gth_list-lin = '6' OR gth_list-lin = '7'
+    OR gth_list-lin = '8'  OR gth_list-lin = '9'
+    OR gth_list-lin = '10' OR gth_list-lin = '11'.
+      gth_list-hslmt = 0 - gth_list-hslmt.
+      gth_list-hslvt = 0 - gth_list-hslvt.
+      gth_list-hsllt = 0 - gth_list-hsllt.
+    ENDIF.
+    lwk_hslmt =  gth_list-hslmt + lwk_hslmt.
+    lwk_hslvt =  gth_list-hslvt + lwk_hslvt.
+    lwk_hsllt =  gth_list-hsllt + lwk_hsllt.
+  ENDLOOP.
+
+  LOOP AT gtd_list INTO gth_list WHERE lin = '15'.
+    gth_list-hslmt  = gth_list-hslmt + lwk_hslmt.
+    gth_list-hslvt = gth_list-hslvt + lwk_hslvt.
+    gth_list-hsllt = gth_list-hsllt + lwk_hsllt.
+    MODIFY gtd_list FROM gth_list TRANSPORTING hslmt hslvt hsllt.
+  ENDLOOP.
+
+**----(2)
+  CLEAR: lwk_hslmt,
+             lwk_hslvt,
+             lwk_hsllt.
+  LOOP AT gtd_list INTO gth_list WHERE  lin = '15'
+        OR lin = '16'  OR lin = '17' .
+    IF gth_list-lin = '17'.
+      gth_list-hslmt = 0 - gth_list-hslmt.
+      gth_list-hslvt = 0 - gth_list-hslvt.
+      gth_list-hsllt = 0 - gth_list-hsllt.
+    ENDIF.
+    lwk_hslmt =  gth_list-hslmt + lwk_hslmt.
+    lwk_hslvt =  gth_list-hslvt + lwk_hslvt.
+    lwk_hsllt =  gth_list-hsllt + lwk_hsllt.
+  ENDLOOP.
+
+  LOOP AT gtd_list INTO gth_list WHERE lin = '19'.
+    gth_list-hslmt  = gth_list-hslmt + lwk_hslmt.
+    gth_list-hslvt = gth_list-hslvt + lwk_hslvt.
+    gth_list-hsllt = gth_list-hsllt + lwk_hsllt.
+    MODIFY gtd_list FROM gth_list TRANSPORTING hslmt hslvt hsllt.
+  ENDLOOP.
+
+**----(3)
+  CLEAR: lwk_hslmt,
+             lwk_hslvt,
+             lwk_hsllt.
+  LOOP AT gtd_list INTO gth_list WHERE lin = '19'
+        OR lin = '20'.
+    IF gth_list-lin = '20'.
+      gth_list-hslmt = 0 - gth_list-hslmt.
+      gth_list-hslvt = 0 - gth_list-hslvt.
+      gth_list-hsllt = 0 - gth_list-hsllt.
+    ENDIF.
+    lwk_hslmt =  gth_list-hslmt + lwk_hslmt.
+    lwk_hslvt =  gth_list-hslvt + lwk_hslvt.
+    lwk_hsllt =  gth_list-hsllt + lwk_hsllt.
+  ENDLOOP.
+
+  LOOP AT gtd_list INTO gth_list WHERE lin = '21'.
+    gth_list-hslmt  = gth_list-hslmt + lwk_hslmt.
+    gth_list-hslvt = gth_list-hslvt + lwk_hslvt.
+    gth_list-hsllt = gth_list-hsllt + lwk_hsllt.
+    MODIFY gtd_list FROM gth_list TRANSPORTING hslmt hslvt hsllt.
+  ENDLOOP.
+
+  CLEAR: lwk_hslmt,
+             lwk_hslvt,
+             lwk_hsllt.
+
+*  LOOP AT gtd_list INTO gth_list WHERE lin = '21'.
+*      gth_list-hslmt = 0 - gth_list-hslmt.
+*      gth_list-hslvt = 0 - gth_list-hslvt.
+*      gth_list-hsllt = 0 - gth_list-hsllt.
+*    MODIFY gtd_list FROM gth_list TRANSPORTING hslmt hslvt hsllt.
+*  ENDLOOP.
+
+ENDFORM. " SUB_SPECIAL_CHANGE
+*&---------------------------------------------------------------------*
+*&      Form  sub_display_data
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*
+*----------------------------------------------------------------------*
+FORM sub_display_data.
+  PERFORM sub_open_file USING p_fname.    "打开文件
+  PERFORM sub_write_cell.                 "输出数据
+ENDFORM. "sub_display_data
+
+*&---------------------------------------------------------------------*
+*&      Form  SUB_WRITE_CELL
+*&---------------------------------------------------------------------*
+*       输出至模板文件
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM sub_write_cell .
+  DATA: lwk_name(30) TYPE c,
+        lwk_text1(40) TYPE c,
+        lwk_text2(40) TYPE c.
+
+* 公司代码的中文描述
+  SELECT SINGLE butxt INTO lwk_name
+    FROM t001
+    WHERE bukrs = p_bukrs
+    AND spras = '1'.
+  CONCATENATE text-c03 lwk_name INTO lwk_text1.
+
+* 年月
+  CONCATENATE text-c08 p_ryear text-c01 p_perid text-c02 INTO lwk_text2.
+  CONDENSE: lwk_text1, lwk_text2 NO-GAPS.
+
+* 输出至抬头
+  PERFORM sub_fill_cell USING 3 1 lwk_text1.
+  PERFORM sub_fill_cell USING 3 2 lwk_text2.
+
+
+* 输出至相应的项目
+  SORT gtd_list BY ergsl.
+  LOOP AT gtd_list INTO gth_list.
+    PERFORM sub_fill_cell USING gth_list-lin
+                                gth_list-colvt
+                                gth_list-hslvt.
+    PERFORM sub_fill_cell USING gth_list-lin
+                                gth_list-colmt
+                                gth_list-hslmt.
+    PERFORM sub_fill_cell USING gth_list-lin
+                                gth_list-collt
+                                gth_list-hsllt.
+  ENDLOOP.
+
+  SET PROPERTY OF gwk_excel 'Visible' = 1.
+
+  FREE: lwk_name,
+        lwk_text1,
+        lwk_text2.
+
+  FREE OBJECT  gwk_excel.
+  FREE OBJECT  gwk_books.
+  FREE OBJECT  gwk_excel.
+  FREE OBJECT gwk_cell.
+
+
+ENDFORM. " SUB_WRITE_CELL
+
+*&---------------------------------------------------------------------*
+*&      Form  SUB_COVERT
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM sub_covert .
+  covert 1 '6001000000' '6001009999' '' '' '' '5'.
+  covert 1 '6051000000' '6051991999' '' '' '' '5'.
+  covert 2 '6401001000' '6401001999' '' '' '' '6'.
+  covert 2 '6402001000' '6402001999' '' '' '' '6'.
+  covert 3 '6403001000' '6403001999' '' '' '' '7'.
+*  covert 4 '6600000000' '6699999999' '1000' '1000' '' '8'.
+  covert 4 '6600000000' '6600024000' '1000' '1000' '' '8'.
+  covert 4 '6600024002' '6699999999' '1000' '1000' '' '8'.
+  covert 4 '6600024001' '6600024001' '' '' '' '8'.
+
+
+
+  covert 5 '6600000000' '6699999999' '2000' '2000' '' '9'.
+  covert 5 '6600000000' '6699999999' '4000' '4000' '' '9'.
+  covert 6 '6600000000' '6699999999' '5000' '5000' '' '10'.
+  covert 7 '' '' '' '' '' '11'.
+  covert 8 '' '' '' '' '' '12'.
+  covert 9 '6100000000' '6199999999' '' '' '' '13'.
+  covert 10 '' '' '' '' '' '14'.
+  covert 11 '' '' '' '' '' '15'.
+*  covert 12 '6301001000' '6301001005' '' '' '' '16'.
+*  covert 12 '6301001007' '6301001999' '' '' '' '16'.
+  covert 12 '6301001000' '6301001999' '' '' '' '16'.
+  covert 13 '6711001000' '6711001999' '' '' '' '17'.
+  covert 14 '' '' '' '' '' '18'.
+  covert 15 '' '' '' '' '' '19'.
+  covert 16 '6801001000' '6801001999' '' '' '' '20'.
+
+  covert 17 '' '' '' '' '' '21'.
+  covert 18 '' '' '' '' '' '22'.
+  covert 19 '' '' '' '' '' '23'.
+  covert 20 '' '' '' '' '' '24'.
+
+  covert 21 '6001000000' '6001009999' '' '' '' '27'.
+  covert 22 '6401001000' '6401001999' '' '' '' '28'.
+  covert 23 '6051000000' '6051991999' '' '' '' '29'.
+  covert 24 '6402001000' '6402001999' '' '' '' '30'.
+
+ENDFORM. " SUB_COVERT
+
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择范围
+* 002 下载利润表模板
+* C01 年
+* C02 月
+* C03 编制单位：
+* C04 FHW2
+* C05 PL_%
+* C06 利润表
+* C07 _
+* C08 日期：
+* F01 C:\
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_BUKRS D       .
+* P_FNAME         文件路径
+* P_PERID D       .
+* P_RYEAR D       .
+
+*MESSAGE TYPE ZFI001
+*001  选择范围内无数据，请重新选择！
+*002  打开模板文件&1时出错！
+*003  请使用[FSE2]在财务报表版本&1中维护&2对应的科目！
+*004  模板文件&1不存在，请使用[SWM0]加载!
+*005  模板文件&1下载失败，请与开发人员联系！
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择范围
+* 002 利润表模板
+* C01 年
+* C02 月
+* C03 单位名称：
+* C04 1000
+* C05 PL_%
+* C06 利润表
+* C07 _
+* C08
+* C09 日
+* F01 C:\
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_BUKRS         公司代码
+* P_FNAME         文件路径
+* P_PERID         报表期间
+* P_RYEAR         会计年度
+* S_PRCTR         利润中心
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: 00
+*398   & & & &
+*
+* Message class: ZFI001
+*001   选择范围内无数据，请重新选择！
+*002   打开模板文件&1时出错！
+*004   模板文件&1不存在，请使用[SWM0]加载!
+*005   模板文件&1下载失败，请与开发人员联系！
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择范围
+* 002 利润表模板
+* C01 年
+* C02 月
+* C03 单位名称：
+* C04 1000
+* C05 PL_%
+* C06 利润表
+* C07 _
+* C08 日期：
+* C09 日
+* F01 D:\
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_BUKRS D       .
+* P_FNAME         文件路径
+* P_PERID D       .
+* P_RYEAR D       .
+* S_PRCTR D       .
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: 00
+*398   & & & &
+*
+* Message class: ZYR
+*999   &1 &2 &3 &4
+Extracted by Mass Download version 1.4.3 - E.G.Mellodew. 1998-2016. Sap Release 731

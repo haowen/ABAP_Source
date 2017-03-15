@@ -1,0 +1,624 @@
+
+Code listing for: ZFIRPR049
+
+Description: 现金流量表及附表
+
+REPORT zfirpr049 MESSAGE-ID zyr.
+
+*----------------------------------------------------------------------*
+* Tables
+*----------------------------------------------------------------------*
+TABLES: bkpf,faglflext.
+
+*----------------------------------------------------------------------*
+* Declaration for Variables
+*----------------------------------------------------------------------*
+DATA: s_layout TYPE slis_layout_alv,
+      gt_fieldcat TYPE slis_t_fieldcat_alv WITH HEADER LINE.
+DATA: g_continue VALUE 'X'.
+
+*----------------------------------------------------------------------*
+* Declaration for Types
+*----------------------------------------------------------------------*
+TYPES: typ_range_racct TYPE RANGE OF faglflext-racct.
+
+TYPES: BEGIN OF typ_sum_lines,
+  zid(4),
+  zsign,
+END OF typ_sum_lines.
+
+*----------------------------------------------------------------------*
+* Declaration for Internal Tables
+*----------------------------------------------------------------------*
+
+DATA: BEGIN OF gt_result OCCURS 0,
+  zid(4),
+  zdesc(100),
+  zline(10),
+  bylj TYPE p LENGTH 16 DECIMALS 2,
+  bnlj TYPE p LENGTH 16 DECIMALS 2,
+END OF gt_result.
+
+DATA: BEGIN OF gt_condition OCCURS 0,
+  zid(4),
+  ztype,   " '' - 空；A - 按现金流量代码；B - 按科目； C - 计算
+  zz02 LIKE bseg-zz02,                     "A - 现金流量代码
+  r_racct TYPE typ_range_racct,            "B - 科目range
+  t_sum_line TYPE TABLE OF typ_sum_lines,  "C - 合计行内表
+  zsign,                                   "符号：  - : 负
+END OF gt_condition.
+
+*----------------------------------------------------------------------*
+* Declaration for Selection-screen
+*----------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+SELECT-OPTIONS: s_bukrs FOR bkpf-bukrs OBLIGATORY.
+PARAMETERS: p_gjahr LIKE bkpf-gjahr OBLIGATORY,
+            p_monat LIKE bkpf-monat OBLIGATORY.
+*SELECTION-SCREEN BEGIN OF LINE.
+*SELECTION-SCREEN COMMENT 1(31) text-101 FOR FIELD p_begmo.
+*PARAMETERS: p_begmo LIKE bkpf-monat OBLIGATORY.
+*SELECTION-SCREEN COMMENT 52(5) text-102 FOR FIELD p_endmo.
+*PARAMETERS: p_endmo LIKE bkpf-monat OBLIGATORY.
+*SELECTION-SCREEN END OF LINE.
+SELECT-OPTIONS: s_prctr FOR faglflext-prctr.
+SELECTION-SCREEN END OF BLOCK b1.
+
+*----------------------------------------------------------------------*
+* INITIALIZATION.
+*----------------------------------------------------------------------*
+INITIALIZATION.
+
+
+*----------------------------------------------------------------------*
+* AT SELECTION-SCREEN.
+*----------------------------------------------------------------------*
+AT SELECTION-SCREEN.
+  PERFORM frm_authority_check.
+
+*----------------------------------------------------------------------*
+* START-OF-SELECTION.
+*----------------------------------------------------------------------*
+START-OF-SELECTION.
+  PERFORM frm_get_data.
+
+*----------------------------------------------------------------------*
+* END-OF-SELECTION.
+*----------------------------------------------------------------------*
+END-OF-SELECTION.
+  CHECK g_continue = 'X'.
+  PERFORM frm_display.
+
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_AUTHORITY_CHECK
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_authority_check.
+  DATA: l_bukrs LIKE t001-bukrs.
+  SELECT bukrs FROM t001 INTO l_bukrs WHERE bukrs IN s_bukrs.
+    AUTHORITY-CHECK OBJECT 'F_BKPF_BUK'
+             ID 'BUKRS' FIELD l_bukrs.
+    IF sy-subrc <> 0.
+      MESSAGE e999 WITH '输入的公司代码超出权限范围'.
+    ENDIF.
+  ENDSELECT.
+ENDFORM. " FRM_AUTHORITY_CHECK
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_DATA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_get_data .
+  PERFORM frm_initial_condition.
+  DATA: r_racct TYPE typ_range_racct WITH HEADER LINE.
+  DATA: s_racct TYPE LINE OF typ_range_racct.
+  LOOP AT gt_condition WHERE r_racct IS NOT INITIAL.
+    LOOP AT gt_condition-r_racct INTO s_racct.
+      APPEND s_racct TO r_racct.
+    ENDLOOP.
+  ENDLOOP.
+
+  r_racct-sign = 'I'.
+  r_racct-option = 'BT'.
+  r_racct-low = '1001000000'.
+  r_racct-high = '1015999999'.
+  APPEND r_racct.
+
+  RANGES: r_zz02 FOR faglflext-zz02.
+  REFRESH r_zz02.
+  CLEAR r_zz02.
+
+  r_zz02-sign = 'I'.
+  r_zz02-option = 'EQ'.
+  LOOP AT gt_condition WHERE zz02 IS NOT INITIAL.
+    r_zz02-low = gt_condition-zz02.
+    APPEND r_zz02.
+  ENDLOOP.
+
+  DATA: BEGIN OF lt_faglflext OCCURS 0,
+*    rbukrs LIKE faglflext-rbukrs,
+    racct LIKE faglflext-racct,
+    zz02 LIKE faglflext-zz02,
+    hslvt LIKE faglflext-hslvt,
+    hsl01 LIKE faglflext-hsl01,
+    hsl02 LIKE faglflext-hsl01,
+    hsl03 LIKE faglflext-hsl01,
+    hsl04 LIKE faglflext-hsl01,
+    hsl05 LIKE faglflext-hsl01,
+    hsl06 LIKE faglflext-hsl01,
+    hsl07 LIKE faglflext-hsl01,
+    hsl08 LIKE faglflext-hsl01,
+    hsl09 LIKE faglflext-hsl01,
+    hsl10 LIKE faglflext-hsl01,
+    hsl11 LIKE faglflext-hsl01,
+    hsl12 LIKE faglflext-hsl01,
+    hsl13 LIKE faglflext-hsl01,
+    hsl14 LIKE faglflext-hsl01,
+    hsl15 LIKE faglflext-hsl01,
+    hsl16 LIKE faglflext-hsl01,
+    hslbq LIKE faglflext-hsl01,  "本期累计
+    hslbn LIKE faglflext-hsl01,  "本年累计
+  END OF lt_faglflext.
+
+  SELECT racct zz02 hslvt
+         hsl01 hsl02 hsl03 hsl04
+         hsl05 hsl06 hsl07 hsl08
+         hsl09 hsl10 hsl11 hsl12
+         hsl13 hsl14 hsl15 hsl16
+    FROM faglflext
+    INTO CORRESPONDING FIELDS OF TABLE lt_faglflext
+    WHERE rbukrs IN s_bukrs
+    AND ryear = p_gjahr
+    AND prctr IN s_prctr
+    AND rldnr = '0L'
+    AND ( racct IN r_racct
+    OR zz02 IN r_zz02 ).
+
+  DATA: l_monat TYPE i.
+  l_monat = p_monat.
+  IF l_monat = 12.
+    l_monat = 16.
+  ENDIF.
+
+  DATA: l_hslxx LIKE faglflext-hsl01.
+
+  LOOP AT lt_faglflext.
+    DO 16 TIMES VARYING l_hslxx FROM lt_faglflext-hsl01 NEXT lt_faglflext-hsl02.
+      IF sy-index <= l_monat.
+        ADD l_hslxx TO lt_faglflext-hslbn.
+      ENDIF.
+      IF l_monat = 16.
+        IF sy-index BETWEEN 12 AND 16.
+          ADD l_hslxx TO lt_faglflext-hslbq.
+        ENDIF.
+      ELSE.
+        IF sy-index = l_monat.
+          lt_faglflext-hslbq = l_hslxx.
+        ENDIF.
+      ENDIF.
+    ENDDO.
+    MODIFY lt_faglflext TRANSPORTING hslbq hslbn.
+  ENDLOOP.
+
+  DATA: l_tabix LIKE sy-tabix.
+  DATA: l_bylj LIKE gt_result-bylj,
+        l_bnlj LIKE gt_result-bnlj.
+  DATA: s_result LIKE gt_result.
+  DATA: s_sum_line TYPE typ_sum_lines.
+
+
+  READ TABLE gt_result WITH KEY zid = '0600'.
+  IF sy-subrc = 0.
+    l_tabix = sy-tabix.
+    LOOP AT lt_faglflext WHERE racct BETWEEN '1001000000' AND '1015999999'.
+      ADD lt_faglflext-hslbn TO gt_result-bnlj.
+      ADD lt_faglflext-hslvt TO gt_result-bnlj.
+    ENDLOOP.
+    gt_result-bylj = gt_result-bnlj.
+    MODIFY gt_result INDEX l_tabix TRANSPORTING bylj bnlj.
+  ENDIF.
+
+  READ TABLE gt_result WITH KEY zid = '0610'.
+  IF sy-subrc = 0.
+    l_tabix = sy-tabix.
+    LOOP AT lt_faglflext WHERE racct BETWEEN '1001000000' AND '1015999999'.
+      ADD lt_faglflext-hslvt TO gt_result-bnlj.
+      ADD lt_faglflext-hslvt TO gt_result-bylj.
+      DO 16 TIMES VARYING l_hslxx FROM lt_faglflext-hsl01 NEXT lt_faglflext-hsl02.
+        IF sy-index < p_monat.
+          ADD l_hslxx TO gt_result-bylj.
+        ENDIF.
+      ENDDO.
+    ENDLOOP.
+    MODIFY gt_result INDEX l_tabix TRANSPORTING bylj bnlj.
+  ENDIF.
+
+  LOOP AT gt_condition.
+    READ TABLE gt_result WITH KEY zid = gt_condition-zid.
+    IF sy-subrc = 0.
+      l_tabix = sy-tabix.
+      CASE gt_condition-ztype.
+        WHEN 'A'.
+          LOOP AT lt_faglflext WHERE zz02 = gt_condition-zz02.
+            ADD lt_faglflext-hslbq TO gt_result-bylj.
+            ADD lt_faglflext-hslbn TO gt_result-bnlj.
+          ENDLOOP.
+        WHEN 'B'.
+          LOOP AT lt_faglflext WHERE racct IN gt_condition-r_racct.
+            ADD lt_faglflext-hslbq TO gt_result-bylj.
+            ADD lt_faglflext-hslbn TO gt_result-bnlj.
+          ENDLOOP.
+        WHEN 'C'.
+          LOOP AT gt_condition-t_sum_line INTO s_sum_line.
+            READ TABLE gt_result INTO s_result WITH KEY zid = s_sum_line-zid.
+            IF sy-subrc = 0.
+              IF s_sum_line-zsign = '-'.
+                SUBTRACT s_result-bylj FROM gt_result-bylj.
+                SUBTRACT s_result-bnlj FROM gt_result-bnlj.
+              ELSE.
+                ADD s_result-bylj TO gt_result-bylj.
+                ADD s_result-bnlj TO gt_result-bnlj.
+              ENDIF.
+            ENDIF.
+          ENDLOOP.
+        WHEN OTHERS.
+          CONTINUE.
+      ENDCASE.
+      IF gt_condition-zsign = '-'.
+        gt_result-bylj = - gt_result-bylj.
+        gt_result-bnlj = - gt_result-bnlj.
+      ENDIF.
+
+      MODIFY gt_result INDEX l_tabix TRANSPORTING bylj bnlj.
+    ENDIF.
+  ENDLOOP.
+
+*  LOOP AT gt_condition WHERE zsign = '-'.
+*    READ TABLE gt_result WITH KEY zid = gt_condition-zid.
+*    IF sy-subrc = 0.
+*      gt_result-bylj = - gt_result-bylj.
+*      gt_result-bnlj = - gt_result-bnlj.
+*      MODIFY gt_result INDEX sy-tabix TRANSPORTING bylj bnlj.
+*    ENDIF.
+*  ENDLOOP.
+
+ENDFORM. " FRM_GET_DATA
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_INITIAL_CONDITION
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_initial_condition .
+
+  DEFINE add_line_to_result_table.
+    clear gt_result.
+    gt_result-zid = &1.
+    gt_result-zdesc = &2.
+    gt_result-zline = &3.
+    append gt_result.
+
+    clear gt_condition.
+    gt_condition-zid = &1.
+    gt_condition-zsign = &4.
+    append gt_condition.
+  END-OF-DEFINITION.
+
+  REFRESH gt_result.
+  REFRESH gt_condition.
+  add_line_to_result_table:
+       '0010' '一、经营活动产生的现金流量'                                    ''   '',
+       '0020' '　　　　销售商品、提供劳务收到的现金'                           '1'  '',
+       '0030' '　　　　收到的税费返还'                                        '3'  '',
+       '0040' '　　　　收到的其它与经营活动有关的现金'                         '8'  '',
+       '0050' '　　现金流入小计'                                              '9'  '',
+       '0060' '　　　　购买商品、接受劳务支付的现金'                           '10' '-',
+       '0070' '　　　　支付给职工以及为职工支付的现金'                         '12' '-',
+       '0080' '　　　　支付的各项税费'                                        '13' '-',
+       '0090' '　　　　支付的其它与经营活动有关的现金'                         '18' '-',
+       '0100' '　　现金流出小计'                                             '20' '',
+       '0110' '　　　　经营活动产生现金净额'                                  '21' '',
+       '0120' '二、投资活动产生的现金流量'                                    ''   '',
+       '0130' '　　　　收回投资所收到的现金'                                  '22' '',
+       '0140' '　　　　取得投资收益所收到的现金'                              '23' '',
+       '0150' '　　　　处置固定资产、无形资产和其它长期资产所收回的现金净额'    '25' '',
+       '0160' '　　　　收到的其它与投资活动有关的现金'                         '28' '',
+       '0170' '　　现金流入小计'                                             '29' '',
+       '0180' '　　　　购建固定资产、无形资产和其它长期资产所支付的现金'        '30' '-',
+       '0190' '　　　　投资所支付的现金'                                      '31' '-',
+       '0200' '　　　　支付的其它与投资活动有关的现金'                         '25' '-',
+       '0210' '　　现金流出小计'                                             '36' '',
+       '0220' '　　　　投资活动产生现金净额'                                  '37' '',
+       '0230' '三、筹资活动产生的现金流量'                                    '' '',
+       '0240' '　　　　吸收投资所收到的现金'                                  '38' '',
+       '0250' '　　　　借款所收到的现金'                                      '40' '',
+       '0260' '　　　　收到的其它与筹资活动有关的现金'                         '43' '',
+       '0270' '　　现金流入小计'                                              '44' '',
+       '0280' '　　　　偿还债务所支付的现金'                                  '45' '-',
+       '0290' '　　　　分配股利、利润或偿付利息所支付的现金'                   '46' '-',
+       '0300' '　　　　支付的其它与筹资活动有关的现金'                         '52' '-',
+       '0310' '　　现金流出小计'                                              '53' '',
+       '0320' '　　　　筹资活动产生现金净额'                                  '54' '',
+       '0330' '四、汇率变动对现金的影响'                                      '55' '',
+       '0340' '五、现金及现金等价物净增加额'                                  '56' '',
+       '0350' ''                                                            ''   '',
+       '0360' '　　　　　　　　*　补    充    资    料　*'                     ''   '',
+       '0370' '1. 将净利润调节为经营活动的现金流量'                            ''   '',
+       '0380' '　　净利润'                                                   '57' '-',
+       '0390' '　　加：计提资产减值准备 '                                     '58' '-',
+       '0400' '　　　　固定资产折旧'                                          '59' '-',
+       '0410' '　　　　无形资产摊销'                                          '60' '-',
+       '0420' '　　　　长期待摊费用摊销'                                      '61' '-',
+       '0430' '　　　　待摊费用减少（减：增加）'                               '64' '-',
+       '0440' '　　　　预提费用增加（减：减少）'                               '65' '-',
+       '0450' '　　　　处置固定资产、无形资产和其他长期资产的损失（减：收益）'   '66' '',
+       '0460' '　　　　固定资产报废损失'                                      '67' '',
+       '0470' '　　　　财务费用'                                             '68' '',
+       '0480' '　　　　投资损失（减：收益）'                                  '69' '',
+       '0490' '　　　　递延税款贷项（减：借项）'                              '70' '-',
+       '0500' '　　　　存货的减少（减：增加）'                                '71' '-',
+       '0510' '　　　　经营性应收项目的减少（减：增加）'                       '72' '-',
+       '0520' '　　　　经营性应付项目的增加（减：减少）'                       '73' '-',
+       '0530' '　　　　其他'                                                 '74' '',
+       '0540' '　　　　经营活动产生的现金流量净额'                            '75' '',
+       '0550' '2. 不涉及现金收支的投资和筹资活动'                             ''   '',
+       '0560' '　　　　债务转为资本'                                         '76' '',
+       '0570' '　　　　一年内到期的可转换公司债券'                            '77' '',
+       '0580' '　　　　融资租入固定资产'                                     '78' '',
+       '0590' '3. 现金及现金等价物净增加情况'                                ''   '',
+       '0600' '　　　　现金的期末余额'                                       '79' '',
+       '0610' '　　　　减：现金的期初余额'                                   '80' '',
+       '0620' '　　　　加：现金等价物的期末余额'                              '81' '',
+       '0630' '　　　　减：现金等价物的期初余额'                              '82' '',
+       '0640' '　　　　现金及现金等价物净增加额'                              '83' '',
+       '0660' '**核对行'                                                    ''   '',
+       '0670' '**核对行'                                                    ''   ''.
+
+  DATA: l_tabix LIKE sy-tabix.
+
+  DEFINE add_condition_a.
+    read table gt_condition with key zid = &1.
+    if sy-subrc = 0.
+      l_tabix = sy-tabix.
+      gt_condition-ztype = 'A'.
+      gt_condition-zz02 = &2.
+      modify gt_condition index l_tabix transporting ztype zz02..
+    endif.
+  END-OF-DEFINITION.
+
+  DATA: s_racct TYPE LINE OF typ_range_racct.
+
+  DEFINE add_condition_b.
+    read table gt_condition with key zid = &1.
+    if sy-subrc = 0.
+      l_tabix = sy-tabix.
+      gt_condition-ztype = 'B'.
+      clear s_racct.
+      s_racct-sign = 'I'.
+      s_racct-option = &2.
+      s_racct-low = &3.
+      s_racct-high = &4.
+      append s_racct to gt_condition-r_racct.
+      modify gt_condition index l_tabix transporting ztype r_racct.
+    endif.
+  END-OF-DEFINITION.
+
+  DATA: s_sum_line TYPE typ_sum_lines.
+
+  DEFINE add_condition_c.
+    read table gt_condition with key zid = &1.
+    if sy-subrc = 0.
+      l_tabix = sy-tabix.
+      gt_condition-ztype = 'C'.
+      clear s_sum_line.
+      s_sum_line-zid = &2.
+      s_sum_line-zsign = &3.
+      append s_sum_line to gt_condition-t_sum_line.
+      modify gt_condition index l_tabix transporting ztype t_sum_line.
+    endif.
+  END-OF-DEFINITION.
+
+  add_condition_a:
+    '0020' '1111',
+    '0030' '1112',
+    '0040' '1113',
+    '0060' '1121',
+    '0070' '1122',
+    '0080' '1123',
+    '0090' '1124',
+    '0130' '1211',
+    '0140' '1212',
+    '0150' '1213',
+    '0160' '1214',
+    '0180' '1223',
+    '0190' '1222',
+    '0200' '1221',
+    '0240' '1311',
+    '0250' '1312',
+    '0260' '1313',
+    '0280' '1321',
+    '0290' '1322',
+    '0300' '1323'.
+
+  add_condition_b:
+    '0380' 'BT' '4103000000' '4104999999',
+    '0380' 'BT' '5001001001' '6999999999',
+    '0390' 'BT' '1241000001' '1241999999',
+    '0390' 'BT' '1461000000' '1461999999',
+    '0390' 'BT' '1603001001' '1603999999',
+    '0390' 'BT' '1604002001' '1604999999',
+    '0390' 'BT' '1621030100' '1621039999',
+    '0390' 'BT' '1703001001' '1703009999',
+    '0400' 'BT' '1602000000' '1602999999',
+    '0410' 'BT' '1702000000' '1702999999',
+    '0420' 'BT' '1801000000' '1801999999',
+    '0430' 'BT' '1231800001' '1231899999',
+    '0440' 'BT' '2241006001' '2241006999',
+    '0450' 'EQ' '6301001002' '',
+    '0450' 'EQ' '6301001004' '',
+    '0450' 'BT' '6711001002' '6711001003',
+    '0470' 'BT' '6603001001' '6603002999',
+    '0480' 'EQ' '6111000000' '',
+    '0490' 'BT' '1811001001' '1811001999',
+    '0490' 'EQ' '2901000000' '',
+    '0500' 'BT' '1401000000' '1401999999',
+    '0500' 'BT' '1403000000' '1404999999',
+    '0500' 'BT' '1406000000' '1407999999',
+    '0500' 'BT' '1411000000' '1412999999',
+    '0500' 'BT' '1461000000' '1461999999',
+    '0510' 'BT' '1121000000' '1123999999',
+    '0510' 'BT' '1231000000' '1231999999',
+    '0510' 'BT' '1241000000' '1241999999',
+    '0520' 'BT' '2201000000' '2205999999',
+    '0520' 'BT' '2241000000' '2241999999',
+    '0520' 'BT' '2211000000' '2221999999'.
+
+  add_condition_c:
+    '0050' '0020' '',
+    '0050' '0030' '',
+    '0050' '0040' '',
+    '0100' '0060' '',
+    '0100' '0070' '',
+    '0100' '0080' '',
+    '0100' '0090' '',
+    '0110' '0050' '',
+    '0110' '0100' '-',
+    '0170' '0130' '',
+    '0170' '0140' '',
+    '0170' '0150' '',
+    '0170' '0160' '',
+    '0210' '0180' '',
+    '0210' '0190' '',
+    '0210' '0200' '',
+    '0220' '0170' '',
+    '0220' '0210' '-',
+    '0270' '0240' '',
+    '0270' '0250' '',
+    '0270' '0260' '',
+    '0310' '0280' '',
+    '0310' '0290' '',
+    '0310' '0300' '',
+    '0320' '0270' '',
+    '0320' '0310' '-',
+    '0340' '0110' '',
+    '0340' '0220' '',
+    '0340' '0320' '',
+    '0340' '0330' '',
+    '0540' '0380' '',
+    '0540' '0390' '',
+    '0540' '0400' '',
+    '0540' '0410' '',
+    '0540' '0420' '',
+    '0540' '0430' '',
+    '0540' '0440' '',
+    '0540' '0450' '',
+    '0540' '0460' '',
+    '0540' '0470' '',
+    '0540' '0480' '',
+    '0540' '0490' '',
+    '0540' '0500' '',
+    '0540' '0510' '',
+    '0540' '0520' '',
+    '0540' '0530' '',
+    '0640' '0600' '',
+    '0640' '0610' '-',
+    '0640' '0620' '',
+    '0640' '0630' '-',
+    '0660' '0540' '',
+    '0660' '0110' '-',
+    '0670' '0640' '',
+    '0670' '0340' '-'.
+
+  LOOP AT gt_condition WHERE zz02 IS NOT INITIAL.
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+      EXPORTING
+        input  = gt_condition-zz02
+      IMPORTING
+        output = gt_condition-zz02.
+    MODIFY gt_condition TRANSPORTING zz02.
+  ENDLOOP.
+
+ENDFORM. " FRM_INITIAL_CONDITION
+
+*&---------------------------------------------------------------------*
+*&      Form  FRM_DISPLAY
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM frm_display .
+
+  CLEAR s_layout.
+  s_layout-zebra = 'X'.
+  s_layout-colwidth_optimize = 'X'.
+
+  PERFORM frm_fill_field USING:
+    'ZDESC' '项目',
+    'ZLINE' '行次',
+    'BYLJ' '本月累计',
+    'BNLJ' '本年累计'.
+
+
+  LOOP AT gt_fieldcat.
+    gt_fieldcat-no_zero = 'X'.
+    MODIFY gt_fieldcat TRANSPORTING no_zero.
+  ENDLOOP.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+      is_layout    = s_layout
+      it_fieldcat  = gt_fieldcat[]
+      i_grid_title = '现金流量表及附表'
+    TABLES
+      t_outtab     = gt_result.
+ENDFORM. " FRM_DISPLAY
+
+*&---------------------------------------------------------------------*
+*&      Form  frm_fill_field
+*&---------------------------------------------------------------------*
+*       ALV显示字段定义
+*----------------------------------------------------------------------*
+*      -->NAME         字段名
+*      -->DESCRIPTION  字段描述
+*----------------------------------------------------------------------*
+FORM frm_fill_field USING name description.
+  CLEAR gt_fieldcat.
+  gt_fieldcat-fieldname     = name.
+  gt_fieldcat-seltext_s     = description.
+  gt_fieldcat-seltext_m     = description.
+  APPEND gt_fieldcat.
+ENDFORM. "FRM_FILL_FIELD_MASTER
+
+*Text elements
+*----------------------------------------------------------
+* 001 选择条件
+
+
+*Selection texts
+*----------------------------------------------------------
+* P_GJAHR         会计年度
+* P_MONAT D       .
+* S_BUKRS D       .
+* S_PRCTR D       .
+
+
+*Messages
+*----------------------------------------------------------
+*
+* Message class: ZYR
+*999   &1 &2 &3 &4
+Extracted by Mass Download version 1.4.3 - E.G.Mellodew. 1998-2016. Sap Release 731
