@@ -1,0 +1,84 @@
+FUNCTION ZFM_GET_ESB_XML.
+*"----------------------------------------------------------------------
+*"*"本地接口：
+*"  IMPORTING
+*"     VALUE(INPUT) TYPE  ZSINPUT
+*"  EXPORTING
+*"     VALUE(OUTPUT) TYPE  ZSSERVICE_RESPONSE
+*"----------------------------------------------------------------------
+* output-code 00:ok   01:err
+  DATA LW_DATA TYPE   ZTMQ_INTERFACE.
+  DATA LW_INPUT TYPE ZTMQ_IF_DATA.
+
+  LW_INPUT-SYSNM     = INPUT-SYSNM.
+  LW_INPUT-SYSID     = INPUT-SYSID.
+  LW_INPUT-XMLDATA   = INPUT-XMLDATA.
+  LW_INPUT-ZTDAT     = SY-DATUM.
+  LW_INPUT-ZTUSR     = SY-UNAME.
+  LW_INPUT-ZTTIM     = SY-UZEIT.
+  LW_INPUT-ZTFLG     = '1'.
+  MODIFY ZTMQ_IF_DATA FROM LW_INPUT.
+  IF  SY-SUBRC = 0.
+    COMMIT WORK .
+    OUTPUT-CODE    = '00'.
+    OUTPUT-MESSAGE = '0K'.
+  ELSE.
+    ROLLBACK WORK.
+    OUTPUT-CODE    = '01'.
+    OUTPUT-MESSAGE = TEXT-M01.
+    EXIT.
+  ENDIF.
+
+*  ENDIF.
+
+  SELECT SINGLE *
+    INTO LW_DATA
+    FROM ZTMQ_INTERFACE
+   WHERE ZSYSNM = INPUT-SYSNM
+     AND ZIFID = INPUT-SYSID+4(4).
+  IF SY-SUBRC = 0.
+*   查询当前接口开关状态
+*    CALL FUNCTION 'ZFXI_CONTROL'
+*      EXPORTING
+*        I_IF_NAME = LW_DATA-ZIFNM    "接口名称
+*      IMPORTING
+*        E_BLOCK   = GV_BLOCK.        "X 关闭  空格 启用
+*    IF GV_BLOCK = 'X'.
+*      LW_INPUT-ZBFLG = '0'.          "接口关闭 不做处理
+*      MESSAGE E005(ZSD01) INTO LW_INPUT-ZMARK .
+*    ELSE.
+      LW_INPUT-ZBFLG = '1'.
+      CALL FUNCTION LW_DATA-ZIFNM STARTING NEW TASK INPUT-SYSID(8)
+        EXPORTING
+          INPUT = INPUT.
+**------------added by zackzhang 20160407 s--------------
+      IF SY-SUBRC <> 0.
+      CLEAR LW_INPUT-ZBFLG.
+      CONCATENATE '未调用接口程序' LW_DATA-ZIFNM INTO
+      LW_INPUT-ZMARK .
+      ENDIF.
+**------------added by zackzhang 20160407 e--------------
+*    ENDIF.
+  ELSE.
+    "接口配置表【ZTMQ_INTERFACE】没有维护
+    OUTPUT-CODE    = '01'.
+    OUTPUT-MESSAGE = TEXT-M02.
+    LW_INPUT-ZMARK = TEXT-M02.
+  ENDIF.
+* 更新处理状态
+  UPDATE ZTMQ_IF_DATA
+     SET ZBFLG = LW_INPUT-ZBFLG
+         ZMARK = LW_INPUT-ZMARK
+   WHERE SYSNM  = LW_INPUT-SYSNM
+     AND SYSID  = LW_INPUT-SYSID.
+  IF  SY-SUBRC = 0.
+    COMMIT WORK .
+*    OUTPUT-CODE    = '00'.
+*    OUTPUT-MESSAGE = '0K'.
+  ELSE.
+    ROLLBACK WORK.
+    OUTPUT-CODE    = '01'.
+    OUTPUT-MESSAGE = TEXT-M01.
+  ENDIF.
+
+ENDFUNCTION.

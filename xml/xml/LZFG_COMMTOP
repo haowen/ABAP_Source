@@ -1,0 +1,22 @@
+FUNCTION-POOL ZFG_COMM.                     "MESSAGE-ID ..
+
+* INCLUDE LZFG_COMMD...                      " Local class definition
+  TYPE-POOLS: IXML.
+DATA: l_ixml TYPE REF TO if_ixml,
+      l_encoding TYPE REF TO if_ixml_encoding,
+      l_comment TYPE REF TO if_ixml_comment,
+      l_doc TYPE REF TO if_ixml_document,
+      l_root TYPE REF TO if_ixml_element,
+      l_item TYPE REF TO if_ixml_element,
+      l_element TYPE REF TO if_ixml_element,
+      l_attribute TYPE REF TO if_ixml_attribute,
+      l_ostream TYPE REF TO if_ixml_ostream,
+      l_factory  TYPE REF TO if_ixml_stream_factory.
+TYPES: BEGIN OF xml_line,
+        data(256) TYPE X,
+      END OF xml_line.
+DATA: xml_table TYPE TABLE OF xml_line,
+      ls_xml type xml_line,
+      xml_size  TYPE i.
+DATA: l_rval TYPE i,
+      GV_BLOCK TYPE ZISOK.

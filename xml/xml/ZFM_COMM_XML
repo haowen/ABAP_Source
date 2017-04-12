@@ -1,0 +1,211 @@
+FUNCTION ZFM_COMM_XML.
+*"----------------------------------------------------------------------
+*"*"本地接口：
+*"  IMPORTING
+*"     REFERENCE(I_DOWN) TYPE  CHAR1
+*"  EXPORTING
+*"     REFERENCE(E_XMLSTR) TYPE  STRING
+*"  TABLES
+*"      T_ITAB TYPE  STANDARD TABLE
+*"----------------------------------------------------------------------
+  DATA LC_ROOT TYPE STRING.
+  CHECK NOT T_ITAB[]  IS INITIAL.
+
+  CLASS CL_IXML DEFINITION LOAD.
+
+  L_IXML = CL_IXML=>CREATE( ).
+
+*  CALL METHOD L_IXML->CREATE_ENCODING
+*    EXPORTING
+*      BYTE_ORDER    = 0
+*      CHARACTER_SET = 'gb2312'
+*    RECEIVING
+*      RVAL          = L_ENCODING.
+
+  CALL METHOD L_IXML->CREATE_DOCUMENT
+    RECEIVING
+      RVAL = L_DOC.
+
+  CALL METHOD L_DOC->SET_ENCODING
+    EXPORTING
+      ENCODING = L_ENCODING.
+  LC_ROOT = TEXT-001.
+  CALL METHOD L_DOC->CREATE_SIMPLE_ELEMENT
+    EXPORTING
+      NAME   = LC_ROOT   "'Root'
+      PARENT = L_DOC
+    RECEIVING
+      RVAL   = L_ROOT.
+*
+  CALL METHOD L_ROOT->SET_ATTRIBUTE
+    EXPORTING
+      NAME  = 'ATTRIBUTE'
+      VALUE = 'XML'
+    RECEIVING
+      RVAL  = L_RVAL.
+
+  CALL METHOD L_ROOT->APPEND_CHILD
+    EXPORTING
+      NEW_CHILD = L_COMMENT
+    RECEIVING
+      RVAL      = L_RVAL.
+
+  PERFORM FILL_ITAB2XML TABLES  T_ITAB
+                        USING   'TableInfo'
+                                'RowInfo'
+                                L_ROOT.
+*  PERFORM fill_itab2xml TABLES  itab_class
+*                        USING   'Categories'
+*                                'Categorie'
+*                                l_root.
+
+  CALL METHOD L_IXML->CREATE_STREAM_FACTORY
+    RECEIVING
+      RVAL = L_FACTORY.
+
+
+  CALL METHOD L_FACTORY->CREATE_OSTREAM_ITABLE
+    EXPORTING
+      TABLE = XML_TABLE
+    RECEIVING
+      RVAL  = L_OSTREAM.
+
+  CALL METHOD L_DOC->RENDER
+    EXPORTING
+      OSTREAM   = L_OSTREAM
+      RECURSIVE = 'X'.
+
+
+
+*  T_XML[] = xml_table[] .
+  CALL METHOD L_OSTREAM->GET_NUM_WRITTEN_RAW
+    RECEIVING
+      RVAL = XML_SIZE.
+
+* DATA LS_XML  TYPE STRING.
+
+  CALL FUNCTION 'SCMS_BINARY_TO_STRING'
+    EXPORTING
+      INPUT_LENGTH = XML_SIZE
+    IMPORTING
+      TEXT_BUFFER  = E_XMLSTR
+    TABLES
+      BINARY_TAB   = XML_TABLE
+    EXCEPTIONS
+      FAILED       = 1
+      OTHERS       = 2.
+
+  IF I_DOWN = 'X' .
+    DATA L_FILENAME TYPE STRING.
+    L_FILENAME = 'C:\XML_FOLDER\' && SY-UNAME && SY-UZEIT && '.XML'.
+    CALL FUNCTION 'GUI_DOWNLOAD'
+      EXPORTING
+        BIN_FILESIZE = XML_SIZE
+        FILENAME     = L_FILENAME
+        FILETYPE     = 'BIN'
+      TABLES
+        DATA_TAB     = XML_TABLE.
+
+  ENDIF.
+  DATA LEN TYPE I.
+  LEN = STRLEN( '<?xml version="1.0"?>' ).
+  SHIFT E_XMLSTR BY LEN PLACES.
+
+ENDFUNCTION.
+
+*&---------------------------------------------------------------------*
+*&      Form  fill_itab2xml
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->INTAB      text
+*      -->NODE1NAME  text
+*      -->NODE2NAME  text
+*      -->L_PARENT   text
+*----------------------------------------------------------------------*
+FORM FILL_ITAB2XML TABLES INTAB
+                   USING NODE1NAME TYPE STRING
+                         NODE2NAME TYPE STRING
+                         L_PARENT TYPE REF TO IF_IXML_ELEMENT.
+  DATA: BEGIN OF HEADTAB OCCURS 0 ,
+          LENGTH    TYPE I ,
+          DECIMALS  TYPE I,
+          TYPE_KIND TYPE C,
+          NAME(30)  TYPE C,
+        END OF HEADTAB.
+
+
+  DATA DESCR_REF TYPE REF TO CL_ABAP_STRUCTDESCR.
+
+
+  FIELD-SYMBOLS: <COMP_WA> TYPE ABAP_COMPDESCR ,
+                 <F_FIELD> ,
+                 <F_INTAB> TYPE ANY .
+
+  DATA: N TYPE I ,
+        STR TYPE STRING ,
+        ITEMNAME TYPE STRING ,
+        TEXT1 TYPE C ,
+        L_NODE TYPE REF TO IF_IXML_ELEMENT ,
+        L_ITEM TYPE REF TO IF_IXML_ELEMENT .
+
+
+  DESCR_REF ?= CL_ABAP_TYPEDESCR=>DESCRIBE_BY_DATA( INTAB ).
+
+  LOOP AT DESCR_REF->COMPONENTS ASSIGNING <COMP_WA>.
+    MOVE-CORRESPONDING <COMP_WA> TO HEADTAB.
+    APPEND HEADTAB.
+  ENDLOOP.
+
+
+  CALL METHOD L_DOC->CREATE_SIMPLE_ELEMENT
+    EXPORTING
+      NAME   = NODE1NAME
+      PARENT = L_PARENT
+    RECEIVING
+      RVAL   = L_NODE.
+
+
+  DESCRIBE TABLE HEADTAB LINES N.
+
+
+  LOOP AT INTAB ASSIGNING <F_INTAB>.
+
+    CALL METHOD L_DOC->CREATE_SIMPLE_ELEMENT
+      EXPORTING
+        NAME   = NODE2NAME
+        PARENT = L_NODE
+      RECEIVING
+        RVAL   = L_ITEM.
+
+
+    DO N TIMES.
+      ASSIGN COMPONENT SY-INDEX OF STRUCTURE <F_INTAB> TO <F_FIELD>.
+      STR = <F_FIELD>.
+      READ TABLE HEADTAB INDEX SY-INDEX.
+      IF HEADTAB-TYPE_KIND = 'I' OR HEADTAB-TYPE_KIND = 'P'
+                                 OR HEADTAB-TYPE_KIND = 'F'.
+        SEARCH STR FOR '-'.
+        IF SY-SUBRC = 0 AND SY-FDPOS <> 0.
+          SPLIT STR AT '-' INTO STR TEXT1.
+          CONDENSE STR.
+          CONCATENATE '-' STR INTO STR.
+        ELSE.
+          CONDENSE STR.
+        ENDIF.
+      ELSE.
+*        SHIFT str LEFT DELETING LEADING ‘0′ .
+      ENDIF.
+      ITEMNAME = HEADTAB-NAME .
+      CALL METHOD L_DOC->CREATE_SIMPLE_ELEMENT
+        EXPORTING
+          NAME   = ITEMNAME
+          PARENT = L_ITEM
+          VALUE  = STR
+        RECEIVING
+          RVAL   = L_ELEMENT.
+    ENDDO.
+  ENDLOOP.
+
+
+ENDFORM.                    "fill_itab2xml

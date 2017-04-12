@@ -1,0 +1,152 @@
+FUNCTION ZFM_COMM_XML_TABLE.
+*"----------------------------------------------------------------------
+*"*"本地接口：
+*"  IMPORTING
+*"     REFERENCE(INPUT) TYPE  ZSINPUT
+*"  TABLES
+*"      OUT_TAB TYPE  STANDARD TABLE
+*"  EXCEPTIONS
+*"      NO_TABLE_TAB
+*"      NO_ROW_TAB
+*"      NO_DATA
+*"----------------------------------------------------------------------
+  DATA: LX_STRING         TYPE XSTRING.
+  DATA: L_IXML            TYPE REF TO IF_IXML,
+        L_STREAMFACTORY   TYPE REF TO IF_IXML_STREAM_FACTORY,
+        L_PARSER          TYPE REF TO IF_IXML_PARSER,
+        L_ISTREAM         TYPE REF TO IF_IXML_ISTREAM,
+        L_DOCUMENT        TYPE REF TO IF_IXML_DOCUMENT
+        .
+  DATA: L_XML_TABLE       TYPE TABLE OF XML_LINE,
+        L_XML_TABLE_SIZE  TYPE I.
+  DATA: L_FILENAME        TYPE STRING.
+  DATA: NODE              TYPE REF TO IF_IXML_NODE,
+        ITERATOR          TYPE REF TO IF_IXML_NODE_ITERATOR,
+        NODEMAP           TYPE REF TO IF_IXML_NAMED_NODE_MAP,
+        NAME              TYPE STRING,
+        VALUE             TYPE STRING,
+        INDENT            TYPE I.
+  DATA: LC_TABLEFLG       TYPE CHAR1,
+        LC_ROWFLG         TYPE CHAR1,
+        LW_INPUT          TYPE ZTMQ_IF_DATA.
+  FIELD-SYMBOLS:
+             <FIELD>      TYPE ANY,
+             <GT_OUT>     TYPE STANDARD TABLE,
+             <GW_OUT>     TYPE ANY.
+
+  LW_INPUT-SYSNM = INPUT-SYSNM.
+  LW_INPUT-SYSID = INPUT-SYSID.
+
+  L_IXML = CL_IXML=>CREATE( ).
+
+*   Creating a stream factory
+  L_STREAMFACTORY = L_IXML->CREATE_STREAM_FACTORY( ).
+*
+*  CALL FUNCTION 'SCMS_STRING_TO_XSTRING'
+*    EXPORTING
+*      TEXT     = IN_XMLSTR
+**     MIMETYPE = ' '
+**     ENCODING = 'UTF-8'
+*    IMPORTING
+*      BUFFER   = LX_STRING
+*    EXCEPTIONS
+*      FAILED   = 1
+*      OTHERS   = 2.
+*  IF SY-SUBRC <> 0.
+** Implement suitable error handling here
+*  ENDIF.
+*
+*  CALL FUNCTION 'SCMS_XSTRING_TO_BINARY'
+*    EXPORTING
+*      BUFFER          = LX_STRING
+**     APPEND_TO_TABLE = ' '
+*    IMPORTING
+*      OUTPUT_LENGTH   = L_XML_TABLE_SIZE
+*    TABLES
+*      BINARY_TAB      = L_XML_TABLE.
+*   wrap the table containing the file into a stream
+  L_ISTREAM = L_STREAMFACTORY->CREATE_ISTREAM_STRING(  INPUT-XMLDATA ).
+*  L_ISTREAM = L_STREAMFACTORY->CREATE_ISTREAM_ITABLE(   TABLE = L_XML_TABLE
+*                                                    SIZE  = L_XML_TABLE_SIZE ).
+*   Creating a document
+  L_DOCUMENT = L_IXML->CREATE_DOCUMENT( ).
+
+*   Create a Parser
+  L_PARSER = L_IXML->CREATE_PARSER( STREAM_FACTORY = L_STREAMFACTORY
+                                    ISTREAM        = L_ISTREAM
+                                    DOCUMENT       = L_DOCUMENT ).
+  IF L_PARSER->PARSE( ) NE 0.
+    IF L_PARSER->NUM_ERRORS( ) NE 0.
+    ENDIF.
+  ENDIF.
+
+
+*   Process the document
+  IF L_PARSER->IS_DOM_GENERATING( ) EQ 'X'.
+    NODE ?= L_DOCUMENT.
+
+    CHECK NOT NODE IS INITIAL.
+
+    IF NODE IS INITIAL.
+      EXIT.
+    ENDIF.
+
+*   create a node iterator
+    ITERATOR  = NODE->CREATE_ITERATOR( ).
+*   get current node
+    NODE = ITERATOR->GET_NEXT( ).
+
+    WHILE NOT NODE IS INITIAL.
+      NAME    = NODE->GET_NAME( ).
+      IF NAME = 'Body'.
+        EXIT.
+      ENDIF.
+      NODE = ITERATOR->GET_NEXT( ).
+    ENDWHILE.
+*   loop over all nodes
+    WHILE NOT NODE IS INITIAL.
+      CASE NODE->GET_TYPE( ).
+        WHEN IF_IXML_NODE=>CO_NODE_ELEMENT.
+*         element node
+          NAME    = NODE->GET_NAME( ).
+          NODEMAP = NODE->GET_ATTRIBUTES( ).
+          CASE NAME.
+            WHEN 'TableInfo'.
+              ASSIGN OUT_TAB[] TO <GT_OUT>.
+              LC_TABLEFLG = ABAP_TRUE.
+            WHEN 'RowInfo'.
+              LC_ROWFLG   = ABAP_TRUE.
+              APPEND INITIAL LINE TO <GT_OUT> ASSIGNING <GW_OUT>.
+            WHEN OTHERS.
+
+          ENDCASE.
+        WHEN IF_IXML_NODE=>CO_NODE_TEXT OR
+             IF_IXML_NODE=>CO_NODE_CDATA_SECTION.
+*         text node
+          ASSIGN COMPONENT NAME OF STRUCTURE <GW_OUT> TO <FIELD>.
+          IF <FIELD> IS ASSIGNED.
+            VALUE  = NODE->GET_VALUE( ).
+            <FIELD> = VALUE.
+          ENDIF.
+
+      ENDCASE.
+*     advance to next node
+      UNASSIGN <FIELD>.
+      NODE = ITERATOR->GET_NEXT( ).
+    ENDWHILE.
+  ENDIF.
+  IF LC_TABLEFLG IS INITIAL.
+    PERFORM frm_update_iftab USING '0' 'NO_TABLE_TAB' INPUT.
+    RAISE NO_TABLE_TAB.
+  ENDIF.
+  IF LC_ROWFLG IS INITIAL.
+    PERFORM frm_update_iftab USING '0' 'NO_ROW_TAB' INPUT.
+    RAISE NO_ROW_TAB.
+  ENDIF.
+  IF  OUT_TAB[] IS INITIAL.
+    PERFORM frm_update_iftab USING '0' 'NO_DATA' INPUT.
+    RAISE NO_DATA.
+  ENDIF.
+  PERFORM frm_update_iftab USING '1' 'OK' INPUT.
+  COMMIT WORK.
+ENDFUNCTION.

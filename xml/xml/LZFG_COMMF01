@@ -1,0 +1,90 @@
+*----------------------------------------------------------------------*
+***INCLUDE LZFG_COMMF01 .
+*----------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*&      Form  FRM_GET_TABLE
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_L_DOCUMENT  text
+*----------------------------------------------------------------------*
+FORM FRM_GET_TABLE  USING document TYPE REF TO if_ixml_document
+                CHANGING PT_OUT TYPE  STANDARD TABLE.
+
+FIELD-SYMBOLS:
+           <field> TYPE any,
+           <gt_out> TYPE STANDARD TABLE,
+           <gw_out> TYPE any.
+    DATA: node      TYPE REF TO if_ixml_node,
+          iterator  TYPE REF TO if_ixml_node_iterator,
+          nodemap   TYPE REF TO if_ixml_named_node_map,
+*          attr      TYPE REF TO if_ixml_node,
+          name      TYPE string,
+*          prefix    TYPE string,
+          value     TYPE string,
+          indent    TYPE i,
+*          count     TYPE i,
+          index     TYPE i.
+
+    node ?= document.
+
+    CHECK NOT node IS INITIAL.
+
+    IF node IS INITIAL. EXIT. ENDIF.
+*   create a node iterator
+    iterator  = node->create_iterator( ).
+*   get current node
+    node = iterator->get_next( ).
+*   loop over all nodes
+    WHILE NOT node IS INITIAL.
+      indent = node->get_height( ) * 2.
+      indent = indent + 20.
+
+      CASE node->get_type( ).
+        WHEN if_ixml_node=>co_node_element.
+*         element node
+          name    = node->get_name( ).
+          nodemap = node->get_attributes( ).
+          CASE name.
+            WHEN 'TableInfo'.
+            ASSIGN PT_OUT[] to <GT_OUT>.
+            WHEN 'RowInfo'.
+            APPEND INITIAL LINE TO <gt_out> ASSIGNING <gw_out>.
+            WHEN OTHERS.
+
+          ENDCASE.
+        WHEN if_ixml_node=>co_node_text OR
+             if_ixml_node=>co_node_cdata_section.
+*         text node
+          ASSIGN COMPONENT name of STRUCTURE <gw_out> to <field>.
+          value  = node->get_value( ).
+          <field> = value.
+      ENDCASE.
+*     advance to next node
+      node = iterator->get_next( ).
+    ENDWHILE.
+
+ENDFORM.                    " FRM_GET_TABLE
+*&---------------------------------------------------------------------*
+*&      Form  FRM_UPDATE_IFTAB
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_0      text
+*      -->P_0284   text
+*----------------------------------------------------------------------*
+FORM FRM_UPDATE_IFTAB  USING    P_FLG TYPE ZTFLG
+                                P_MARK TYPE ZMARK
+                                P_INPUT TYPE ZSINPUT.
+*    LW_INPUT-ZTFLG = 0.
+*    LW_INPUT-ZMARK =
+    UPDATE ZTMQ_IF_DATA
+       SET  ZTFLG = P_FLG
+           ZMARK = P_MARK
+     WHERE SYSNM = P_INPUT-SYSNM
+       AND SYSID = P_INPUT-SYSID.
+    IF SY-SUBRC = 0.
+       COMMIT WORK.
+    ENDIF.
+
+ENDFORM.                    " FRM_UPDATE_IFTAB

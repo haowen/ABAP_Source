@@ -1,0 +1,45 @@
+FUNCTION ZFM_COMM_XML_ABAP.
+*"----------------------------------------------------------------------
+*"*"本地接口：
+*"  IMPORTING
+*"     REFERENCE(I_TRANSID) TYPE  CXSLTDESC
+*"     REFERENCE(I_STRNAME) TYPE  TYPENAME
+*"     REFERENCE(I_XMLSTR) TYPE  STRING
+*"  TABLES
+*"      T_ITAB TYPE  STANDARD TABLE
+*"----------------------------------------------------------------------
+
+
+*PARAMETERS p_name TYPE tabname.
+
+
+  DATA: DYN_TABLE TYPE REF TO DATA.
+  DATA: DYN_WA TYPE REF TO DATA.
+*  DATA XMLXSTR TYPE STRING.
+
+  FIELD-SYMBOLS: <DYN_TABLE> TYPE TABLE,
+                 <DYN_WA> TYPE ANY.
+
+
+*创建动态表结构
+  CREATE DATA DYN_TABLE TYPE TABLE OF (I_STRNAME).
+
+*创建动态内表
+  ASSIGN DYN_TABLE->* TO <DYN_TABLE>.
+
+*创建动态工作区结构
+  CREATE DATA DYN_WA LIKE LINE OF <DYN_TABLE>.
+
+*创建动态工作区
+  ASSIGN DYN_WA->* TO <DYN_WA>.
+
+
+  CALL TRANSFORMATION (I_TRANSID)
+                     SOURCE XML I_XMLSTR
+                     RESULT DATA_TAB = <DYN_TABLE>.
+
+
+T_ITAB[] = <DYN_TABLE> .
+
+
+ENDFUNCTION.
