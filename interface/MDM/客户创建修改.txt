@@ -1,0 +1,210 @@
+FUNCTION ZDC_CUSTOMER_MOD .
+*"----------------------------------------------------------------------
+*"*"本地接口：
+*"  EXPORTING
+*"     VALUE(EC_KUNNR) TYPE  KUNNR
+*"     VALUE(EC_SUBRC) TYPE  CHAR1
+*"     VALUE(EC_MESSAGE) TYPE  CHAR200
+*"  TABLES
+*"      GT_TAB STRUCTURE  ZTB_KNABV
+*"      ET_RETURN STRUCTURE  ZBAPIRET1 OPTIONAL
+*"----------------------------------------------------------------------
+  TABLES:T077X,T077D.
+  DATA: GT_T077X LIKE STANDARD TABLE OF T077X WITH HEADER LINE.
+  DATA: GT_T077D LIKE STANDARD TABLE OF T077D WITH HEADER LINE.
+  DATA: GT_KNBK  LIKE STANDARD TABLE OF FKNBK  WITH HEADER LINE,
+        GT_YKNBK  LIKE STANDARD TABLE OF FKNBK  WITH HEADER LINE.
+  DATA: GT_KNA1  TYPE KNA1 ,
+        GT_KNB1  TYPE KNB1 ,
+        WA_KNB1  TYPE KNB1 ,
+        GT_ADRC  TYPE BAPIADDR1 .
+  DATA: RETCODE(1)     TYPE C.             " Returncode
+  DATA: ZKUNNR LIKE KNA1-KUNNR.
+  FIELD-SYMBOLS:<fs_data> like GT_TAB.
+  CONSTANTS:  c_address_group LIKE adrg-addr_group  VALUE 'BP  '.
+  DEFINE MAPPING_DATA.
+     MOVE-CORRESPONDING &1 TO GT_KNA1.
+     MOVE-CORRESPONDING &1 TO GT_KNB1.
+     MOVE-CORRESPONDING &1 TO GT_ADRC.
+     GT_ADRC-C_O_NAME = &1-NAME_CO.
+     GT_ADRC-TEL1_NUMBR = &1-TELF1.
+     GT_ADRC-FORMOFADDR = &1-anred.
+     GT_ADRC-NAME = &1-name1.
+     GT_ADRC-NAME_2 = &1-name2.
+     GT_ADRC-LANGU  = SY-LANGU.
+     GT_ADRC-COUNTRY = 'CN'.
+     GT_ADRC-STREET_LNG = &1-STRAS.
+     GT_ADRC-SORT1     = &1-SORTL.
+     MOVE-CORRESPONDING &1 TO GT_KNBK.
+     IF GT_KNBK-BANKS IS INITIAL.
+       GT_KNBK-BANKS = 'CN'.
+     ENDIF.
+     APPEND GT_KNBK.
+   END-OF-DEFINITION.
+
+
+  CLEAR : GT_TAB,GT_KNA1,GT_KNB1,GT_ADRC,ET_RETURN,ET_RETURN[],GT_KNBK.
+  DATA:WA_ADRC TYPE ADRC,
+       WA_KNA1 TYPE KNA1.
+
+  LOOP AT GT_TAB ASSIGNING <fs_data> .
+
+    SELECT SINGLE * INTO WA_KNA1
+      FROM kna1
+      WHERE KUNNR = <fs_data>-KUNNR
+      .
+      IF SY-SUBRC EQ 0.
+        SELECT SINGLE * INTO WA_KNB1
+        FROM knB1
+        WHERE KUNNR = <fs_data>-KUNNR
+          AND BUKRS = <fs_data>-BUKRS.
+        CLEAR:GT_YKNBK,GT_YKNBK[].
+
+        IF GT_YKNBK-BANKS IS INITIAL.
+         GT_YKNBK-BANKS = 'CN'.
+        ENDIF.
+        GT_YKNBK-KZ = 'U'.
+        IF <fs_data>-LOEVA = 'X' OR <fs_data>-LOEVM = 'X'.
+          GT_YKNBK-KZ = 'D'.
+        ENDIF.
+        MOVE-CORRESPONDING WA_KNA1 TO GT_YKNBK.
+        MOVE-CORRESPONDING WA_KNB1 TO GT_YKNBK.
+        APPEND GT_YKNBK.
+      ENDIF.
+
+********mark.wen 21.01.2016 15:32:20****start****
+  "判断是否证件号重复
+  IF <fs_data>-KUNNR IS INITIAL.
+    SELECT * FROM adrc INTO WA_ADRC
+      where STR_SUPPL2 = <fs_data>-STR_SUPPL2 .
+      SELECT * FROM kna1 INTO WA_KNA1 WHERE
+        ADRNR = WA_ADRC-ADDRNUMBER .
+        IF WA_KNA1-KUNNR ne <fs_data>-KUNNR .
+          EC_SUBRC = 'E' .
+          EC_MESSAGE = '证件号码重复，SAP客户为：'  && WA_KNA1-KUNNR.
+        ENDIF .
+      ENDSELECT .
+    ENDSELECT .
+  ENDIF.
+  CHECK EC_SUBRC NE 'E'.
+
+********mark.wen 21.01.2016 15:32:20****end*****
+
+    "统驭科目：
+SELECT SINGLE ZAKONT into <fs_data>-AKONT
+  FROM ZTFI002
+  WHERE ZKTOKD = <fs_data>-KTOKD.
+
+    MAPPING_DATA <fs_data>.
+    GT_KNA1-LOEVM = <fs_data>-LOEVA.
+    GT_KNB1-LOEVM = <fs_data>-LOEVM.
+    GT_KNA1-SPRAS = SY-LANGU.
+    IF <fs_data>-KUNNR IS NOT INITIAL.
+       GT_KNBK-KZ = 'U'.
+    ENDIF.
+    IF <fs_data>-LOEVA = 'X' OR <fs_data>-LOEVM = 'X'.
+      GT_KNBK-KZ = 'D'.
+    ENDIF.
+    MODIFY GT_KNBK INDEX 1.
+
+    GT_KNA1-ANRED = <fs_data>-ANRED.
+
+
+    CALL FUNCTION 'SD_CUSTOMER_MAINTAIN_ALL'
+      EXPORTING
+        I_KNA1                     = GT_KNA1
+        I_KNB1                     = GT_KNB1
+        I_BAPIADDR1                = GT_ADRC
+        I_MAINTAIN_ADDRESS_BY_KNA1 = 'X'
+        pi_postflag                = 'X'
+        i_from_customermaster      = 'X'
+      IMPORTING
+        E_KUNNR                    = ZKUNNR
+      TABLES
+        T_XKNBK                    = GT_KNBK
+        T_YKNBK	                   = GT_YKNBK
+      EXCEPTIONS
+        client_error               = 1
+        kna1_incomplete            = 2
+        knb1_incomplete            = 3
+        knb5_incomplete            = 4
+        knvv_incomplete            = 5
+        kunnr_not_unique           = 6
+        sales_area_not_unique      = 7
+        sales_area_not_valid       = 8
+        insert_update_conflict     = 9
+        number_assignment_error    = 10
+        number_not_in_range        = 11
+        number_range_not_extern    = 12
+        number_range_not_intern    = 13
+        account_group_not_valid    = 14
+        parnr_invalid              = 15
+        bank_address_invalid       = 16
+        tax_data_not_valid         = 17
+        no_authority               = 18
+        company_code_not_unique    = 19
+        dunning_data_not_valid     = 20
+        knb1_reference_invalid     = 21
+        cam_error                  = 22
+        OTHERS                     = 23.
+    IF sy-subrc <> 0.
+      ROLLBACK WORK.
+      ET_RETURN-TYPE = 'E'.
+      IF ZKUNNR IS INITIAL.
+        ZKUNNR = <fs_data>-KUNNR.
+      ENDIF.
+      IF GT_KNBK-KZ = 'D'.
+      CONCATENATE ET_RETURN-MESSAGE '客户编号：'
+                  ZKUNNR '删除或冻结失败！' INTO ET_RETURN-MESSAGE.
+      ELSEIF GT_KNBK-KZ = 'U'.
+      CONCATENATE ET_RETURN-MESSAGE '客户编号：'
+                  ZKUNNR '修改失败！' INTO ET_RETURN-MESSAGE.
+      ELSE.
+        ET_RETURN-MESSAGE = '客户创建失败！'.
+      ENDIF.
+
+    ELSE.
+      CALL FUNCTION 'BAPI_TRANSACTION_COMMIT'
+       EXPORTING
+         WAIT          = 'X'.
+
+      ET_RETURN-TYPE = 'S'.
+      IF ZKUNNR IS INITIAL.
+        ZKUNNR = <fs_data>-KUNNR.
+      ENDIF.
+      IF GT_KNBK-KZ = 'D'.
+      CONCATENATE ET_RETURN-MESSAGE '客户编号：'
+                  ZKUNNR '删除或冻结成功！' INTO ET_RETURN-MESSAGE.
+      ELSEIF GT_KNBK-KZ = 'U'.
+      CONCATENATE ET_RETURN-MESSAGE '客户编号：'
+                  ZKUNNR '修改成功！' INTO ET_RETURN-MESSAGE.
+      ELSE.
+      CONCATENATE ET_RETURN-MESSAGE '客户编号：'
+                  ZKUNNR '创建成功！' INTO ET_RETURN-MESSAGE.
+      ENDIF.
+      EC_SUBRC = 'S'.
+      EC_MESSAGE = ET_RETURN-MESSAGE.
+    ENDIF.
+    APPEND ET_RETURN.
+    IF ET_RETURN-TYPE = 'S'.
+*      ET_RETURN-ID = 'KUNNR'.
+*      ET_RETURN-MESSAGE = ZKUNNR.
+*      APPEND ET_RETURN.
+      EC_KUNNR = ZKUNNR.
+    ENDIF.
+
+*    <fs_data>-KUNNR = ZKUNNR.
+*    MODIFY ZTB_KNABV FROM <fs_data>.
+*    IF sy-subrc eq 0.
+*      COMMIT WORK AND WAIT.
+*    ENDIF.
+
+    CLEAR : GT_KNA1,GT_KNB1,GT_KNBK,GT_KNBK[].
+  ENDLOOP.
+
+  IF EC_SUBRC NE 'S'.
+    EC_SUBRC = 'E'.
+  ENDIF.
+
+
+ENDFUNCTION.
